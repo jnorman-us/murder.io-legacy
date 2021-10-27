@@ -3,7 +3,6 @@ module github.com/josephnormandev/murder
 go 1.16
 
 require (
-	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/mattn/go-runewidth v0.0.13 // indirect
-	github.com/nsf/termbox-go v1.1.1 // indirect
+	github.com/llgcode/draw2d v0.0.0-20200110163050-b96d8208fcfc // indirect
+	github.com/markfarnan/go-canvas v0.0.0-20200722235510-6971ccd00770
 )

@@ -2,14 +2,16 @@ package collider
 
 import (
 	"github.com/josephnormandev/murder/common/types"
+	"github.com/llgcode/draw2d/draw2dimg"
+	"github.com/llgcode/draw2d/draw2dkit"
 	"math"
 )
 
 type Circle struct {
 	localPosition types.Vector
 	radius        float64
-	collider  *Collider
-	colliding bool
+	collider      *Collider
+	colliding     bool
 }
 
 func NewCircle(p types.Vector, r float64) Circle {
@@ -93,25 +95,11 @@ func (c *Circle) getOffsetAngle() float64 {
 	return c.collider.GetAngle()
 }
 
-func (c *Circle) Draw(setCell func(types.Vector, rune)) {
+func (c *Circle) draw(g *draw2dimg.GraphicContext) {
 	var position = c.getOffsetPosition()
-	var radius = math.Max(c.radius, 1)
-
-	for y := -radius; y <= radius; y += 1 {
-		for x := -radius; x <= radius; x += 1 {
-			var cellPosition = types.NewVector(x, y)
-			cellPosition.Add(position)
-
-			if cellPosition.Distance(position) <= radius {
-				setCell(
-					cellPosition,
-					'O',
-				)
-			}
-		}
-	}
-	setCell(
-		types.NewVector(position.X, position.Y),
-		'0',
-	)
+	g.SetFillColor(c.collider.color)
+	g.SetStrokeColor(c.collider.color)
+	g.BeginPath()
+	draw2dkit.Circle(g, position.X, position.Y, c.radius)
+	g.FillStroke()
 }

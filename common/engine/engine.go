@@ -23,7 +23,7 @@ func NewEngine(w *world.World) *Engine {
 
 func (e *Engine) Start() {
 	e.running = true
-	e.run()
+	go e.run()
 }
 
 func (e *Engine) run() {
@@ -32,16 +32,19 @@ func (e *Engine) run() {
 		if e.running == false {
 			break
 		}
-		// update position based on Force and Velocity
-		for _, moveable := range e.world.Moveables {
-			(*moveable).UpdatePosition()
-		}
+		e.Tick()
+	}
+}
 
-		e.collisionsManager.Resolve()
+func (e *Engine) Tick() {
+	for _, moveable := range e.world.Moveables {
+		(*moveable).UpdatePosition()
+	}
 
-		for _, identifiable := range e.world.Identifiables {
-			(*identifiable).Tick()
-		}
+	e.collisionsManager.Resolve()
+
+	for _, identifiable := range e.world.Identifiables {
+		(*identifiable).Tick()
 	}
 }
 

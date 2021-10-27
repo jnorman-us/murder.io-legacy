@@ -2,6 +2,9 @@ package collider
 
 import (
 	"github.com/josephnormandev/murder/common/types"
+	"github.com/llgcode/draw2d/draw2dimg"
+	"github.com/llgcode/draw2d/draw2dkit"
+	"image/color"
 )
 
 type Collider struct {
@@ -11,6 +14,7 @@ type Collider struct {
 	angularVelocity float64
 	rectangles      []Rectangle
 	circles         []Circle
+	color           color.RGBA
 }
 
 func (c *Collider) GetCollider() *Collider {
@@ -30,6 +34,10 @@ func (c *Collider) Setup(rectangles []Rectangle, circles []Circle) {
 		var circle = &c.circles[i]
 		circle.setCollider(c)
 	}
+	c.SetColor(color.RGBA{
+		G: 0xff,
+		A: 0xff,
+	})
 }
 
 func (c *Collider) Clear() {
@@ -118,4 +126,24 @@ func (c *Collider) GetAngularVelocity() float64 {
 
 func (c *Collider) SetAngularVelocity(angularVelocity float64) {
 	c.angularVelocity = angularVelocity
+}
+
+func (c *Collider) SetColor(co color.RGBA) {
+	c.color = co
+}
+
+func (c *Collider) Draw(g *draw2dimg.GraphicContext) {
+	for _, circle := range c.circles {
+		circle.draw(g)
+	}
+	for _, rectangle := range c.rectangles {
+		rectangle.draw(g)
+	}
+
+	// draw centerpoint for reference
+	g.SetFillColor(color.RGBA{A: 0xff})
+	g.SetStrokeColor(color.RGBA{A: 0xff})
+	g.BeginPath()
+	draw2dkit.Circle(g, c.position.X, c.position.Y, 2)
+	g.FillStroke()
 }
