@@ -1,11 +1,12 @@
 package main
 
 import (
+	"github.com/josephnormandev/murder/client/drawer"
+	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
-	"github.com/josephnormandev/murder/drawer"
 	"time"
 )
 
@@ -28,6 +29,7 @@ func main() {
 	Zhaohang12345.AddTo(gameWorld)
 
 	var gameDrawer = drawer.NewDrawer(gameWorld, gameEngine, 500, 500)
+	var _ = input.NewInput()
 
 	gameDrawer.Start()
 
