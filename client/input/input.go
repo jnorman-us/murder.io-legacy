@@ -6,16 +6,18 @@ import (
 )
 
 type Input struct {
-	window   js.Value
-	document js.Value
+	eventsManager *events.Manager
+	window        js.Value
+	document      js.Value
 
 	keySettings keybinds
 
 	playerInput events.PlayerInputEvent
 }
 
-func NewInput(playerID string) *Input {
+func NewInput(e *events.Manager, playerID string) *Input {
 	var input = &Input{}
+	input.eventsManager = e
 	input.window = js.Global()
 	input.document = input.window.Get("document")
 	input.keySettings = LoadSettings()
@@ -55,6 +57,6 @@ func (i *Input) updatePlayerInput(key Keys, active bool) {
 	}
 	if newInput != i.playerInput {
 		i.playerInput = newInput
-		events.Singleton.FirePlayerInputEvent(i.playerInput)
+		i.eventsManager.FirePlayerInputEvent(i.playerInput)
 	}
 }

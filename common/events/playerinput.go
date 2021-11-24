@@ -1,13 +1,15 @@
 package events
 
-import "fmt"
-
 type PlayerInputEvent struct {
 	PlayerID string
 	Forward  bool
 	Backward bool
 	Left     bool
 	Right    bool
+}
+
+func (e *PlayerInputEvent) Dead() bool {
+	return !(e.Forward || e.Left || e.Right || e.Backward)
 }
 
 type PlayerInputListener interface {
@@ -19,7 +21,6 @@ func (m *Manager) RegisterPlayerInputListener(l *PlayerInputListener) {
 }
 
 func (m *Manager) FirePlayerInputEvent(e PlayerInputEvent) {
-	fmt.Println(e)
 	var handler = playerInputHandler{
 		event:     e,
 		listeners: m.playerInputListeners,

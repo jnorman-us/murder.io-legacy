@@ -8,12 +8,12 @@ import (
 
 type Entity struct {
 	collider.Collider
-	id        int32
-	health    float64
-	maxHealth float64 // minHealth is obviously 0
-	maxSpeed  float64
-	world     *world.World
-	events    *events.Manager
+	id            int32
+	health        float64
+	maxHealth     float64 // minHealth is obviously 0
+	maxSpeed      float64
+	world         *world.World
+	eventsManager *events.Manager
 }
 
 func (e *Entity) SetStats(maxHealth, maxSpeed float64) {

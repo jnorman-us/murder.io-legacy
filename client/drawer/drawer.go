@@ -14,7 +14,7 @@ type Drawer struct {
 	canvas *canvas.Canvas2d
 }
 
-func NewDrawer(e *engine.Engine, width, height int) *Drawer {
+func NewDrawer(w *world.World, e *engine.Engine, width, height int) *Drawer {
 	var c, _ = canvas.NewCanvas2d(false)
 	c.Create(
 		width,
@@ -22,7 +22,7 @@ func NewDrawer(e *engine.Engine, width, height int) *Drawer {
 	)
 
 	return &Drawer{
-		world:  world.Singleton,
+		world:  w,
 		engine: e,
 		canvas: c,
 	}

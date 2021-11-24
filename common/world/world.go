@@ -9,8 +9,6 @@ import (
 // game instance. It is only ever mutated via the Engine so there is no need for
 // channels
 
-var Singleton *World
-
 type World struct {
 	tick              int32
 	currentID         int32
@@ -19,8 +17,8 @@ type World struct {
 	Moveables         map[int32]*classes.Moveable
 }
 
-func InitializeWorld() {
-	Singleton = &World{
+func NewWorld() *World {
+	return &World{
 		tick:              0,
 		currentID:         0,
 		CollisionsManager: collisions.NewManager(),

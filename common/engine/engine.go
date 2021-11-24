@@ -2,6 +2,7 @@ package engine
 
 import (
 	"github.com/josephnormandev/murder/common/collisions"
+	"github.com/josephnormandev/murder/common/events"
 	"github.com/josephnormandev/murder/common/world"
 	"time"
 )
@@ -12,11 +13,11 @@ type Engine struct {
 	collisionsManager *collisions.Manager
 }
 
-func NewEngine() *Engine {
+func NewEngine(w *world.World, e *events.Manager) *Engine {
 	var engine = &Engine{
 		running:           false,
-		world:             world.Singleton,
-		collisionsManager: world.Singleton.CollisionsManager,
+		world:             w,
+		collisionsManager: w.CollisionsManager,
 	}
 	return engine
 }
