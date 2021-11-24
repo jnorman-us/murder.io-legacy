@@ -5,6 +5,7 @@ import (
 	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities"
+	"github.com/josephnormandev/murder/common/events"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
 	"time"
@@ -13,25 +14,25 @@ import (
 var done chan struct{}
 
 func main() {
-	var gameWorld = world.NewWorld()
-	var gameEngine = engine.NewEngine(gameWorld)
+	events.InitializeEvents()
+	world.InitializeWorld()
+
+	var gameEngine = engine.NewEngine()
 
 	var wineCraft = entities.NewPlayer()
 	wineCraft.SetPosition(types.NewVector(50, 100))
-	wineCraft.SetAngularVelocity(0.01)
-	wineCraft.SetVelocity(types.NewVector(.5, 0))
-	wineCraft.AddTo(gameWorld)
+	wineCraft.Add()
+	wineCraft.SetAngularVelocity(.3)
+	wineCraft.AddInputListener()
 
-	var Zhaohang12345 = entities.NewPlayer()
-	Zhaohang12345.SetPosition(types.NewVector(450, 100))
-	Zhaohang12345.SetAngularVelocity(0.01)
-	Zhaohang12345.SetVelocity(types.NewVector(-.5, 0))
-	Zhaohang12345.AddTo(gameWorld)
+	var zhaohang12345 = entities.NewPlayer()
+	zhaohang12345.SetPosition(types.NewVector(450, 100))
+	zhaohang12345.Add()
 
-	var gameDrawer = drawer.NewDrawer(gameWorld, gameEngine, 500, 500)
-	var _ = input.NewInput()
+	var gameDrawer = drawer.NewDrawer(gameEngine, 500, 500)
+	var _ = input.NewInput("Wine_Craft")
 
-	gameDrawer.Start()
+	go gameDrawer.Start()
 
 	for range time.Tick(time.Second * 1) {
 

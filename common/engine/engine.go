@@ -12,11 +12,11 @@ type Engine struct {
 	collisionsManager *collisions.Manager
 }
 
-func NewEngine(w *world.World) *Engine {
+func NewEngine() *Engine {
 	var engine = &Engine{
 		running:           false,
-		world:             w,
-		collisionsManager: w.CollisionsManager,
+		world:             world.Singleton,
+		collisionsManager: world.Singleton.CollisionsManager,
 	}
 	return engine
 }

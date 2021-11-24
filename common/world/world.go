@@ -8,8 +8,10 @@ import (
 // World is the struct that holds onto each subset of the objects present in this
 // game instance. It is only ever mutated via the Engine so there is no need for
 // channels
+
+var Singleton *World
+
 type World struct {
-	round             int32
 	tick              int32
 	currentID         int32
 	CollisionsManager *collisions.Manager
@@ -17,9 +19,8 @@ type World struct {
 	Moveables         map[int32]*classes.Moveable
 }
 
-func NewWorld() *World {
-	return &World{
-		round:             0,
+func InitializeWorld() {
+	Singleton = &World{
 		tick:              0,
 		currentID:         0,
 		CollisionsManager: collisions.NewManager(),
@@ -34,7 +35,7 @@ func (w *World) NextAvailableID() int32 {
 }
 
 func (w *World) Tick() {
-	w.tick ++
+	w.tick++
 }
 
 func (w *World) GetTick() int32 {

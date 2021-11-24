@@ -4,6 +4,7 @@ import (
 	"github.com/josephnormandev/murder/common/classes"
 	"github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/collisions"
+	"github.com/josephnormandev/murder/common/events"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
 )
@@ -28,29 +29,41 @@ func NewPlayer() *Player {
 	return player
 }
 
-func (p *Player) AddTo(w *world.World) {
-	var id = w.NextAvailableID()
+func (p *Player) Add() {
+	p.world = world.Singleton
+	p.events = events.Singleton
+
+	var id = p.world.NextAvailableID()
 
 	var identifiable = classes.Identifiable(p)
 	var moveable = classes.Moveable(p)
 	var collidable = collisions.Collidable(p)
 
-	w.AddIdentifiable(id, &identifiable)
-	w.AddMoveable(id, &moveable)
-	w.CollisionsManager.AddCollidable(id, &collidable)
+	p.world.AddIdentifiable(id, &identifiable)
+	p.world.AddMoveable(id, &moveable)
+	p.world.CollisionsManager.AddCollidable(id, &collidable)
 }
 
-func (p *Player) RemoveFrom() {
+func (p *Entity) Remove() {
 	var id = p.GetID()
-	var w = p.world
 
-	w.CollisionsManager.RemoveCollidable(id)
-	w.RemoveIdentifiable(id)
-	w.RemoveMoveable(id)
+	p.world.CollisionsManager.RemoveCollidable(id)
+	p.world.RemoveIdentifiable(id)
+	p.world.RemoveMoveable(id)
 
-	w = nil
+	p.world = nil
+	p.events = nil
+}
+
+func (p *Player) AddInputListener() {
+	var playerInputListener = events.PlayerInputListener(p)
+	p.events.RegisterPlayerInputListener(&playerInputListener)
 }
 
 func (p *Player) Tick() {
+
+}
+
+func (p *Player) HandlePlayerInput(e events.PlayerInputEvent) {
 
 }

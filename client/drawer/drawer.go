@@ -14,7 +14,7 @@ type Drawer struct {
 	canvas *canvas.Canvas2d
 }
 
-func NewDrawer(w *world.World, e *engine.Engine, width, height int) *Drawer {
+func NewDrawer(e *engine.Engine, width, height int) *Drawer {
 	var c, _ = canvas.NewCanvas2d(false)
 	c.Create(
 		width,
@@ -22,7 +22,7 @@ func NewDrawer(w *world.World, e *engine.Engine, width, height int) *Drawer {
 	)
 
 	return &Drawer{
-		world:  w,
+		world:  world.Singleton,
 		engine: e,
 		canvas: c,
 	}
@@ -35,7 +35,7 @@ func (d *Drawer) Start() {
 func (d *Drawer) Render(g *draw2dimg.GraphicContext) bool {
 	d.engine.Tick()
 
-	g.SetFillColor(color.RGBA{0xff, 0xff, 0xff, 0xff})
+	g.SetFillColor(color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xff})
 	g.Clear()
 
 	for _, collidable := range d.world.CollisionsManager.Collidables {

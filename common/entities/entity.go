@@ -2,16 +2,18 @@ package entities
 
 import (
 	"github.com/josephnormandev/murder/common/collider"
+	"github.com/josephnormandev/murder/common/events"
 	"github.com/josephnormandev/murder/common/world"
 )
 
 type Entity struct {
 	collider.Collider
-	id     int32
-	health float64
+	id        int32
+	health    float64
 	maxHealth float64 // minHealth is obviously 0
-	maxSpeed float64
-	world  *world.World
+	maxSpeed  float64
+	world     *world.World
+	events    *events.Manager
 }
 
 func (e *Entity) SetStats(maxHealth, maxSpeed float64) {
