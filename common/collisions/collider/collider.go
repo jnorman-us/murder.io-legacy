@@ -21,7 +21,7 @@ func (c *Collider) GetCollider() *Collider {
 	return c
 }
 
-func (c *Collider) Setup(rectangles []Rectangle, circles []Circle) {
+func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle) {
 	c.rectangles = rectangles
 	c.circles = circles
 
@@ -132,12 +132,12 @@ func (c *Collider) SetColor(co color.RGBA) {
 	c.color = co
 }
 
-func (c *Collider) Draw(g *draw2dimg.GraphicContext) {
+func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
 	for _, circle := range c.circles {
-		circle.draw(g)
+		circle.drawHitbox(g)
 	}
 	for _, rectangle := range c.rectangles {
-		rectangle.draw(g)
+		rectangle.drawHitbox(g)
 	}
 
 	// draw centerpoint for reference

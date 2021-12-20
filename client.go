@@ -2,40 +2,43 @@ package main
 
 import (
 	"github.com/josephnormandev/murder/client/drawer"
-	"github.com/josephnormandev/murder/client/input"
+	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
-	"github.com/josephnormandev/murder/common/entities"
-	"github.com/josephnormandev/murder/common/events"
+	"github.com/josephnormandev/murder/common/entities/innocent"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
 	"time"
 )
 
-var done chan struct{}
+var gameWorld *world.World
+var gameEngine *engine.Engine
+var gameCollisions *collisions.Manager
+var gameDrawer *drawer.Drawer
 
 func main() {
-	var eventsManager = events.NewManager()
-	var world = world.NewWorld()
+	gameEngine = engine.NewEngine()
+	gameDrawer = drawer.NewDrawer(500, 500)
+	gameCollisions = collisions.NewManager()
+	gameWorld = world.NewClientWorld(gameEngine, gameCollisions, gameDrawer)
 
-	var gameEngine = engine.NewEngine(world, eventsManager)
-
-	var wineCraft = entities.NewPlayer()
+	var wineCraft = innocent.NewInnocent()
 	wineCraft.SetPosition(types.NewVector(50, 100))
-	wineCraft.Add(world, eventsManager)
 	wineCraft.SetAngularVelocity(.1)
-	wineCraft.AddInputListener()
+	wineCraft.SetSpawner(gameWorld)
 
-	var zhaohang12345 = entities.NewPlayer()
-	zhaohang12345.SetPosition(types.NewVector(350, 250))
-	zhaohang12345.Add(world, eventsManager)
-
-	var gameDrawer = drawer.NewDrawer(world, gameEngine, 500, 500)
-	var _ = input.NewInput(eventsManager, "Wine_Craft")
+	var xiehang = innocent.NewInnocent()
+	xiehang.SetPosition(types.NewVector(80, 100))
+	xiehang.SetAngularVelocity(-.175)
+	xiehang.SetSpawner(gameWorld)
 
 	go gameDrawer.Start()
-	go eventsManager.Start()
 
-	for range time.Tick(time.Second * 1) {
-
+	for range time.Tick(50 * time.Millisecond) {
+		tick()
 	}
+}
+
+func tick() {
+	gameEngine.UpdatePhysics()
+	gameCollisions.ResolveCollisions()
 }

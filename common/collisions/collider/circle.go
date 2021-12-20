@@ -95,7 +95,7 @@ func (c *Circle) getOffsetAngle() float64 {
 	return c.collider.GetAngle()
 }
 
-func (c *Circle) draw(g *draw2dimg.GraphicContext) {
+func (c *Circle) drawHitbox(g *draw2dimg.GraphicContext) {
 	var position = c.getOffsetPosition()
 	g.SetFillColor(c.collider.color)
 	g.SetStrokeColor(c.collider.color)

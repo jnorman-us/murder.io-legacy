@@ -1,7 +1,7 @@
 package collisions
 
 import (
-	"github.com/josephnormandev/murder/common/collider"
+	"github.com/josephnormandev/murder/common/collisions/collider"
 	"image/color"
 )
 
@@ -9,15 +9,15 @@ type Collidable interface {
 	GetCollider() *collider.Collider
 }
 
-func (m *Manager) AddCollidable(id int32, c *Collidable) {
+func (m *Manager) AddCollidable(id int, c *Collidable) {
 	m.Collidables[id] = c
 }
 
-func (m *Manager) RemoveCollidable(id int32) {
+func (m *Manager) RemoveCollidable(id int) {
 	delete(m.Collidables, id)
 }
 
-func (m *Manager) ResolveCollidables() {
+func (m *Manager) resolveCollidables() {
 	var green = color.RGBA{
 		G: 0xff,
 		A: 0xff,

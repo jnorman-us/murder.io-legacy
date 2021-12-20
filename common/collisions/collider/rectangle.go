@@ -48,7 +48,7 @@ func (r *Rectangle) getOffsetAngle() float64 {
 	return r.localAngle + r.collider.GetAngle()
 }
 
-func (r *Rectangle) draw(g *draw2dimg.GraphicContext) {
+func (r *Rectangle) drawHitbox(g *draw2dimg.GraphicContext) {
 	var angle = r.getOffsetAngle()
 	var position = r.getOffsetPosition()
 	var width = r.width / 2

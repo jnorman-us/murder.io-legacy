@@ -1,54 +1,20 @@
 package engine
 
-import (
-	"github.com/josephnormandev/murder/common/collisions"
-	"github.com/josephnormandev/murder/common/events"
-	"github.com/josephnormandev/murder/common/world"
-	"time"
-)
-
 type Engine struct {
-	running           bool
-	world             *world.World
-	collisionsManager *collisions.Manager
+	running   bool
+	Moveables map[int]*Moveable
 }
 
-func NewEngine(w *world.World, e *events.Manager) *Engine {
+func NewEngine() *Engine {
 	var engine = &Engine{
-		running:           false,
-		world:             w,
-		collisionsManager: w.CollisionsManager,
+		running:   false,
+		Moveables: map[int]*Moveable{},
 	}
 	return engine
 }
 
-func (e *Engine) Start() {
-	e.running = true
-	go e.run()
-}
-
-func (e *Engine) run() {
-	// loop for each tick of the game
-	for range time.Tick(time.Second / 20) { // 20 TPS
-		if e.running == false {
-			break
-		}
-		e.Tick()
+func (e *Engine) UpdatePhysics() {
+	for id := range e.Moveables {
+		(*e.Moveables[id]).UpdatePosition()
 	}
-}
-
-func (e *Engine) Tick() {
-	for _, moveable := range e.world.Moveables {
-		(*moveable).UpdatePosition()
-	}
-
-	e.collisionsManager.Resolve()
-
-	for _, identifiable := range e.world.Identifiables {
-		(*identifiable).Tick()
-	}
-}
-
-func (e *Engine) Stop() {
-	e.running = false
 }

@@ -1,33 +1,38 @@
 package world
 
 import (
-	"github.com/josephnormandev/murder/common/classes"
+	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/common/collisions"
+	"github.com/josephnormandev/murder/common/engine"
+	"github.com/josephnormandev/murder/common/entities/innocent"
+	"github.com/josephnormandev/murder/common/entities/wall"
 )
 
-// World is the struct that holds onto each subset of the objects present in this
-// game instance. It is only ever mutated via the Engine so there is no need for
-// channels
-
 type World struct {
-	tick              int32
-	currentID         int32
-	CollisionsManager *collisions.Manager
-	Identifiables     map[int32]*classes.Identifiable
-	Moveables         map[int32]*classes.Moveable
+	tick      int
+	currentID int
+	Walls     map[int]*wall.Wall
+	Innocents map[int]*innocent.Innocent
+
+	drawer     *drawer.Drawer
+	collisions *collisions.Manager
+	engine     *engine.Engine
 }
 
-func NewWorld() *World {
+func NewClientWorld(e *engine.Engine, c *collisions.Manager, d *drawer.Drawer) *World {
 	return &World{
-		tick:              0,
-		currentID:         0,
-		CollisionsManager: collisions.NewManager(),
-		Identifiables:     map[int32]*classes.Identifiable{},
-		Moveables:         map[int32]*classes.Moveable{},
+		tick:      0,
+		currentID: 0,
+		Walls:     map[int]*wall.Wall{},
+		Innocents: map[int]*innocent.Innocent{},
+
+		drawer:     d,
+		engine:     e,
+		collisions: c,
 	}
 }
 
-func (w *World) NextAvailableID() int32 {
+func (w *World) NextAvailableID() int {
 	w.currentID++
 	return w.currentID
 }
@@ -36,22 +41,6 @@ func (w *World) Tick() {
 	w.tick++
 }
 
-func (w *World) GetTick() int32 {
+func (w *World) GetTick() int {
 	return w.tick
-}
-
-func (w *World) AddIdentifiable(id int32, i *classes.Identifiable) {
-	w.Identifiables[id] = i
-}
-
-func (w *World) AddMoveable(id int32, m *classes.Moveable) {
-	w.Moveables[id] = m
-}
-
-func (w *World) RemoveIdentifiable(id int32) {
-	delete(w.Identifiables, id)
-}
-
-func (w *World) RemoveMoveable(id int32) {
-	delete(w.Moveables, id)
 }
