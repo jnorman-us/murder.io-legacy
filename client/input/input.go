@@ -1,62 +1,114 @@
 package input
 
 import (
-	"github.com/josephnormandev/murder/common/events"
 	"syscall/js"
 )
 
-type Input struct {
-	eventsManager *events.Manager
-	window        js.Value
-	document      js.Value
+type Manager struct {
+	window   js.Value
+	document js.Value
+	canvas   js.Value
+	keyBinds KeyBinds
 
-	keySettings keybinds
+	playerListener *Listener
 
-	playerInput events.PlayerInputEvent
+	inputs  Input
+	current map[int]bool
 }
 
-func NewInput(e *events.Manager, playerID string) *Input {
-	var input = &Input{}
-	input.eventsManager = e
-	input.window = js.Global()
+func NewManager(playerID string) *Manager {
+	var input = &Manager{
+		window:   js.Global(),
+		current:  map[int]bool{},
+		keyBinds: LoadSettings(),
+	}
 	input.document = input.window.Get("document")
-	input.keySettings = LoadSettings()
-	input.playerInput = events.PlayerInputEvent{}
 
 	registerKeyDownListener(input)
 	registerKeyUpListener(input)
+	registerMouseUpListener(input)
+	registerMouseDownListener(input)
+	registerContextMenuDisabler(input)
 
 	return input
 }
 
-func (i *Input) updatePlayerInput(key Keys, active bool) {
-	var newInput = i.playerInput
-	if key.equals(i.keySettings.moveLeft) {
-		if i.playerInput.Right == true && active {
-			return
-		}
-		newInput.Left = active
+func (i *Manager) updatePlayerInput(key int, active bool) {
+	var newInputs = i.inputs
+
+	if _, ok := i.current[key]; !ok && active {
+		i.current[key] = true
+	} else {
+		delete(i.current, key)
 	}
-	if key.equals(i.keySettings.moveRight) {
-		if i.playerInput.Left == true && active {
-			return
+
+	if key == i.keyBinds.moveForward {
+		if _, ok := i.current[i.keyBinds.moveBackward]; ok {
+			if active {
+				newInputs.forward = true
+				newInputs.backward = false
+			} else {
+				newInputs.forward = false
+				newInputs.backward = true
+			}
+		} else {
+			newInputs.forward = active
 		}
-		newInput.Right = active
-	}
-	if key.equals(i.keySettings.moveForward) {
-		if i.playerInput.Backward == true && active {
-			return
+	} else if key == i.keyBinds.moveBackward {
+		if _, ok := i.current[i.keyBinds.moveForward]; ok {
+			if active {
+				newInputs.backward = true
+				newInputs.forward = false
+			} else {
+				newInputs.backward = false
+				newInputs.forward = true
+			}
+		} else {
+			newInputs.backward = active
 		}
-		newInput.Forward = active
 	}
-	if key.equals(i.keySettings.moveBackward) {
-		if i.playerInput.Forward == true && active {
-			return
+	if key == i.keyBinds.moveLeft {
+		if _, ok := i.current[i.keyBinds.moveRight]; ok {
+			if active {
+				newInputs.left = true
+				newInputs.right = false
+			} else {
+				newInputs.left = false
+				newInputs.right = true
+			}
+		} else {
+			newInputs.left = active
 		}
-		newInput.Backward = active
+	} else if key == i.keyBinds.moveRight {
+		if _, ok := i.current[i.keyBinds.moveLeft]; ok {
+			if active {
+				newInputs.right = true
+				newInputs.left = false
+			} else {
+				newInputs.right = false
+				newInputs.left = true
+			}
+		} else {
+			newInputs.right = active
+		}
 	}
-	if newInput != i.playerInput {
-		i.playerInput = newInput
-		i.eventsManager.FirePlayerInputEvent(i.playerInput)
+	/*
+		if key.equals(i.keyBinds.moveLeft) {
+		} else if key.equals(i.keyBinds.moveRight) {
+		}
+		if key.equals(i.keyBinds.abilityAttack) {
+
+		}
+		if key.equals(i.keyBinds.abilityRanged) {
+
+		}
+		if key.equals(i.keyBinds.abilitySpecial) {
+
+		}*/
+	if !i.inputs.Equals(newInputs) {
+		i.inputs = newInputs
+		if i.playerListener != nil {
+			(*i.playerListener).HandleInputStateChange(newInputs)
+		}
 	}
 }

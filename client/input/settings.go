@@ -1,26 +1,24 @@
 package input
 
-import "syscall/js"
-
-type Keys js.Value
-
-type keybinds struct {
-	moveForward  Keys
-	moveBackward Keys
-	moveLeft     Keys
-	moveRight    Keys
+type KeyBinds struct {
+	moveForward    int
+	moveBackward   int
+	moveLeft       int
+	moveRight      int
+	abilitySpecial int
+	abilityAttack  int
+	abilityRanged  int
 }
 
-func LoadSettings() keybinds {
-	var keySettings = keybinds{
-		moveForward:  Keys(js.ValueOf(87)),
-		moveBackward: Keys(js.ValueOf(83)),
-		moveLeft:     Keys(js.ValueOf(65)),
-		moveRight:    Keys(js.ValueOf(68)),
+func LoadSettings() KeyBinds {
+	var keyBinds = KeyBinds{
+		moveForward:    87,
+		moveBackward:   83,
+		moveLeft:       65,
+		moveRight:      68,
+		abilitySpecial: 32,
+		abilityAttack:  0,
+		abilityRanged:  1,
 	}
-	return keySettings
-}
-
-func (k Keys) equals(o Keys) bool {
-	return js.Value(k).Equal(js.Value(o))
+	return keyBinds
 }

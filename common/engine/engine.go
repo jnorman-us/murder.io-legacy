@@ -15,6 +15,7 @@ func NewEngine() *Engine {
 
 func (e *Engine) UpdatePhysics() {
 	for id := range e.Moveables {
+		(*e.Moveables[id]).Tick()
 		(*e.Moveables[id]).UpdatePosition()
 	}
 }

@@ -9,11 +9,14 @@ import (
 
 func (w *World) AddInnocent(i *innocent.Innocent) int {
 	var id = w.NextAvailableID()
+	var spawner = innocent.Spawner(w)
 	var drawable = drawer.Drawable(i)
 	var moveable = engine.Moveable(i)
 	var collidable = collisions.Collidable(i)
 
 	i.SetID(id)
+	i.SetSpawner(&spawner)
+
 	w.Innocents[id] = i
 	w.drawer.AddDrawable(id, &drawable)
 	w.engine.AddMoveable(id, &moveable)

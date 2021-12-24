@@ -1,14 +1,17 @@
 package innocent
 
 import (
+	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/types"
 )
 
 type Innocent struct {
 	id      int
-	spawner Spawner
+	spawner *Spawner
 	collider.Collider
+
+	input input.Input
 }
 
 func NewInnocent() *Innocent {
@@ -22,6 +25,10 @@ func NewInnocent() *Innocent {
 		},
 	)
 	return innocent
+}
+
+func (i *Innocent) Tick() {
+
 }
 
 func (i *Innocent) GetID() int {
