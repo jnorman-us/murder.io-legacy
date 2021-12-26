@@ -45,51 +45,51 @@ func (i *Manager) updatePlayerInput(key int, active bool) {
 	if key == i.keyBinds.moveForward {
 		if _, ok := i.current[i.keyBinds.moveBackward]; ok {
 			if active {
-				newInputs.forward = true
-				newInputs.backward = false
+				newInputs.Forward = true
+				newInputs.Backward = false
 			} else {
-				newInputs.forward = false
-				newInputs.backward = true
+				newInputs.Forward = false
+				newInputs.Backward = true
 			}
 		} else {
-			newInputs.forward = active
+			newInputs.Forward = active
 		}
 	} else if key == i.keyBinds.moveBackward {
 		if _, ok := i.current[i.keyBinds.moveForward]; ok {
 			if active {
-				newInputs.backward = true
-				newInputs.forward = false
+				newInputs.Backward = true
+				newInputs.Forward = false
 			} else {
-				newInputs.backward = false
-				newInputs.forward = true
+				newInputs.Backward = false
+				newInputs.Forward = true
 			}
 		} else {
-			newInputs.backward = active
+			newInputs.Backward = active
 		}
 	}
 	if key == i.keyBinds.moveLeft {
 		if _, ok := i.current[i.keyBinds.moveRight]; ok {
 			if active {
-				newInputs.left = true
-				newInputs.right = false
+				newInputs.Left = true
+				newInputs.Right = false
 			} else {
-				newInputs.left = false
-				newInputs.right = true
+				newInputs.Left = false
+				newInputs.Right = true
 			}
 		} else {
-			newInputs.left = active
+			newInputs.Left = active
 		}
 	} else if key == i.keyBinds.moveRight {
 		if _, ok := i.current[i.keyBinds.moveLeft]; ok {
 			if active {
-				newInputs.right = true
-				newInputs.left = false
+				newInputs.Right = true
+				newInputs.Left = false
 			} else {
-				newInputs.right = false
-				newInputs.left = true
+				newInputs.Right = false
+				newInputs.Left = true
 			}
 		} else {
-			newInputs.right = active
+			newInputs.Right = active
 		}
 	}
 	/*

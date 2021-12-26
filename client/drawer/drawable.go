@@ -5,7 +5,7 @@ import (
 )
 
 type Drawable interface {
-	Draw(*draw.GraphicContext)
+	// Draw(*draw.GraphicContext)
 	DrawHitbox(*draw.GraphicContext)
 }
 

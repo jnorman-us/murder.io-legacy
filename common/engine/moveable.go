@@ -2,7 +2,6 @@ package engine
 
 type Moveable interface {
 	GetID() int
-	Tick()
 	UpdatePosition()
 }
 

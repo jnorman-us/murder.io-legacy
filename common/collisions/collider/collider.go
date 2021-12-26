@@ -8,10 +8,13 @@ import (
 )
 
 type Collider struct {
+	mass            float64
 	position        types.Vector
 	angle           float64
 	velocity        types.Vector
 	angularVelocity float64
+	friction        float64
+	angularFriction float64
 	rectangles      []Rectangle
 	circles         []Circle
 	color           color.RGBA
@@ -21,9 +24,10 @@ func (c *Collider) GetCollider() *Collider {
 	return c
 }
 
-func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle) {
+func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle, mass float64) {
 	c.rectangles = rectangles
 	c.circles = circles
+	c.mass = mass
 
 	for i := range c.rectangles {
 		var rectangle = &c.rectangles[i]
@@ -87,14 +91,25 @@ func (c *Collider) CheckCollision(o *Collider) bool {
 	return colliding
 }
 
+func (c *Collider) ApplyForce(force types.Vector) {
+	force.Scale(1 / c.mass)
+	c.velocity.Add(force)
+}
+
 func (c *Collider) UpdatePosition() {
 	var newPosition = c.GetPosition()
 	var newAngle = c.GetAngle()
+	var newVelocity = c.GetVelocity()
+	var newAngularVelocity = c.GetAngularVelocity()
 	newPosition.Add(c.velocity)
 	newAngle += c.angularVelocity
+	newVelocity.Scale(1 - c.friction)
+	newAngularVelocity *= 1 - c.angularFriction
 
 	c.SetPosition(newPosition)
 	c.SetAngle(newAngle)
+	c.SetVelocity(newVelocity)
+	c.SetAngularVelocity(newAngularVelocity)
 }
 
 func (c *Collider) GetPosition() types.Vector {
@@ -120,12 +135,20 @@ func (c *Collider) SetVelocity(velocity types.Vector) {
 	c.velocity = velocity
 }
 
+func (c *Collider) SetFriction(coefficient float64) {
+	c.friction = coefficient
+}
+
 func (c *Collider) GetAngularVelocity() float64 {
 	return c.angularVelocity
 }
 
 func (c *Collider) SetAngularVelocity(angularVelocity float64) {
 	c.angularVelocity = angularVelocity
+}
+
+func (c *Collider) SetAngularFriction(coefficient float64) {
+	c.angularFriction = coefficient
 }
 
 func (c *Collider) SetColor(co color.RGBA) {

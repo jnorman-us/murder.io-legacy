@@ -56,6 +56,11 @@ func (v *Vector) RotateAbout(a float64, o Vector) {
 	v.Y = o.Y + ((vector.X-o.X)*sin + (vector.Y-o.Y)*cos)
 }
 
+func (v *Vector) Scale(scalar float64) {
+	v.X = v.X * scalar
+	v.Y = v.Y * scalar
+}
+
 func (v *Vector) Distance(o Vector) float64 {
 	var x = v.X - o.X
 	var y = v.Y - o.Y
