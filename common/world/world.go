@@ -9,14 +9,16 @@ import (
 	"github.com/josephnormandev/murder/common/entities/sword"
 	"github.com/josephnormandev/murder/common/entities/wall"
 	"github.com/josephnormandev/murder/common/logic"
+	"github.com/josephnormandev/murder/common/types"
 )
 
 type World struct {
-	tick      int
-	currentID int
-	Walls     map[int]*wall.Wall
-	Innocents map[int]*innocent.Innocent
-	Swords    map[int]*sword.Sword
+	environment types.Environment
+	tick        int
+	currentID   int
+	Walls       map[int]*wall.Wall
+	Innocents   map[int]*innocent.Innocent
+	Swords      map[int]*sword.Sword
 
 	drawer     *drawer.Drawer
 	collisions *collisions.Manager
@@ -28,11 +30,12 @@ type World struct {
 
 func NewClientWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, d *drawer.Drawer, i *input.Manager) *World {
 	return &World{
-		tick:      0,
-		currentID: 0,
-		Walls:     map[int]*wall.Wall{},
-		Innocents: map[int]*innocent.Innocent{},
-		Swords:    map[int]*sword.Sword{},
+		environment: types.ClientEnvironment(),
+		tick:        0,
+		currentID:   0,
+		Walls:       map[int]*wall.Wall{},
+		Innocents:   map[int]*innocent.Innocent{},
+		Swords:      map[int]*sword.Sword{},
 
 		input:      i,
 		logic:      l,

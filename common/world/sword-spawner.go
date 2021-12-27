@@ -25,3 +25,11 @@ func (w *World) AddSword(s *sword.Sword) int {
 
 	return id
 }
+
+func (w *World) RemoveSword(id int) {
+	delete(w.Swords, id)
+	w.drawer.RemoveDrawable(id)
+	w.logic.RemoveTickable(id)
+	w.engine.RemoveMoveable(id)
+	w.collisions.RemoveCollidable(id)
+}

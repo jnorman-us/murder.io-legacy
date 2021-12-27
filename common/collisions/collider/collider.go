@@ -5,6 +5,7 @@ import (
 	"github.com/llgcode/draw2d/draw2dimg"
 	"github.com/llgcode/draw2d/draw2dkit"
 	"image/color"
+	"math"
 )
 
 type Collider struct {
@@ -96,6 +97,10 @@ func (c *Collider) ApplyForce(force types.Vector) {
 	c.velocity.Add(force)
 }
 
+func (c *Collider) ApplyTorque(torque float64) {
+	c.angularVelocity += torque / c.mass
+}
+
 func (c *Collider) UpdatePosition() {
 	var newPosition = c.GetPosition()
 	var newAngle = c.GetAngle()
@@ -163,10 +168,16 @@ func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
 		rectangle.drawHitbox(g)
 	}
 
+	var directionPoint = c.position
+	directionPoint.Add(types.NewVector(0, 20))
+	directionPoint.RotateAbout(c.angle-math.Pi/2, c.position)
+
 	// draw centerpoint for reference
 	g.SetFillColor(color.RGBA{A: 0xff})
 	g.SetStrokeColor(color.RGBA{A: 0xff})
 	g.BeginPath()
 	draw2dkit.Circle(g, c.position.X, c.position.Y, 2)
+	draw2dkit.Circle(g, directionPoint.X, directionPoint.Y, 0)
+
 	g.FillStroke()
 }

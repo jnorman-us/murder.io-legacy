@@ -8,6 +8,7 @@ type Input struct {
 	AttackClick bool // left-click
 	RangedClick bool // right-click
 	Special     bool // space bar
+	Direction   float64
 }
 
 func (s Input) Equals(o Input) bool {

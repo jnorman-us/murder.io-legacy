@@ -6,7 +6,6 @@ import (
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/innocent"
-	"github.com/josephnormandev/murder/common/entities/sword"
 	"github.com/josephnormandev/murder/common/logic"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
@@ -23,9 +22,12 @@ var gameInputs *input.Manager
 func main() {
 	gameEngine = engine.NewEngine()
 	gameLogic = logic.NewManager()
-	gameDrawer = drawer.NewDrawer(500, 500)
-	gameInputs = input.NewManager("WineCraft")
+	gameDrawer = drawer.NewDrawer()
 	gameCollisions = collisions.NewManager()
+
+	var sizeable = input.Sizeable(gameDrawer)
+	gameInputs = input.NewManager(&sizeable)
+
 	gameWorld = world.NewClientWorld(gameEngine, gameLogic, gameCollisions, gameDrawer, gameInputs)
 
 	var wineCraft = innocent.NewInnocent()
@@ -44,17 +46,15 @@ func main() {
 	xiehang.SetAngularFriction(.1)
 	xiehang.SetFriction(.5)
 
-	var sword = sword.NewSword()
-	sword.SetPosition(types.NewVector(300, 100))
-	sword.SetAngularVelocity(.1)
+	var center = drawer.Centerable(wineCraft)
+	gameDrawer.SetCenterable(&center)
 
 	gameWorld.AddInnocent(wineCraft)
 	gameWorld.AddInnocent(xiehang)
-	gameWorld.AddSword(sword)
 
 	go gameDrawer.Start()
 
-	for range time.Tick(50 * time.Millisecond) {
+	for range time.Tick(20 * time.Millisecond) {
 		tick()
 	}
 }

@@ -14,6 +14,9 @@ type Innocent struct {
 	collider.Collider
 
 	input input.Input
+
+	// the sword that is being held
+	sword *Swingable
 }
 
 func NewInnocent() *Innocent {
@@ -30,6 +33,8 @@ func NewInnocent() *Innocent {
 
 func (i *Innocent) Tick() {
 	var in = i.input
+	i.SetAngle(in.Direction)
+
 	var angle = 0.0
 	var movementForce = types.NewVector(20, 0)
 	if in.Left && in.Forward {
@@ -54,4 +59,14 @@ func (i *Innocent) Tick() {
 
 	movementForce.RotateAbout(angle, types.NewZeroVector())
 	i.Collider.ApplyForce(movementForce)
+
+	if in.AttackClick && i.sword == nil { // initialize sword
+		i.sword = (*i.spawner).SpawnSword(i)
+		(*i.sword).Swing()
+	} else if i.sword != nil {
+		if (*i.sword).SwingCompleted() {
+			(*i.spawner).DespawnSword((*i.sword).GetID())
+			i.sword = nil
+		}
+	}
 }

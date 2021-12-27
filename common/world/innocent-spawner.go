@@ -1,10 +1,12 @@
 package world
 
 import (
+	"fmt"
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/innocent"
+	"github.com/josephnormandev/murder/common/entities/sword"
 	"github.com/josephnormandev/murder/common/logic"
 )
 
@@ -37,5 +39,19 @@ func (w *World) RemoveInnocent(id int) {
 }
 
 func (w *World) SpawnSword(i *innocent.Innocent) *innocent.Swingable {
-	return nil
+	var beholder = sword.Beholder(i)
+	var s = sword.NewSword(&beholder)
+	s.SetPosition(i.GetPosition())
+	s.SetVelocity(i.GetVelocity())
+	s.SetAngle(i.GetAngle())
+	fmt.Println(i.GetAngle())
+	w.AddSword(s)
+
+	var swingable = innocent.Swingable(s)
+
+	return &swingable
+}
+
+func (w *World) DespawnSword(id int) {
+	w.RemoveSword(id)
 }
