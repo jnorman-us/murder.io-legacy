@@ -46,11 +46,19 @@ func main() {
 	xiehang.SetAngularFriction(.1)
 	xiehang.SetFriction(.5)
 
+	var bruhlord = innocent.NewInnocent()
+	bruhlord.SetPosition(types.NewVector(-80, 100))
+	bruhlord.SetVelocity(types.NewVector(0, 10))
+	bruhlord.SetAngularVelocity(-.175)
+	bruhlord.SetAngularFriction(.1)
+	bruhlord.SetFriction(.5)
+
 	var center = drawer.Centerable(wineCraft)
 	gameDrawer.SetCenterable(&center)
 
 	gameWorld.AddInnocent(wineCraft)
 	gameWorld.AddInnocent(xiehang)
+	gameWorld.AddInnocent(bruhlord)
 
 	go gameDrawer.Start()
 

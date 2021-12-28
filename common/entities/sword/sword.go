@@ -38,7 +38,7 @@ func (s *Sword) Tick() {
 }
 
 func (s *Sword) Swing() {
-	s.ApplyTorque(.2)
+	s.ApplyTorque(.18)
 }
 
 func (s *Sword) SwingCompleted() bool {

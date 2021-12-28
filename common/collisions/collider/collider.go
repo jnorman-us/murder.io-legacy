@@ -117,6 +117,19 @@ func (c *Collider) UpdatePosition() {
 	c.SetAngularVelocity(newAngularVelocity)
 }
 
+func (c *Collider) BounceBack() {
+	var newPosition = c.GetPosition()
+	var newVelocity = c.GetVelocity()
+	newVelocity.Scale(-1 / (1 - c.friction))
+	newPosition.Add(newVelocity)
+
+	c.SetPosition(newPosition)
+}
+
+func (c *Collider) GetMass() float64 {
+	return c.mass
+}
+
 func (c *Collider) GetPosition() types.Vector {
 	return c.position
 }

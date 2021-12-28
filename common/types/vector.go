@@ -69,12 +69,12 @@ func (v *Vector) Distance(o Vector) float64 {
 
 func (v *Vector) Angle() float64 {
 	if v.X == 0 {
-		return math.Atan(0)
+		return math.Atan(10)
 	}
 	var angle = math.Atan(v.Y / v.X)
 
 	var output = angle
-	if v.X < 0 {
+	if v.X <= 0 {
 		output = output - math.Pi
 	}
 	return output

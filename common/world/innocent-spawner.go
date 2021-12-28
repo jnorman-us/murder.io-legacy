@@ -16,7 +16,7 @@ func (w *World) AddInnocent(i *innocent.Innocent) int {
 	var tickable = logic.Tickable(i)
 	var drawable = drawer.Drawable(i)
 	var moveable = engine.Moveable(i)
-	var collidable = collisions.Collidable(i)
+	var collidable = collisions.PlayerPlayerCollidable(i)
 
 	i.SetID(id)
 	i.SetSpawner(&spawner)
@@ -25,7 +25,7 @@ func (w *World) AddInnocent(i *innocent.Innocent) int {
 	w.drawer.AddDrawable(id, &drawable)
 	w.logic.AddTickable(id, &tickable)
 	w.engine.AddMoveable(id, &moveable)
-	w.collisions.AddCollidable(id, &collidable)
+	w.collisions.AddPlayerPlayerCollidable(id, &collidable)
 
 	return id
 }
