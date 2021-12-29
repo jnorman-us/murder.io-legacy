@@ -6,6 +6,7 @@ import (
 	"github.com/markfarnan/go-canvas/canvas"
 	"image/color"
 	"syscall/js"
+	"time"
 )
 
 type Drawer struct {
@@ -14,6 +15,10 @@ type Drawer struct {
 
 	center    *Centerable
 	Drawables map[int]*Drawable
+
+	lastStart     time.Time
+	lastDuration  float64
+	updatePhysics func(float64)
 }
 
 func NewDrawer() *Drawer {
@@ -32,11 +37,21 @@ func NewDrawer() *Drawer {
 	}
 }
 
-func (d *Drawer) Start() {
-	d.canvas.Start(120, d.Render) // random maxFPS, change to some setting later?
+func (d *Drawer) Start(updatePhysics func(float64)) {
+	d.updatePhysics = updatePhysics
+	d.lastStart = time.Now()
+	d.lastDuration = 10
+
+	d.canvas.Start(200, d.render) // random maxFPS, change to some setting later?
 }
 
-func (d *Drawer) Render(g *draw2dimg.GraphicContext) bool {
+func (d *Drawer) render(g *draw2dimg.GraphicContext) bool {
+	d.lastDuration = float64(time.Since(d.lastStart).Milliseconds())
+	d.lastStart = time.Now()
+	d.updatePhysics(d.lastDuration)
+
+	// fmt.Println("FPS:", 1000 / d.lastDuration)
+
 	var translated types.Vector
 	if d.center != nil {
 		var position = (*d.center).GetPosition()

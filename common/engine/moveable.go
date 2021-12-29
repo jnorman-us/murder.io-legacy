@@ -2,7 +2,7 @@ package engine
 
 type Moveable interface {
 	GetID() int
-	UpdatePosition()
+	UpdatePosition(float64)
 }
 
 func (e *Engine) AddMoveable(id int, m *Moveable) {

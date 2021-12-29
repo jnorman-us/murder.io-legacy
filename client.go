@@ -19,6 +19,8 @@ var gameCollisions *collisions.Manager
 var gameDrawer *drawer.Drawer
 var gameInputs *input.Manager
 
+var logicMS = 33
+
 func main() {
 	gameEngine = engine.NewEngine()
 	gameLogic = logic.NewManager()
@@ -60,15 +62,21 @@ func main() {
 	gameWorld.AddInnocent(xiehang)
 	gameWorld.AddInnocent(bruhlord)
 
-	go gameDrawer.Start()
+	go tick()
+	go gameDrawer.Start(updatePhysics)
 
-	for range time.Tick(20 * time.Millisecond) {
-		tick()
+	for range time.Tick(time.Second) {
+		// do nothing, just keep this thread alive...
 	}
 }
 
-func tick() {
-	gameLogic.Tick()
-	gameEngine.UpdatePhysics()
+func updatePhysics(ms float64) {
+	gameEngine.UpdatePhysics(ms / float64(logicMS))
 	gameCollisions.ResolveCollisions()
+}
+
+func tick() {
+	for range time.Tick(time.Duration(logicMS) * time.Millisecond) {
+		gameLogic.Tick()
+	}
 }

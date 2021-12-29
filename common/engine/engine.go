@@ -11,8 +11,8 @@ func NewEngine() *Engine {
 	return engine
 }
 
-func (e *Engine) UpdatePhysics() {
+func (e *Engine) UpdatePhysics(tick float64) {
 	for id := range e.Moveables {
-		(*e.Moveables[id]).UpdatePosition()
+		(*e.Moveables[id]).UpdatePosition(tick)
 	}
 }

@@ -101,15 +101,24 @@ func (c *Collider) ApplyTorque(torque float64) {
 	c.angularVelocity += torque / c.mass
 }
 
-func (c *Collider) UpdatePosition() {
+func (c *Collider) UpdatePosition(time float64) {
+	var scaledVelocity = c.GetVelocity()
+	var scaledAngularVelocity = c.GetAngularVelocity()
+	scaledVelocity.Scale(time)
+	scaledAngularVelocity *= time
+
+	var scaledFriction = 1 - c.friction*time
+	var scaledAngularFriction = 1 - c.angularFriction*time
+
 	var newPosition = c.GetPosition()
 	var newAngle = c.GetAngle()
 	var newVelocity = c.GetVelocity()
 	var newAngularVelocity = c.GetAngularVelocity()
-	newPosition.Add(c.velocity)
-	newAngle += c.angularVelocity
-	newVelocity.Scale(1 - c.friction)
-	newAngularVelocity *= 1 - c.angularFriction
+
+	newPosition.Add(scaledVelocity)
+	newVelocity.Scale(scaledFriction)
+	newAngle += scaledAngularVelocity
+	newAngularVelocity *= scaledAngularFriction
 
 	c.SetPosition(newPosition)
 	c.SetAngle(newAngle)
