@@ -25,16 +25,21 @@ func NewSword(w *Beholder) *Sword {
 		[]collider.Circle{},
 		1,
 	)
+	sword.SetFriction((*w).GetFriction())
 	sword.SetAngularFriction(.1)
 	return sword
 }
 
 func (s *Sword) Tick() {
+}
+
+func (s *Sword) UpdatePosition(time float64) {
 	var wielder = *s.wielder
 	var copyPosition = wielder.GetPosition()
 	var copyVelocity = wielder.GetVelocity()
 	s.SetPosition(copyPosition)
 	s.SetVelocity(copyVelocity)
+	s.Collider.UpdatePosition(time)
 }
 
 func (s *Sword) Swing() {

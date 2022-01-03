@@ -1,7 +1,9 @@
 package input
 
+import "github.com/josephnormandev/murder/common/types"
+
 type Listener interface {
-	HandleInputStateChange(Input)
+	HandleInputStateChange(types.Input)
 }
 
 func (m *Manager) AddPlayerListener(l *Listener) {

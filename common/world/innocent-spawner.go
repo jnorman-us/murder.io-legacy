@@ -1,10 +1,10 @@
 package world
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
+	"github.com/josephnormandev/murder/common/entities/bow"
 	"github.com/josephnormandev/murder/common/entities/innocent"
 	"github.com/josephnormandev/murder/common/entities/sword"
 	"github.com/josephnormandev/murder/common/logic"
@@ -44,7 +44,6 @@ func (w *World) SpawnSword(i *innocent.Innocent) *innocent.Swingable {
 	s.SetPosition(i.GetPosition())
 	s.SetVelocity(i.GetVelocity())
 	s.SetAngle(i.GetAngle())
-	fmt.Println(i.GetAngle())
 	w.AddSword(s)
 
 	var swingable = innocent.Swingable(s)
@@ -54,4 +53,20 @@ func (w *World) SpawnSword(i *innocent.Innocent) *innocent.Swingable {
 
 func (w *World) DespawnSword(id int) {
 	w.RemoveSword(id)
+}
+
+func (w *World) SpawnBow(i *innocent.Innocent) *innocent.Shootable {
+	var shooter = bow.Shooter(i)
+	var b = bow.NewBow(&shooter)
+	b.SetPosition(i.GetPosition())
+	b.SetVelocity(i.GetVelocity())
+	b.SetAngle(i.GetAngle())
+	w.AddBow(b)
+
+	var shootable = innocent.Shootable(b)
+	return &shootable
+}
+
+func (w *World) DespawnBow(id int) {
+	w.RemoveBow(id)
 }

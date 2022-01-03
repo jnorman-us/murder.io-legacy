@@ -1,7 +1,6 @@
 package innocent
 
 import (
-	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
@@ -13,11 +12,16 @@ type Innocent struct {
 	spawner *Spawner
 	collider.Collider
 
-	input input.Input
+	input types.Input
 
 	// the sword that is being held
 	sword *Swingable
+	bow   *Shootable
 }
+
+var angularFriction = .1
+var friction = .5
+var mass = 10.0
 
 func NewInnocent() *Innocent {
 	var innocent = &Innocent{}
@@ -26,9 +30,19 @@ func NewInnocent() *Innocent {
 		[]collider.Circle{
 			collider.NewCircle(types.NewVector(0, 0), 10),
 		},
-		10,
+		mass,
 	)
+	innocent.SetAngularFriction(angularFriction)
+	innocent.SetFriction(friction)
 	return innocent
+}
+
+func (i *Innocent) ScaleMass(scale float64) {
+	i.SetMass(scale * mass)
+}
+
+func (i *Innocent) ResetMass() {
+	i.SetMass(mass)
 }
 
 func (i *Innocent) Tick() {
@@ -67,6 +81,21 @@ func (i *Innocent) Tick() {
 		if (*i.sword).SwingCompleted() {
 			(*i.spawner).DespawnSword((*i.sword).GetID())
 			i.sword = nil
+		}
+	}
+
+	if in.RangedClick && i.bow == nil {
+		i.bow = (*i.spawner).SpawnBow(i)
+	} else if in.RangedClick {
+		var bow = *i.bow
+		bow.Charge()
+	} else if i.bow != nil {
+		var bow = *i.bow
+		if bow.Fired() {
+			(*i.spawner).DespawnSword(bow.GetID())
+			i.bow = nil
+		} else {
+			bow.Fire()
 		}
 	}
 }

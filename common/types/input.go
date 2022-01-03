@@ -1,4 +1,4 @@
-package input
+package types
 
 type Input struct {
 	Forward     bool // w

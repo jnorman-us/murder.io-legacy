@@ -14,7 +14,7 @@ type Manager struct {
 
 	playerListener *Listener
 
-	inputs  Input
+	inputs  types.Input
 	current map[int]bool
 }
 
@@ -96,8 +96,11 @@ func (i *Manager) updatePlayerInput(key int, active bool) {
 			newInputs.Right = active
 		}
 	}
-	if key == i.keyBinds.abilitySpecial {
+	if key == i.keyBinds.abilityAttack {
 		newInputs.AttackClick = active
+	}
+	if key == i.keyBinds.abilityRanged {
+		newInputs.RangedClick = active
 	}
 	if !i.inputs.Equals(newInputs) {
 		i.inputs = newInputs

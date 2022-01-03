@@ -139,6 +139,10 @@ func (c *Collider) GetMass() float64 {
 	return c.mass
 }
 
+func (c *Collider) SetMass(mass float64) {
+	c.mass = mass
+}
+
 func (c *Collider) GetPosition() types.Vector {
 	return c.position
 }
@@ -160,6 +164,10 @@ func (c *Collider) GetVelocity() types.Vector {
 
 func (c *Collider) SetVelocity(velocity types.Vector) {
 	c.velocity = velocity
+}
+
+func (c *Collider) GetFriction() float64 {
+	return c.friction
 }
 
 func (c *Collider) SetFriction(coefficient float64) {
