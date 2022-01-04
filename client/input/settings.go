@@ -17,7 +17,7 @@ func LoadSettings() KeyBinds {
 		moveLeft:       65,
 		moveRight:      68,
 		abilitySpecial: 32,
-		abilityAttack:  1,
+		abilityAttack:  32,
 		abilityRanged:  3,
 	}
 	return keyBinds

@@ -35,18 +35,18 @@ func main() {
 	var wineCraft = innocent.NewInnocent()
 	wineCraft.SetPosition(types.NewVector(50, 100))
 	wineCraft.SetAngularVelocity(.1)
-	wineCraft.SetVelocity(types.NewVector(10, 0))
+	//wineCraft.SetVelocity(types.NewVector(10, 0))
 
 	wineCraft.AddInputs(gameInputs)
 
 	var xiehang = innocent.NewInnocent()
 	xiehang.SetPosition(types.NewVector(80, 100))
-	xiehang.SetVelocity(types.NewVector(0, 10))
+	//xiehang.SetVelocity(types.NewVector(0, 10))
 	xiehang.SetAngularVelocity(-.175)
 
 	var bruhlord = innocent.NewInnocent()
 	bruhlord.SetPosition(types.NewVector(-80, 100))
-	bruhlord.SetVelocity(types.NewVector(0, 10))
+	//bruhlord.SetVelocity(types.NewVector(0, 10))
 	bruhlord.SetAngularVelocity(-.175)
 
 	var center = drawer.Centerable(wineCraft)

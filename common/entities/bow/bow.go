@@ -11,16 +11,18 @@ type Bow struct {
 	entities.ID
 	collider.Collider
 
-	shooter *Shooter
+	holder  *Holder
+	spawner *Spawner
 
-	charge int
+	charge float64
 	fired  bool
 }
 
-func NewBow(s *Shooter) *Bow {
+func NewBow(h *Holder) *Bow {
+	var holder = *h
 	var bow = &Bow{
-		shooter: s,
-		charge:  10,
+		holder: h,
+		charge: 10,
 	}
 	bow.SetupCollider(
 		[]collider.Rectangle{
@@ -29,7 +31,10 @@ func NewBow(s *Shooter) *Bow {
 		[]collider.Circle{},
 		1,
 	)
-	bow.SetFriction((*s).GetFriction())
+	bow.SetPosition(holder.GetPosition())
+	bow.SetVelocity(holder.GetVelocity())
+	bow.SetAngle(holder.GetAngle())
+	bow.SetFriction((*h).GetFriction())
 	return bow
 }
 
@@ -38,10 +43,10 @@ func (b *Bow) Tick() {
 }
 
 func (b *Bow) UpdatePosition(time float64) {
-	var shooter = *b.shooter
-	var copyPosition = shooter.GetPosition()
-	var copyVelocity = shooter.GetVelocity()
-	var copyAngle = shooter.GetAngle()
+	var holder = *b.holder
+	var copyPosition = holder.GetPosition()
+	var copyVelocity = holder.GetVelocity()
+	var copyAngle = holder.GetAngle()
 	b.SetAngle(copyAngle)
 	b.SetPosition(copyPosition)
 	b.SetVelocity(copyVelocity)
@@ -49,18 +54,23 @@ func (b *Bow) UpdatePosition(time float64) {
 }
 
 func (b *Bow) Charge() {
-	var shooter = *b.shooter
+	var holder = *b.holder
 	if b.charge < 50 {
 		b.charge++
-		shooter.ScaleMass((float64(b.charge) / 50 * 5) + 1)
+		holder.ScaleMass((b.charge / 50 * 5) + 1)
 	}
 }
 
 func (b *Bow) Fire() {
-	fmt.Println("Firing with", b.charge/10, "charge")
-	(*b.shooter).ResetMass()
+	(*b.holder).ResetMass()
+	(*b.spawner).SpawnArrow(b.holder, b.charge/50)
 	b.fired = true
 	b.charge = 0
+}
+
+func (b *Bow) Cancel() {
+	(*b.holder).ResetMass()
+	fmt.Println("Cancelled Bow Shot")
 }
 
 func (b *Bow) Fired() bool {

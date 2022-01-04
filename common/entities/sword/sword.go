@@ -15,6 +15,7 @@ type Sword struct {
 }
 
 func NewSword(w *Beholder) *Sword {
+	var wielder = *w
 	var sword = &Sword{
 		wielder: w,
 	}
@@ -25,6 +26,9 @@ func NewSword(w *Beholder) *Sword {
 		[]collider.Circle{},
 		1,
 	)
+	sword.SetPosition(wielder.GetPosition())
+	sword.SetVelocity(wielder.GetVelocity())
+	sword.SetAngle(wielder.GetAngle())
 	sword.SetFriction((*w).GetFriction())
 	sword.SetAngularFriction(.1)
 	return sword

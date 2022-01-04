@@ -1,11 +1,13 @@
-package sword
+package bow
 
 import "github.com/josephnormandev/murder/common/types"
 
-type Beholder interface {
+type Holder interface {
 	GetID() int
+	GetAngle() float64
+	ScaleMass(float64)
+	ResetMass()
 	GetPosition() types.Vector
 	GetVelocity() types.Vector
 	GetFriction() float64
-	GetAngle() float64
 }

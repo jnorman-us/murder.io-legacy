@@ -74,28 +74,34 @@ func (i *Innocent) Tick() {
 	movementForce.RotateAbout(angle, types.NewZeroVector())
 	i.Collider.ApplyForce(movementForce)
 
+	var spawner = *i.spawner
 	if in.AttackClick && i.sword == nil { // initialize sword
-		i.sword = (*i.spawner).SpawnSword(i)
+		i.sword = spawner.SpawnSword(i)
 		(*i.sword).Swing()
 	} else if i.sword != nil {
 		if (*i.sword).SwingCompleted() {
-			(*i.spawner).DespawnSword((*i.sword).GetID())
+			spawner.DespawnSword((*i.sword).GetID())
 			i.sword = nil
 		}
 	}
 
 	if in.RangedClick && i.bow == nil {
-		i.bow = (*i.spawner).SpawnBow(i)
-	} else if in.RangedClick {
-		var bow = *i.bow
-		bow.Charge()
+		i.bow = spawner.SpawnBow(i)
 	} else if i.bow != nil {
 		var bow = *i.bow
-		if bow.Fired() {
-			(*i.spawner).DespawnSword(bow.GetID())
+		if in.AttackClick {
+			bow.Cancel()
+			spawner.DespawnSword(bow.GetID())
 			i.bow = nil
+		} else if in.RangedClick {
+			bow.Charge()
 		} else {
-			bow.Fire()
+			if bow.Fired() {
+				spawner.DespawnSword(bow.GetID())
+				i.bow = nil
+			} else {
+				bow.Fire()
+			}
 		}
 	}
 }

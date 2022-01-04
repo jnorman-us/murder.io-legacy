@@ -5,4 +5,5 @@ type Shootable interface {
 	Charge()
 	Fire()
 	Fired() bool
+	Cancel()
 }

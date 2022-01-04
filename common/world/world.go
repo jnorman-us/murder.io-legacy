@@ -5,6 +5,7 @@ import (
 	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
+	"github.com/josephnormandev/murder/common/entities/arrow"
 	"github.com/josephnormandev/murder/common/entities/bow"
 	"github.com/josephnormandev/murder/common/entities/innocent"
 	"github.com/josephnormandev/murder/common/entities/sword"
@@ -21,6 +22,7 @@ type World struct {
 	Innocents   map[int]*innocent.Innocent
 	Swords      map[int]*sword.Sword
 	Bows        map[int]*bow.Bow
+	Arrows      map[int]*arrow.Arrow
 
 	drawer     *drawer.Drawer
 	collisions *collisions.Manager
@@ -39,6 +41,7 @@ func NewClientWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, d
 		Innocents:   map[int]*innocent.Innocent{},
 		Swords:      map[int]*sword.Sword{},
 		Bows:        map[int]*bow.Bow{},
+		Arrows:      map[int]*arrow.Arrow{},
 
 		input:      i,
 		logic:      l,

@@ -16,7 +16,7 @@ func (w *World) AddInnocent(i *innocent.Innocent) int {
 	var tickable = logic.Tickable(i)
 	var drawable = drawer.Drawable(i)
 	var moveable = engine.Moveable(i)
-	var collidable = collisions.PlayerPlayerCollidable(i)
+	var collidable = collisions.Collidable(i)
 
 	i.SetID(id)
 	i.SetSpawner(&spawner)
@@ -25,7 +25,7 @@ func (w *World) AddInnocent(i *innocent.Innocent) int {
 	w.drawer.AddDrawable(id, &drawable)
 	w.logic.AddTickable(id, &tickable)
 	w.engine.AddMoveable(id, &moveable)
-	w.collisions.AddPlayerPlayerCollidable(id, &collidable)
+	w.collisions.AddCollidable(id, &collidable)
 
 	return id
 }
@@ -41,9 +41,6 @@ func (w *World) RemoveInnocent(id int) {
 func (w *World) SpawnSword(i *innocent.Innocent) *innocent.Swingable {
 	var beholder = sword.Beholder(i)
 	var s = sword.NewSword(&beholder)
-	s.SetPosition(i.GetPosition())
-	s.SetVelocity(i.GetVelocity())
-	s.SetAngle(i.GetAngle())
 	w.AddSword(s)
 
 	var swingable = innocent.Swingable(s)
@@ -56,11 +53,8 @@ func (w *World) DespawnSword(id int) {
 }
 
 func (w *World) SpawnBow(i *innocent.Innocent) *innocent.Shootable {
-	var shooter = bow.Shooter(i)
-	var b = bow.NewBow(&shooter)
-	b.SetPosition(i.GetPosition())
-	b.SetVelocity(i.GetVelocity())
-	b.SetAngle(i.GetAngle())
+	var holder = bow.Holder(i)
+	var b = bow.NewBow(&holder)
 	w.AddBow(b)
 
 	var shootable = innocent.Shootable(b)
