@@ -11,5 +11,6 @@ func (i *Innocent) HandleInputStateChange(s types.Input) {
 
 func (i *Innocent) AddInputs(m *input.Manager) {
 	var listener = input.Listener(i)
+	i.SetColor(types.Colors.Green)
 	m.AddPlayerListener(&listener)
 }
