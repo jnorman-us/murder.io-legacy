@@ -30,11 +30,13 @@ func (m *Manager) RemoveWallArrow(id int) {
 }
 
 func (m *Manager) resolveArrowWalls() {
-	for _, wall := range m.WallArrows {
-		for _, arrow := range m.ArrowWalls {
-			var arrowCollider = (*arrow).GetCollider()
-			if (*wall).CheckCollision(arrowCollider) {
-				(*arrow).Stop()
+	for _, w := range m.WallArrows {
+		var wall = *w
+		for _, a := range m.ArrowWalls {
+			var arrow = *a
+			var arrowCollider = arrow.GetCollider()
+			if wall.CheckCollision(arrowCollider) {
+				arrow.Stop()
 			}
 		}
 	}

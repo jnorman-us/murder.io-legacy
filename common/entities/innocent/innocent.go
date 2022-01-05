@@ -37,6 +37,7 @@ func NewInnocent(u string) *Innocent {
 		},
 		mass,
 	)
+	innocent.SetColor(types.Colors.Green)
 	innocent.SetAngularFriction(angularFriction)
 	innocent.SetFriction(friction)
 	return innocent

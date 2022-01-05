@@ -31,6 +31,7 @@ func NewBow(h *Holder) *Bow {
 		[]collider.Circle{},
 		1,
 	)
+	bow.SetColor(types.Colors.Blue)
 	bow.SetPosition(holder.GetPosition())
 	bow.SetVelocity(holder.GetVelocity())
 	bow.SetAngle(holder.GetAngle())

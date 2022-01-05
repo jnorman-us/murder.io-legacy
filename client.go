@@ -10,6 +10,8 @@ import (
 	"github.com/josephnormandev/murder/common/logic"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
+	"math"
+	"math/rand"
 	"time"
 )
 
@@ -34,13 +36,14 @@ func main() {
 	gameWorld = world.NewClientWorld(gameEngine, gameLogic, gameCollisions, gameDrawer, gameInputs)
 
 	var wineCraft = innocent.NewInnocent("Wine_Craft")
+	var center = drawer.Centerable(wineCraft)
 	wineCraft.SetPosition(types.NewVector(250, 250))
 	wineCraft.SetAngularVelocity(.1)
+	wineCraft.AddInputs(gameInputs)
 	//wineCraft.SetVelocity(types.NewVector(10, 0))
 
 	gameWorld.AddInnocent(wineCraft)
-
-	wineCraft.AddInputs(gameInputs)
+	gameDrawer.SetCenterable(&center)
 
 	for _, name := range []string{
 		"Xiehang",
@@ -53,17 +56,16 @@ func main() {
 		"JoeyD",
 	} {
 		var player = innocent.NewInnocent(name)
-		player.SetPosition(types.NewRandomVector(0, 0, 500, 500))
+		player.SetPosition(types.NewRandomVector(0, 0, 600, 600))
 		gameWorld.AddInnocent(player)
 	}
 
-	var border = wall.NewWall(100)
-	border.SetPosition(types.NewVector(100, 200))
-
-	var center = drawer.Centerable(wineCraft)
-	gameDrawer.SetCenterable(&center)
-
-	gameWorld.AddWall(border)
+	for i := 0; i < 5; i++ {
+		var border = wall.NewWall(rand.Intn(1000))
+		border.SetPosition(types.NewRandomVector(0, 0, 600, 600))
+		border.SetAngle(rand.Float64() * math.Pi * 2)
+		gameWorld.AddWall(border)
+	}
 
 	go tick()
 	go gameDrawer.Start(updatePhysics)

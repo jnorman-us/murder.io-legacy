@@ -30,11 +30,12 @@ func NewArrow(s *Shooter, charge float64) *Arrow {
 		},
 		1,
 	)
+	arrow.SetColor(types.Colors.Red)
 	arrow.SetAngle(shooter.GetAngle())
 	arrow.SetPosition(shooter.GetPosition())
 	//arrow.SetVelocity(shooter.GetVelocity())
 
-	var force = types.NewVector(20, 0)
+	var force = types.NewVector(30, 0)
 	force.RotateAbout(shooter.GetAngle(), types.NewZeroVector())
 	force.Scale(charge)
 	arrow.ApplyForce(force)

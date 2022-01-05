@@ -24,5 +24,6 @@ func NewWall(w int) *Wall {
 		[]collider.Circle{},
 		10,
 	)
+	wall.SetColor(types.Colors.Gray)
 	return wall
 }

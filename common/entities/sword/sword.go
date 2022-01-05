@@ -26,6 +26,7 @@ func NewSword(w *Beholder) *Sword {
 		[]collider.Circle{},
 		1,
 	)
+	sword.SetColor(types.Colors.Blue)
 	sword.SetPosition(wielder.GetPosition())
 	sword.SetVelocity(wielder.GetVelocity())
 	sword.SetAngle(wielder.GetAngle())
