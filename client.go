@@ -6,6 +6,7 @@ import (
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/innocent"
+	"github.com/josephnormandev/murder/common/entities/wall"
 	"github.com/josephnormandev/murder/common/logic"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
@@ -32,29 +33,37 @@ func main() {
 
 	gameWorld = world.NewClientWorld(gameEngine, gameLogic, gameCollisions, gameDrawer, gameInputs)
 
-	var wineCraft = innocent.NewInnocent()
-	wineCraft.SetPosition(types.NewVector(50, 100))
+	var wineCraft = innocent.NewInnocent("Wine_Craft")
+	wineCraft.SetPosition(types.NewVector(250, 250))
 	wineCraft.SetAngularVelocity(.1)
 	//wineCraft.SetVelocity(types.NewVector(10, 0))
 
+	gameWorld.AddInnocent(wineCraft)
+
 	wineCraft.AddInputs(gameInputs)
 
-	var xiehang = innocent.NewInnocent()
-	xiehang.SetPosition(types.NewVector(80, 100))
-	//xiehang.SetVelocity(types.NewVector(0, 10))
-	xiehang.SetAngularVelocity(-.175)
+	for _, name := range []string{
+		"Xiehang",
+		"TheStorminNorman",
+		"ShadowDragon",
+		"Society Member",
+		"Envii",
+		"Jinseng",
+		"Laerir",
+		"JoeyD",
+	} {
+		var player = innocent.NewInnocent(name)
+		player.SetPosition(types.NewRandomVector(0, 0, 500, 500))
+		gameWorld.AddInnocent(player)
+	}
 
-	var bruhlord = innocent.NewInnocent()
-	bruhlord.SetPosition(types.NewVector(-80, 100))
-	//bruhlord.SetVelocity(types.NewVector(0, 10))
-	bruhlord.SetAngularVelocity(-.175)
+	var border = wall.NewWall(100)
+	border.SetPosition(types.NewVector(100, 200))
 
 	var center = drawer.Centerable(wineCraft)
 	gameDrawer.SetCenterable(&center)
 
-	gameWorld.AddInnocent(wineCraft)
-	gameWorld.AddInnocent(xiehang)
-	gameWorld.AddInnocent(bruhlord)
+	gameWorld.AddWall(border)
 
 	go tick()
 	go gameDrawer.Start(updatePhysics)

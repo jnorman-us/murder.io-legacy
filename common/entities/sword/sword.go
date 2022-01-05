@@ -21,7 +21,7 @@ func NewSword(w *Beholder) *Sword {
 	}
 	sword.SetupCollider(
 		[]collider.Rectangle{
-			collider.NewRectangle(types.NewVector(30, 0), math.Pi/-4, 36, 2),
+			collider.NewRectangle(types.NewVector(30, 0), math.Pi/-4, 30, 2),
 		},
 		[]collider.Circle{},
 		1,

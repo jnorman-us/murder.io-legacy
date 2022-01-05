@@ -121,7 +121,7 @@ func (m *Manager) updatePlayerDirection(x, y float64) {
 	var newAngle = center.Angle()
 
 	if newAngle != m.inputs.Direction {
-		m.inputs.Direction = center.Angle()
+		m.inputs.Direction = newAngle
 		(*m.playerListener).HandleInputStateChange(m.inputs)
 	}
 }

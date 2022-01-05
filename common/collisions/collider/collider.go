@@ -88,7 +88,20 @@ func (c *Collider) CheckCollision(o *Collider) bool {
 			}
 		}
 	}
-	// then rect on rect collisions
+
+	/*
+		// then rect on rect collisions
+		for i := range c.rectangles {
+			for j := range o.rectangles {
+				var rectangle = &c.rectangles[i]
+				var otherRectangle = &o.rectangles[j]
+				if rectangle.checkRectangleCollision(otherRectangle) {
+					colliding = true
+				}
+			}
+		}
+	*/
+
 	return colliding
 }
 

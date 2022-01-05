@@ -42,9 +42,14 @@ func (v *Vector) Add(o Vector) {
 	v.Y += o.Y
 }
 
+func (v *Vector) MultiplyBy(o Vector) {
+	v.X *= o.X
+	v.Y *= o.Y
+}
+
 func (v *Vector) Rotate(a float64) {
-	v.X = math.Cos(a) * v.X
-	v.Y = math.Sin(a) * v.Y
+	v.X = math.Cos(a)*v.X - math.Sin(a)*v.Y
+	v.Y = math.Sin(a)*v.X + math.Cos(a)*v.Y
 }
 
 func (v *Vector) RotateAbout(a float64, o Vector) {

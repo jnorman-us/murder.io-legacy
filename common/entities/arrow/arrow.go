@@ -10,6 +10,7 @@ type Arrow struct {
 	entities.ID
 	collider.Collider
 
+	spawner *Spawner
 	charge  float64
 	shooter *Shooter
 }
@@ -22,23 +23,38 @@ func NewArrow(s *Shooter, charge float64) *Arrow {
 	}
 	arrow.SetupCollider(
 		[]collider.Rectangle{
-			collider.NewRectangle(types.NewVector(0, 0), 0, 20, 4),
+			collider.NewRectangle(types.NewVector(-10, 0), 0, 10, 4),
 		},
-		[]collider.Circle{},
+		[]collider.Circle{
+			collider.NewCircle(types.NewVector(0, 0), 6),
+		},
 		1,
 	)
 	arrow.SetAngle(shooter.GetAngle())
 	arrow.SetPosition(shooter.GetPosition())
 	//arrow.SetVelocity(shooter.GetVelocity())
 
-	var force = types.NewVector(20, 20)
-	force.Rotate(shooter.GetAngle())
+	var force = types.NewVector(20, 0)
+	force.RotateAbout(shooter.GetAngle(), types.NewZeroVector())
 	force.Scale(charge)
 	arrow.ApplyForce(force)
 
 	return arrow
 }
 
-func (a *Arrow) Tick() {
+func (a *Arrow) Stop() {
+	a.SetVelocity(types.NewZeroVector())
+	(*a.spawner).RemoveArrowCollidable(a.GetID())
+}
 
+func (a *Arrow) GetShooter() int {
+	return (*a.shooter).GetID()
+}
+
+func (a *Arrow) GetShooterUsername() string {
+	return (*a.shooter).GetUsername()
+}
+
+func (a *Arrow) StopAndBreak() {
+	(*a.spawner).RemoveArrow(a.GetID())
 }

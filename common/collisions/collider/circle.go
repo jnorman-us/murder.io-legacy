@@ -28,20 +28,13 @@ func (c *Circle) setCollider(co *Collider) {
 
 func (c *Circle) checkCircleCollision(o *Circle) bool {
 	var selfPos = c.getOffsetPosition()
-
 	var otherPos = o.getOffsetPosition()
+	var dist = selfPos.Distance(otherPos)
 
-	var x1 = selfPos.X
-	var y1 = selfPos.Y
 	var r1 = c.radius
-
-	var x2 = otherPos.X
-	var y2 = otherPos.Y
 	var r2 = o.radius
 
-	var dist = math.Abs((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
-
-	var colliding = dist < (r1+r2)*(r1+r2)
+	var colliding = math.Pow(dist, 2) < (r1+r2)*(r1+r2)
 	if colliding == true {
 		c.colliding = true
 		o.colliding = true

@@ -1,6 +1,7 @@
 package innocent
 
 import (
+	"fmt"
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
@@ -9,8 +10,10 @@ import (
 
 type Innocent struct {
 	entities.ID
-	spawner *Spawner
 	collider.Collider
+	spawner *Spawner
+
+	username string
 
 	input types.Input
 
@@ -23,8 +26,10 @@ var angularFriction = .1
 var friction = .5
 var mass = 10.0
 
-func NewInnocent() *Innocent {
-	var innocent = &Innocent{}
+func NewInnocent(u string) *Innocent {
+	var innocent = &Innocent{
+		username: u,
+	}
 	innocent.SetupCollider(
 		[]collider.Rectangle{},
 		[]collider.Circle{
@@ -37,12 +42,21 @@ func NewInnocent() *Innocent {
 	return innocent
 }
 
+func (i *Innocent) GetUsername() string {
+	return i.username
+}
+
 func (i *Innocent) ScaleMass(scale float64) {
 	i.SetMass(scale * mass)
 }
 
 func (i *Innocent) ResetMass() {
 	i.SetMass(mass)
+}
+
+func (i *Innocent) ShotBy(id int, username string) {
+	fmt.Println(i.GetUsername(), "shot by", username)
+	(*i.spawner).RemoveInnocent(i.GetID())
 }
 
 func (i *Innocent) Tick() {

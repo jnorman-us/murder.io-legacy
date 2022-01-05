@@ -5,23 +5,24 @@ import (
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/arrow"
-	"github.com/josephnormandev/murder/common/logic"
 )
 
 func (w *World) AddArrow(a *arrow.Arrow) int {
 	var id = w.NextAvailableID()
-	var tickable = logic.Tickable(a)
+	var spawner = arrow.Spawner(w)
 	var drawable = drawer.Drawable(a)
 	var moveable = engine.Moveable(a)
-	var collidable = collisions.Collidable(a)
+	var arrowWall = collisions.ArrowWall(a)
+	var arrowPlayer = collisions.ArrowPlayer(a)
 
 	a.SetID(id)
+	a.SetSpawner(&spawner)
 
 	w.Arrows[id] = a
 	w.drawer.AddDrawable(id, &drawable)
-	w.logic.AddTickable(id, &tickable)
 	w.engine.AddMoveable(id, &moveable)
-	w.collisions.AddCollidable(id, &collidable)
+	w.collisions.AddArrowWall(id, &arrowWall)
+	w.collisions.AddArrowPlayer(id, &arrowPlayer)
 
 	return id
 }
@@ -31,5 +32,11 @@ func (w *World) RemoveArrow(id int) {
 	w.drawer.RemoveDrawable(id)
 	w.logic.RemoveTickable(id)
 	w.engine.RemoveMoveable(id)
-	w.collisions.RemoveCollidable(id)
+	w.collisions.RemoveArrowWall(id)
+	w.collisions.RemoveArrowPlayer(id)
+}
+
+func (w *World) RemoveArrowCollidable(id int) {
+	w.collisions.RemoveArrowWall(id)
+	w.collisions.RemoveArrowPlayer(id)
 }
