@@ -60,6 +60,11 @@ func (i *Innocent) ShotBy(id int, username string) {
 	(*i.spawner).RemoveInnocent(i.GetID())
 }
 
+func (i *Innocent) SlainBy(id int, username string) {
+	fmt.Println(i.GetUsername(), "slain by", username)
+	(*i.spawner).RemoveInnocent(i.GetID())
+}
+
 func (i *Innocent) Tick() {
 	var in = i.input
 	i.SetAngle(in.Direction)

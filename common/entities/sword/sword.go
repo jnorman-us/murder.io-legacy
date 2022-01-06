@@ -54,3 +54,11 @@ func (s *Sword) Swing() {
 func (s *Sword) SwingCompleted() bool {
 	return math.Abs(s.GetAngularVelocity()) < .01
 }
+
+func (s *Sword) GetWielder() int {
+	return (*s.wielder).GetID()
+}
+
+func (s *Sword) GetWielderUsername() string {
+	return (*s.wielder).GetUsername()
+}

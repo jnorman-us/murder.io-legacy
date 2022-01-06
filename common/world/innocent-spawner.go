@@ -18,6 +18,7 @@ func (w *World) AddInnocent(i *innocent.Innocent) int {
 	var moveable = engine.Moveable(i)
 	var playerArrow = collisions.PlayerArrow(i)
 	var playerWall = collisions.PlayerWall(i)
+	var playerSword = collisions.PlayerSword(i)
 
 	i.SetID(id)
 	i.SetSpawner(&spawner)
@@ -28,6 +29,7 @@ func (w *World) AddInnocent(i *innocent.Innocent) int {
 	w.engine.AddMoveable(id, &moveable)
 	w.collisions.AddPlayerArrow(id, &playerArrow)
 	w.collisions.AddPlayerWall(id, &playerWall)
+	w.collisions.AddPlayerSword(id, &playerSword)
 
 	return id
 }
@@ -39,6 +41,7 @@ func (w *World) RemoveInnocent(id int) {
 	w.engine.RemoveMoveable(id)
 	w.collisions.RemovePlayerArrow(id)
 	w.collisions.RemovePlayerWall(id)
+	w.collisions.RemovePlayerSword(id)
 }
 
 func (w *World) SpawnSword(i *innocent.Innocent) *innocent.Swingable {

@@ -7,6 +7,8 @@ type Manager struct {
 	PlayerArrows map[int]*PlayerArrow
 	PlayerWalls  map[int]*PlayerWall
 	WallPlayers  map[int]*WallPlayer
+	SwordPlayers map[int]*SwordPlayer
+	PlayerSwords map[int]*PlayerSword
 }
 
 func NewManager() *Manager {
@@ -17,11 +19,14 @@ func NewManager() *Manager {
 		PlayerArrows: map[int]*PlayerArrow{},
 		PlayerWalls:  map[int]*PlayerWall{},
 		WallPlayers:  map[int]*WallPlayer{},
+		SwordPlayers: map[int]*SwordPlayer{},
+		PlayerSwords: map[int]*PlayerSword{},
 	}
 }
 
 func (m *Manager) ResolveCollisions() {
 	m.resolvePlayerWalls()
+	m.resolveSwordPlayers()
 	m.resolveArrowPlayers()
 	m.resolveArrowWalls()
 }
