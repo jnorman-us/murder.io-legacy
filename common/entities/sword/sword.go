@@ -31,7 +31,7 @@ func NewSword(w *Beholder) *Sword {
 	sword.SetVelocity(wielder.GetVelocity())
 	sword.SetAngle(wielder.GetAngle())
 	sword.SetFriction((*w).GetFriction())
-	sword.SetAngularFriction(.1)
+	sword.SetAngularFriction(.5)
 	return sword
 }
 
@@ -48,7 +48,7 @@ func (s *Sword) UpdatePosition(time float64) {
 }
 
 func (s *Sword) Swing() {
-	s.ApplyTorque(.18)
+	s.ApplyTorque(.8)
 }
 
 func (s *Sword) SwingCompleted() bool {

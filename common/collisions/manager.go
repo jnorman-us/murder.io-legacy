@@ -22,6 +22,6 @@ func NewManager() *Manager {
 
 func (m *Manager) ResolveCollisions() {
 	m.resolvePlayerWalls()
-	m.resolveArrowWalls()
 	m.resolveArrowPlayers()
+	m.resolveArrowWalls()
 }

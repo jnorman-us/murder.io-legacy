@@ -111,11 +111,11 @@ func (d *Drawer) drawFPS(gc *draw2dimg.GraphicContext) {
 	gc.SetStrokeColor(image.Black)
 	gc.SetFontSize(10)
 
-	var x, y float64
-	x, y = 8, 20
-
 	// Draw Text
-	gc.FillStringAt(fmt.Sprintf("FPS: %d", d.GetFPS()), x, y)
+	gc.FillStringAt(fmt.Sprintf("FPS: %d", d.GetFPS()), 8, 20)
+	gc.FillStringAt("WASD - Movement", 8, 34)
+	gc.FillStringAt("Left Click - Swing Sword", 8, 48)
+	gc.FillStringAt("Right Click - Shoot Arrow (hold to charge)", 8, 62)
 }
 
 func (d *Drawer) GetDimensions() types.Vector {
