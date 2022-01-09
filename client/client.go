@@ -3,10 +3,9 @@ package main
 import (
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/input"
+	"github.com/josephnormandev/murder/client/world"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/packet"
-	"github.com/josephnormandev/murder/common/world"
-	"time"
 )
 
 var gameWorld *world.World
@@ -27,15 +26,9 @@ func main() {
 	var inputsSystem = packet.System(gameInputs)
 	gameNetwork.AddSystem(inputsSystem.GetChannel(), &inputsSystem)
 
-	gameWorld = world.NewClientWorld(gameEngine, gameDrawer, gameInputs)
+	gameWorld = world.NewWorld(gameEngine, gameDrawer, gameInputs)
 
 	go gameDrawer.Start(updatePhysics)
-
-	for range time.Tick(time.Second) {
-		gameNetwork.EncodeOutputs()
-		gameNetwork.CopyOver()
-		gameNetwork.DecodeInputs()
-	}
 }
 
 func updatePhysics(ms float64) {

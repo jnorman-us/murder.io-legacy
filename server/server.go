@@ -8,7 +8,7 @@ import (
 	"github.com/josephnormandev/murder/common/logic"
 	"github.com/josephnormandev/murder/common/packet"
 	"github.com/josephnormandev/murder/common/types"
-	"github.com/josephnormandev/murder/common/world"
+	"github.com/josephnormandev/murder/server/world"
 	"log"
 	"math"
 	"math/rand"
@@ -30,7 +30,7 @@ func main() {
 	gameCollisions = collisions.NewManager()
 	gameNetwork = packet.NewManager("**SERVER**")
 
-	gameWorld = world.NewServerWorld(gameEngine, gameLogic, gameCollisions, gameNetwork)
+	gameWorld = world.NewWorld(gameEngine, gameLogic, gameCollisions, gameNetwork)
 
 	var wineCraft = innocent.NewInnocent("Wine_Craft")
 	wineCraft.SetPosition(types.NewVector(250, 250))
@@ -62,12 +62,20 @@ func main() {
 	}
 
 	go tick()
+	go network()
 
 	fs := http.FileServer(http.Dir("./server/static"))
 	http.Handle("/", fs)
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+}
+
+func network() {
+	for range time.Tick(time.Second) {
+		gameNetwork.EncodeOutputs()
 	}
 }
 

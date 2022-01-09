@@ -1,8 +1,6 @@
 package world
 
 import (
-	"github.com/josephnormandev/murder/client/drawer"
-	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/arrow"
@@ -26,31 +24,12 @@ type World struct {
 	Arrows      map[int]*arrow.Arrow
 
 	network    *packet.Manager
-	drawer     *drawer.Drawer
 	collisions *collisions.Manager
 	engine     *engine.Engine
 	logic      *logic.Manager
-
-	input *input.Manager
 }
 
-func NewClientWorld(e *engine.Engine, d *drawer.Drawer, i *input.Manager) *World {
-	return &World{
-		environment: types.ClientEnvironment(),
-		tick:        0,
-		Walls:       map[int]*wall.Wall{},
-		Innocents:   map[int]*innocent.Innocent{},
-		Swords:      map[int]*sword.Sword{},
-		Bows:        map[int]*bow.Bow{},
-		Arrows:      map[int]*arrow.Arrow{},
-
-		input:  i,
-		drawer: d,
-		engine: e,
-	}
-}
-
-func NewServerWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *packet.Manager) *World {
+func NewWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *packet.Manager) *World {
 	return &World{
 		environment: types.ServerEnvironment(),
 		tick:        0,
