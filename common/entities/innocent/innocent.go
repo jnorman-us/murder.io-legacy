@@ -1,6 +1,7 @@
 package innocent
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/entities"
@@ -13,7 +14,7 @@ type Innocent struct {
 	collider.Collider
 	spawner *Spawner
 
-	username string
+	Username string
 
 	input types.Input
 
@@ -28,7 +29,7 @@ var mass = 10.0
 
 func NewInnocent(u string) *Innocent {
 	var innocent = &Innocent{
-		username: u,
+		Username: u,
 	}
 	innocent.SetupCollider(
 		[]collider.Rectangle{},
@@ -44,7 +45,7 @@ func NewInnocent(u string) *Innocent {
 }
 
 func (i *Innocent) GetUsername() string {
-	return i.username
+	return i.Username
 }
 
 func (i *Innocent) ScaleMass(scale float64) {
@@ -114,9 +115,9 @@ func (i *Innocent) Tick() {
 			spawner.DespawnSword(bow.GetID())
 			i.bow = nil
 		} else if in.RangedClick {
-			bow.Charge()
+			bow.ChargeBow()
 		} else {
-			if bow.Fired() {
+			if bow.IsFired() {
 				spawner.DespawnSword(bow.GetID())
 				i.bow = nil
 			} else {
@@ -124,4 +125,12 @@ func (i *Innocent) Tick() {
 			}
 		}
 	}
+}
+
+func (i *Innocent) GetClass() string {
+	return "innocent"
+}
+
+func (i *Innocent) GetData(e *gob.Encoder) {
+	e.Encode(i)
 }

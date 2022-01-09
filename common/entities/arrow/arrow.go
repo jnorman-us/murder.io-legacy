@@ -1,6 +1,7 @@
 package arrow
 
 import (
+	"encoding/gob"
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
@@ -11,7 +12,7 @@ type Arrow struct {
 	collider.Collider
 
 	spawner *Spawner
-	charge  float64
+	Charge  float64
 	shooter *Shooter
 }
 
@@ -19,7 +20,7 @@ func NewArrow(s *Shooter, charge float64) *Arrow {
 	var shooter = *s
 	var arrow = &Arrow{
 		shooter: s,
-		charge:  charge,
+		Charge:  charge,
 	}
 	arrow.SetupCollider(
 		[]collider.Rectangle{
@@ -58,4 +59,12 @@ func (a *Arrow) GetShooterUsername() string {
 
 func (a *Arrow) StopAndBreak() {
 	(*a.spawner).RemoveArrow(a.GetID())
+}
+
+func (a *Arrow) GetClass() string {
+	return "arrow"
+}
+
+func (a *Arrow) GetData(e *gob.Encoder) {
+	e.Encode(a)
 }

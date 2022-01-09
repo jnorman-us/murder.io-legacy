@@ -2,8 +2,8 @@ package innocent
 
 type Shootable interface {
 	GetID() int
-	Charge()
+	ChargeBow()
 	Fire()
-	Fired() bool
+	IsFired() bool
 	Cancel()
 }

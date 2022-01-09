@@ -1,6 +1,7 @@
 package bow
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/entities"
@@ -14,15 +15,15 @@ type Bow struct {
 	holder  *Holder
 	spawner *Spawner
 
-	charge float64
-	fired  bool
+	Charge float64
+	Fired  bool
 }
 
 func NewBow(h *Holder) *Bow {
 	var holder = *h
 	var bow = &Bow{
 		holder: h,
-		charge: 10,
+		Charge: 10,
 	}
 	bow.SetupCollider(
 		[]collider.Rectangle{
@@ -54,19 +55,19 @@ func (b *Bow) UpdatePosition(time float64) {
 	b.Collider.UpdatePosition(time)
 }
 
-func (b *Bow) Charge() {
+func (b *Bow) ChargeBow() {
 	var holder = *b.holder
-	if b.charge < 50 {
-		b.charge++
-		holder.ScaleMass((b.charge / 50 * 5) + 1)
+	if b.Charge < 50 {
+		b.Charge++
+		holder.ScaleMass((b.Charge / 50 * 5) + 1)
 	}
 }
 
 func (b *Bow) Fire() {
 	(*b.holder).ResetMass()
-	(*b.spawner).SpawnArrow(b.holder, b.charge/50)
-	b.fired = true
-	b.charge = 0
+	(*b.spawner).SpawnArrow(b.holder, b.Charge/50)
+	b.Fired = true
+	b.Charge = 0
 }
 
 func (b *Bow) Cancel() {
@@ -74,6 +75,14 @@ func (b *Bow) Cancel() {
 	fmt.Println("Cancelled Bow Shot")
 }
 
-func (b *Bow) Fired() bool {
-	return b.fired
+func (b *Bow) IsFired() bool {
+	return b.Fired
+}
+
+func (b *Bow) GetClass() string {
+	return "bow"
+}
+
+func (b *Bow) GetData(e *gob.Encoder) {
+	e.Encode(b)
 }

@@ -1,13 +1,13 @@
 package entities
 
 type ID struct {
-	id int
+	ID int
 }
 
 func (i *ID) GetID() int {
-	return i.id
+	return i.ID
 }
 
 func (i *ID) SetID(id int) {
-	i.id = id
+	i.ID = id
 }

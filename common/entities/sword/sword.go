@@ -1,6 +1,7 @@
 package sword
 
 import (
+	"encoding/gob"
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
@@ -61,4 +62,12 @@ func (s *Sword) GetWielder() int {
 
 func (s *Sword) GetWielderUsername() string {
 	return (*s.wielder).GetUsername()
+}
+
+func (s *Sword) GetClass() string {
+	return "sword"
+}
+
+func (s *Sword) GetData(e *gob.Encoder) {
+	e.Encode(s)
 }

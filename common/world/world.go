@@ -11,6 +11,7 @@ import (
 	"github.com/josephnormandev/murder/common/entities/sword"
 	"github.com/josephnormandev/murder/common/entities/wall"
 	"github.com/josephnormandev/murder/common/logic"
+	"github.com/josephnormandev/murder/common/packet"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -24,7 +25,7 @@ type World struct {
 	Bows        map[int]*bow.Bow
 	Arrows      map[int]*arrow.Arrow
 
-	// network    *packet.Manager
+	network    *packet.Manager
 	drawer     *drawer.Drawer
 	collisions *collisions.Manager
 	engine     *engine.Engine
@@ -33,9 +34,25 @@ type World struct {
 	input *input.Manager
 }
 
-func NewClientWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, d *drawer.Drawer, i *input.Manager /*n *packet.Manager*/) *World {
+func NewClientWorld(e *engine.Engine, d *drawer.Drawer, i *input.Manager) *World {
 	return &World{
 		environment: types.ClientEnvironment(),
+		tick:        0,
+		Walls:       map[int]*wall.Wall{},
+		Innocents:   map[int]*innocent.Innocent{},
+		Swords:      map[int]*sword.Sword{},
+		Bows:        map[int]*bow.Bow{},
+		Arrows:      map[int]*arrow.Arrow{},
+
+		input:  i,
+		drawer: d,
+		engine: e,
+	}
+}
+
+func NewServerWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *packet.Manager) *World {
+	return &World{
+		environment: types.ServerEnvironment(),
 		tick:        0,
 		currentID:   0,
 		Walls:       map[int]*wall.Wall{},
@@ -44,12 +61,10 @@ func NewClientWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, d
 		Bows:        map[int]*bow.Bow{},
 		Arrows:      map[int]*arrow.Arrow{},
 
-		// network:    n,
-		input:      i,
 		logic:      l,
-		drawer:     d,
-		engine:     e,
 		collisions: c,
+		network:    n,
+		engine:     e,
 	}
 }
 

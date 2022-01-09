@@ -1,6 +1,7 @@
 package wall
 
 import (
+	"encoding/gob"
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
@@ -10,12 +11,12 @@ type Wall struct {
 	entities.ID
 	collider.Collider
 
-	width int
+	Width int
 }
 
 func NewWall(w int) *Wall {
 	var wall = &Wall{
-		width: w,
+		Width: w,
 	}
 	wall.SetupCollider(
 		[]collider.Rectangle{
@@ -26,4 +27,12 @@ func NewWall(w int) *Wall {
 	)
 	wall.SetColor(types.Colors.Gray)
 	return wall
+}
+
+func (w *Wall) GetClass() string {
+	return "wall"
+}
+
+func (w *Wall) GetData(e *gob.Encoder) {
+	e.Encode(w)
 }
