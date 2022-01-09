@@ -24,6 +24,7 @@ type World struct {
 	Bows        map[int]*bow.Bow
 	Arrows      map[int]*arrow.Arrow
 
+	// network    *packet.Manager
 	drawer     *drawer.Drawer
 	collisions *collisions.Manager
 	engine     *engine.Engine
@@ -32,7 +33,7 @@ type World struct {
 	input *input.Manager
 }
 
-func NewClientWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, d *drawer.Drawer, i *input.Manager) *World {
+func NewClientWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, d *drawer.Drawer, i *input.Manager /*n *packet.Manager*/) *World {
 	return &World{
 		environment: types.ClientEnvironment(),
 		tick:        0,
@@ -43,6 +44,7 @@ func NewClientWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, d
 		Bows:        map[int]*bow.Bow{},
 		Arrows:      map[int]*arrow.Arrow{},
 
+		// network:    n,
 		input:      i,
 		logic:      l,
 		drawer:     d,

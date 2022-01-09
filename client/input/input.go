@@ -1,6 +1,7 @@
 package input
 
 import (
+	"encoding/gob"
 	"github.com/josephnormandev/murder/common/types"
 	"syscall/js"
 )
@@ -124,4 +125,12 @@ func (m *Manager) updatePlayerDirection(x, y float64) {
 		m.inputs.Direction = newAngle
 		(*m.playerListener).HandleInputStateChange(m.inputs)
 	}
+}
+
+func (m *Manager) GetChannel() string {
+	return "PLAYER_INPUT"
+}
+
+func (m *Manager) GetData(e *gob.Encoder) {
+	e.Encode(m.inputs)
 }

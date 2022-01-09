@@ -2,12 +2,14 @@ package main
 
 import (
 	"github.com/josephnormandev/murder/client/drawer"
+	"github.com/josephnormandev/murder/client/dummy"
 	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/innocent"
 	"github.com/josephnormandev/murder/common/entities/wall"
 	"github.com/josephnormandev/murder/common/logic"
+	"github.com/josephnormandev/murder/common/packet"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
 	"math"
@@ -21,6 +23,7 @@ var gameLogic *logic.Manager
 var gameCollisions *collisions.Manager
 var gameDrawer *drawer.Drawer
 var gameInputs *input.Manager
+var gameNetwork *packet.Manager
 
 var logicMS = 33
 
@@ -29,6 +32,7 @@ func main() {
 	gameLogic = logic.NewManager()
 	gameDrawer = drawer.NewDrawer()
 	gameCollisions = collisions.NewManager()
+	gameNetwork = packet.NewManager("Wine_Craft")
 
 	var sizeable = input.Sizeable(gameDrawer)
 	gameInputs = input.NewManager(&sizeable)
@@ -44,6 +48,12 @@ func main() {
 
 	gameWorld.AddInnocent(wineCraft)
 	gameDrawer.SetCenterable(&center)
+	var inputsSystem = packet.System(gameInputs)
+	gameNetwork.AddSystem(inputsSystem.GetChannel(), &inputsSystem)
+
+	var dummyListener = &dummy.Listener{}
+	var inputListener = packet.Listener(dummyListener)
+	gameNetwork.AddListener(inputListener.GetChannel(), &inputListener)
 
 	for _, name := range []string{
 		"Xiehang",
@@ -71,17 +81,19 @@ func main() {
 	go gameDrawer.Start(updatePhysics)
 
 	for range time.Tick(time.Second) {
-		// do nothing, just keep this thread alive...
+		gameNetwork.EncodeOutputs()
+		gameNetwork.CopyOver()
+		gameNetwork.DecodeInputs()
 	}
 }
 
 func updatePhysics(ms float64) {
 	gameEngine.UpdatePhysics(ms / float64(logicMS))
-	gameCollisions.ResolveCollisions()
 }
 
 func tick() {
 	for range time.Tick(time.Duration(logicMS) * time.Millisecond) {
+		gameCollisions.ResolveCollisions()
 		gameLogic.Tick()
 	}
 }

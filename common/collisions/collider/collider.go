@@ -10,12 +10,12 @@ import (
 
 type Collider struct {
 	mass            float64
-	position        types.Vector
-	angle           float64
-	velocity        types.Vector
-	angularVelocity float64
-	friction        float64
-	angularFriction float64
+	Position        types.Vector
+	Angle           float64
+	Velocity        types.Vector
+	AngularVelocity float64
+	Friction        float64
+	AngularFriction float64
 	rectangles      []Rectangle
 	circles         []Circle
 	color           color.RGBA
@@ -107,11 +107,11 @@ func (c *Collider) CheckCollision(o *Collider) bool {
 
 func (c *Collider) ApplyForce(force types.Vector) {
 	force.Scale(1 / c.mass)
-	c.velocity.Add(force)
+	c.Velocity.Add(force)
 }
 
 func (c *Collider) ApplyTorque(torque float64) {
-	c.angularVelocity += torque / c.mass
+	c.AngularVelocity += torque / c.mass
 }
 
 func (c *Collider) UpdatePosition(time float64) {
@@ -120,8 +120,8 @@ func (c *Collider) UpdatePosition(time float64) {
 	scaledVelocity.Scale(time)
 	scaledAngularVelocity *= time
 
-	var scaledFriction = 1 - c.friction*time
-	var scaledAngularFriction = 1 - c.angularFriction*time
+	var scaledFriction = 1 - c.Friction*time
+	var scaledAngularFriction = 1 - c.AngularFriction*time
 
 	var newPosition = c.GetPosition()
 	var newAngle = c.GetAngle()
@@ -142,7 +142,7 @@ func (c *Collider) UpdatePosition(time float64) {
 func (c *Collider) BounceBack() {
 	var newPosition = c.GetPosition()
 	var newVelocity = c.GetVelocity()
-	newVelocity.Scale(-1 / (1 - c.friction))
+	newVelocity.Scale(-1 / (1 - c.Friction))
 	newPosition.Add(newVelocity)
 
 	c.SetPosition(newPosition)
@@ -157,46 +157,46 @@ func (c *Collider) SetMass(mass float64) {
 }
 
 func (c *Collider) GetPosition() types.Vector {
-	return c.position
+	return c.Position
 }
 
 func (c *Collider) SetPosition(p types.Vector) {
-	c.position = p
+	c.Position = p
 }
 
 func (c *Collider) GetAngle() float64 {
-	return c.angle
+	return c.Angle
 }
 
 func (c *Collider) SetAngle(a float64) {
-	c.angle = a
+	c.Angle = a
 }
 func (c *Collider) GetVelocity() types.Vector {
-	return c.velocity
+	return c.Velocity
 }
 
 func (c *Collider) SetVelocity(velocity types.Vector) {
-	c.velocity = velocity
+	c.Velocity = velocity
 }
 
 func (c *Collider) GetFriction() float64 {
-	return c.friction
+	return c.Friction
 }
 
 func (c *Collider) SetFriction(coefficient float64) {
-	c.friction = coefficient
+	c.Friction = coefficient
 }
 
 func (c *Collider) GetAngularVelocity() float64 {
-	return c.angularVelocity
+	return c.AngularVelocity
 }
 
 func (c *Collider) SetAngularVelocity(angularVelocity float64) {
-	c.angularVelocity = angularVelocity
+	c.AngularVelocity = angularVelocity
 }
 
 func (c *Collider) SetAngularFriction(coefficient float64) {
-	c.angularFriction = coefficient
+	c.AngularFriction = coefficient
 }
 
 func (c *Collider) SetColor(co color.RGBA) {
@@ -211,15 +211,15 @@ func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
 		rectangle.drawHitbox(g)
 	}
 
-	var directionPoint = c.position
+	var directionPoint = c.Position
 	directionPoint.Add(types.NewVector(0, 20))
-	directionPoint.RotateAbout(c.angle-math.Pi/2, c.position)
+	directionPoint.RotateAbout(c.Angle-math.Pi/2, c.Position)
 
 	// draw centerpoint for reference
 	g.SetFillColor(color.RGBA{A: 0xff})
 	g.SetStrokeColor(color.RGBA{A: 0xff})
 	g.BeginPath()
-	draw2dkit.Circle(g, c.position.X, c.position.Y, 2)
+	draw2dkit.Circle(g, c.Position.X, c.Position.Y, 2)
 	draw2dkit.Circle(g, directionPoint.X, directionPoint.Y, 0)
 
 	g.FillStroke()
