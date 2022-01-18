@@ -6,6 +6,7 @@ type Manager struct {
 	packet.Codec
 
 	identifier string
+	spawner    *Spawner
 	systems    map[string]*System
 	listeners  map[string]*Listener
 }
@@ -28,12 +29,10 @@ func (m *Manager) EncodeSystems() {
 	for _, s := range m.systems {
 		var system = *s
 		var channel = system.GetChannel()
-		var output = m.Outputs[channel]
-		var encoder = m.Encoders[channel]
 
-		output.Reset()
+		var encoder = m.BeginEncode(channel)
 		system.GetData(encoder)
-		var outputBytes = output.Bytes()
+		var outputBytes = m.EndEncode(channel)
 
 		packetArray = append(packetArray, packet.Packet{
 			Channel: channel,
@@ -50,16 +49,23 @@ func (m *Manager) DecodeForListeners(ps []packet.Packet) {
 		var channel = packet.Channel
 		var data = packet.Data
 
-		var l, ok = m.listeners[channel]
-		var input = m.Inputs[channel]
-		var decoder = m.Decoders[channel]
+		if id == -1 {
+			var l, ok = m.listeners[channel]
+			if ok {
+				var decoder = m.BeginDecode(channel, data)
+				var listener = *l
+				listener.HandleData(id, decoder)
+				m.EndDecode(channel)
+			}
+		} else {
+			// pass it to the spawner, which will take this packet
+			// as some kinda entity
+			var class = channel
+			var spawner = *m.spawner
 
-		if ok {
-			var listener = *l
-
-			input.Reset()
-			input.Write(data)
-			listener.HandleData(id, decoder)
+			var decoder = m.BeginDecode(class, data)
+			spawner.HandleSpawn(id, class, decoder)
+			m.EndDecode(class)
 		}
 	}
 }

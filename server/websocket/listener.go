@@ -4,7 +4,7 @@ import "encoding/gob"
 
 type Listener interface {
 	GetChannel() string
-	HandleData(string, *gob.Decoder) // client, id, decoder
+	HandleData(string, *gob.Decoder) // client, decoder
 }
 
 func (m *Manager) AddListener(l *Listener) {
