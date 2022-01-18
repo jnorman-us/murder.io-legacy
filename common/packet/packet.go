@@ -1,18 +1,17 @@
 package packet
 
-import (
-	"github.com/josephnormandev/murder/common/types"
-)
-
-type Packet struct {
-	SpawnOrSystem types.SpawnOrSystem
-	Identifier    string
-	ID            int
-	Class         string
-	Channel       string
-	Data          []byte
+type Packets struct {
+	Client  string
+	Packets []Packet
 }
 
+type Packet struct {
+	Channel string // decoder channel
+	ID      int    // extra identifier in the packet
+	Data    []byte // data to be decoded
+}
+
+/*
 func (m *Manager) CreatePackets() []Packet {
 	var packets []Packet
 	for _, s := range m.Spawns {
@@ -26,7 +25,6 @@ func (m *Manager) CreatePackets() []Packet {
 
 		packets = append(packets, Packet{
 			SpawnOrSystem: types.Spawn(),
-			Identifier:    m.Identifier,
 			ID:            id,
 			Class:         class,
 			Data:          outputBytes,
@@ -49,3 +47,4 @@ func (m *Manager) CreatePackets() []Packet {
 	}
 	return packets
 }
+*/

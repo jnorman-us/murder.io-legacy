@@ -7,7 +7,7 @@ import (
 	"github.com/josephnormandev/murder/common/entities/innocent"
 	"github.com/josephnormandev/murder/common/entities/sword"
 	"github.com/josephnormandev/murder/common/logic"
-	"github.com/josephnormandev/murder/common/packet"
+	"github.com/josephnormandev/murder/server/tcp"
 )
 
 func (w *World) AddInnocent(i *innocent.Innocent) int {
@@ -17,7 +17,7 @@ func (w *World) AddInnocent(i *innocent.Innocent) int {
 	var spawner = innocent.Spawner(w)
 	i.SetSpawner(&spawner)
 
-	var spawn = packet.Spawn(i)
+	var spawn = tcp.Spawn(i)
 	var tickable = logic.Tickable(i)
 	var moveable = engine.Moveable(i)
 	var playerWall = collisions.PlayerWall(i)

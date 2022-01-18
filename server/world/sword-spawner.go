@@ -5,14 +5,14 @@ import (
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/sword"
 	"github.com/josephnormandev/murder/common/logic"
-	"github.com/josephnormandev/murder/common/packet"
+	"github.com/josephnormandev/murder/server/tcp"
 )
 
 func (w *World) AddSword(s *sword.Sword) int {
 	var id = w.NextAvailableID()
 	s.SetID(id)
 
-	var spawn = packet.Spawn(s)
+	var spawn = tcp.Spawn(s)
 	var tickable = logic.Tickable(s)
 	var moveable = engine.Moveable(s)
 	var swordPlayer = collisions.SwordPlayer(s)

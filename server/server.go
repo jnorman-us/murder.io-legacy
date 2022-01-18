@@ -6,8 +6,8 @@ import (
 	"github.com/josephnormandev/murder/common/entities/innocent"
 	"github.com/josephnormandev/murder/common/entities/wall"
 	"github.com/josephnormandev/murder/common/logic"
-	"github.com/josephnormandev/murder/common/packet"
 	"github.com/josephnormandev/murder/common/types"
+	"github.com/josephnormandev/murder/server/tcp"
 	"github.com/josephnormandev/murder/server/world"
 	"log"
 	"math"
@@ -19,36 +19,35 @@ import (
 var gameWorld *world.World
 var gameLogic *logic.Manager
 var gameEngine *engine.Engine
-var gameNetwork *packet.Manager
+var gamePackets *tcp.Manager
 var gameCollisions *collisions.Manager
+var udpServer *tcp.Server
 
 var logicMS = 33
+
+var names = []string{
+	"Wine_Craft",
+	"Xiehang",
+	"TheStorminNorman",
+	"ShadowDragon",
+	"Society Member",
+	"Envii",
+	"Jinseng",
+	"Laerir",
+	"JoeyD",
+}
 
 func main() {
 	gameLogic = logic.NewManager()
 	gameEngine = engine.NewEngine()
 	gameCollisions = collisions.NewManager()
-	gameNetwork = packet.NewManager("**SERVER**")
 
-	gameWorld = world.NewWorld(gameEngine, gameLogic, gameCollisions, gameNetwork)
+	gamePackets = tcp.NewManager()
+	udpServer = tcp.NewServer(gamePackets, names)
 
-	var wineCraft = innocent.NewInnocent("Wine_Craft")
-	wineCraft.SetPosition(types.NewVector(250, 250))
-	wineCraft.SetAngularVelocity(.1)
-	//wineCraft.SetVelocity(types.NewVector(10, 0))
+	gameWorld = world.NewWorld(gameEngine, gameLogic, gameCollisions, gamePackets)
 
-	gameWorld.AddInnocent(wineCraft)
-
-	for _, name := range []string{
-		"Xiehang",
-		"TheStorminNorman",
-		"ShadowDragon",
-		"Society Member",
-		"Envii",
-		"Jinseng",
-		"Laerir",
-		"JoeyD",
-	} {
+	for _, name := range names {
 		var player = innocent.NewInnocent(name)
 		player.SetPosition(types.NewRandomVector(0, 0, 600, 600))
 		gameWorld.AddInnocent(player)
@@ -62,20 +61,15 @@ func main() {
 	}
 
 	go tick()
-	go network()
+	go udpServer.Send()
+	go udpServer.Listen()
+	go udpServer.AcceptConnections()
 
 	fs := http.FileServer(http.Dir("./server/static"))
 	http.Handle("/", fs)
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)
-	}
-
-}
-
-func network() {
-	for range time.Tick(time.Second) {
-		gameNetwork.EncodeOutputs()
 	}
 }
 
