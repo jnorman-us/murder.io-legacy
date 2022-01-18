@@ -1,4 +1,4 @@
-package tcp
+package websocket
 
 import "github.com/josephnormandev/murder/common/packet"
 

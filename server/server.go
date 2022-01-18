@@ -7,7 +7,7 @@ import (
 	"github.com/josephnormandev/murder/common/entities/wall"
 	"github.com/josephnormandev/murder/common/logic"
 	"github.com/josephnormandev/murder/common/types"
-	"github.com/josephnormandev/murder/server/tcp"
+	"github.com/josephnormandev/murder/server/websocket"
 	"github.com/josephnormandev/murder/server/world"
 	"log"
 	"math"
@@ -19,9 +19,8 @@ import (
 var gameWorld *world.World
 var gameLogic *logic.Manager
 var gameEngine *engine.Engine
-var gamePackets *tcp.Manager
+var gamePackets *websocket.Manager
 var gameCollisions *collisions.Manager
-var udpServer *tcp.Server
 
 var logicMS = 33
 
@@ -42,8 +41,7 @@ func main() {
 	gameEngine = engine.NewEngine()
 	gameCollisions = collisions.NewManager()
 
-	gamePackets = tcp.NewManager()
-	udpServer = tcp.NewServer(gamePackets, names)
+	gamePackets = websocket.NewManager()
 
 	gameWorld = world.NewWorld(gameEngine, gameLogic, gameCollisions, gamePackets)
 
@@ -61,9 +59,6 @@ func main() {
 	}
 
 	go tick()
-	go udpServer.Send()
-	go udpServer.Listen()
-	go udpServer.AcceptConnections()
 
 	fs := http.FileServer(http.Dir("./server/static"))
 	http.Handle("/", fs)

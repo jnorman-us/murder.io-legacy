@@ -1,4 +1,4 @@
-package tcp
+package websocket
 
 import (
 	"encoding/gob"

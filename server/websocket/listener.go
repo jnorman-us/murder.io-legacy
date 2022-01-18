@@ -1,12 +1,10 @@
-package tcp
+package websocket
 
-import (
-	"encoding/gob"
-)
+import "encoding/gob"
 
 type Listener interface {
 	GetChannel() string
-	HandleData(int, *gob.Decoder) // id, decoder
+	HandleData(string, *gob.Decoder) // client, id, decoder
 }
 
 func (m *Manager) AddListener(l *Listener) {
