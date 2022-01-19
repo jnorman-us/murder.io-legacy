@@ -10,7 +10,7 @@ import (
 	"github.com/josephnormandev/murder/common/entities/wall"
 	"github.com/josephnormandev/murder/common/logic"
 	"github.com/josephnormandev/murder/common/types"
-	"github.com/josephnormandev/murder/server/websocket"
+	"github.com/josephnormandev/murder/server/ws"
 )
 
 type World struct {
@@ -23,13 +23,13 @@ type World struct {
 	Bows        map[int]*bow.Bow
 	Arrows      map[int]*arrow.Arrow
 
-	network    *websocket.Manager
+	network    *ws.Manager
 	collisions *collisions.Manager
 	engine     *engine.Engine
 	logic      *logic.Manager
 }
 
-func NewWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *websocket.Manager) *World {
+func NewWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *ws.Manager) *World {
 	return &World{
 		environment: types.ServerEnvironment(),
 		tick:        0,

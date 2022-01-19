@@ -3,7 +3,7 @@ package packet
 import (
 	"bytes"
 	"encoding/gob"
-	"log"
+	"fmt"
 	"sync"
 )
 
@@ -42,6 +42,9 @@ func NewCodec() *Codec {
 		packetEncoder: gob.NewEncoder(outputBuffer),
 		outputBuffer:  outputBuffer,
 		inputBuffer:   inputBuffer,
+
+		encoderMutex: &sync.Mutex{},
+		decoderMutex: &sync.Mutex{},
 	}
 }
 
@@ -59,9 +62,9 @@ func (c *Codec) BeginEncode(channel string) *gob.Encoder {
 }
 
 func (c *Codec) EndEncode(channel string) []byte {
-	var bytes = c.Outputs[channel].Bytes()
+	var byteArray = c.Outputs[channel].Bytes()
 	c.encoderMutexes[channel].Unlock()
-	return bytes
+	return byteArray
 }
 
 func (c *Codec) AddDecoder(channel string) {
@@ -71,40 +74,50 @@ func (c *Codec) AddDecoder(channel string) {
 	c.decoderMutexes[channel] = &sync.Mutex{}
 }
 
-func (c *Codec) BeginDecode(channel string, data []byte) *gob.Decoder {
+func (c *Codec) BeginDecode(channel string, data []byte) (*gob.Decoder, error) {
 	c.decoderMutexes[channel].Lock()
 	c.Inputs[channel].Reset()
-	c.Inputs[channel].Read(data)
-	return c.Decoders[channel]
+	_, err := c.Inputs[channel].Read(data)
+
+	if err != nil {
+		return nil, err
+	}
+	return c.Decoders[channel], nil
 }
 
 func (c *Codec) EndDecode(channel string) {
 	c.decoderMutexes[channel].Unlock()
 }
 
-func (c *Codec) EncodeOutputs(client string, ps []Packet) []byte {
-	c.outputBuffer.Reset()
-	var err = c.packetEncoder.Encode(Packets{
-		Client:  client,
-		Packets: ps,
-	})
+func (c *Codec) EncodeOutputs(ps []Packet) ([]byte, error) {
+	c.encoderMutex.Lock()
+	defer c.encoderMutex.Unlock()
 
+	c.outputBuffer.Reset()
+	var err = c.packetEncoder.Encode(ps)
 	if err != nil {
-		log.Fatal("encoder error:", err)
+		return []byte{}, err
 	}
-	return c.outputBuffer.Bytes()
-	// fmt.Println(c.outputBuffer.Len(), c.outputBuffer.Bytes())
+
+	var byteArray = c.outputBuffer.Bytes()
+	return byteArray, nil
 }
 
-func (c *Codec) DecodeInputs(data []byte) (string, []Packet) {
-	var packets = &Packets{}
-	c.inputBuffer.Reset()
-	c.inputBuffer.Read(data)
+func (c *Codec) DecodeInputs(data []byte) ([]Packet, error) {
+	c.decoderMutex.Lock()
+	defer c.decoderMutex.Unlock()
 
-	var err = c.packetDecoder.Decode(packets)
+	var packets = &[]Packet{}
+	c.inputBuffer.Reset()
+	_, err := c.inputBuffer.Write(data)
 	if err != nil {
-		log.Fatal("decode error:", err)
+		fmt.Printf("Error decoding! %v\n", err)
+		return []Packet{}, err
 	}
 
-	return packets.Client, packets.Packets
+	err = c.packetDecoder.Decode(packets)
+	if err != nil {
+		return []Packet{}, nil
+	}
+	return *packets, nil
 }

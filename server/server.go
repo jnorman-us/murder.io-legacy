@@ -1,14 +1,16 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/innocent"
 	"github.com/josephnormandev/murder/common/entities/wall"
 	"github.com/josephnormandev/murder/common/logic"
 	"github.com/josephnormandev/murder/common/types"
-	"github.com/josephnormandev/murder/server/websocket"
+	"github.com/josephnormandev/murder/server/input"
 	"github.com/josephnormandev/murder/server/world"
+	"github.com/josephnormandev/murder/server/ws"
 	"log"
 	"math"
 	"math/rand"
@@ -19,8 +21,10 @@ import (
 var gameWorld *world.World
 var gameLogic *logic.Manager
 var gameEngine *engine.Engine
-var gamePackets *websocket.Manager
+var gamePackets *ws.Manager
+var gameInputs *input.Manager
 var gameCollisions *collisions.Manager
+var wsServer *ws.Server
 
 var logicMS = 33
 
@@ -40,8 +44,13 @@ func main() {
 	gameLogic = logic.NewManager()
 	gameEngine = engine.NewEngine()
 	gameCollisions = collisions.NewManager()
+	gameInputs = input.NewManager()
+	gamePackets = ws.NewManager()
 
-	gamePackets = websocket.NewManager()
+	var listener = ws.Listener(gameInputs)
+	gamePackets.AddListener(&listener)
+
+	wsServer = ws.NewServer(names, gamePackets)
 
 	gameWorld = world.NewWorld(gameEngine, gameLogic, gameCollisions, gamePackets)
 
@@ -59,10 +68,15 @@ func main() {
 	}
 
 	go tick()
+	go wsServer.Send()
 
-	fs := http.FileServer(http.Dir("./server/static"))
-	http.Handle("/", fs)
-	err := http.ListenAndServe(":8080", nil)
+	var staticFiles = http.FileServer(http.Dir("./server/static"))
+
+	var router = mux.NewRouter().StrictSlash(true)
+	router.Handle("/ws/{id}", wsServer)
+	router.PathPrefix("/").Handler(staticFiles)
+
+	err := http.ListenAndServe(":8080", router)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -130,9 +130,10 @@ func (m *Manager) updatePlayerDirection(x, y float64) {
 }
 
 func (m *Manager) GetChannel() string {
-	return "PLAYER_INPUT"
+	return "INPUT"
 }
 
-func (m *Manager) GetData(e *gob.Encoder) {
-	e.Encode(m.inputs)
+func (m *Manager) GetData(e *gob.Encoder) error {
+	err := e.Encode(m.inputs)
+	return err
 }

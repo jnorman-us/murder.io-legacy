@@ -5,7 +5,7 @@ import (
 	"github.com/josephnormandev/murder/common/entities/arrow"
 	"github.com/josephnormandev/murder/common/entities/bow"
 	"github.com/josephnormandev/murder/common/logic"
-	"github.com/josephnormandev/murder/server/websocket"
+	"github.com/josephnormandev/murder/server/ws"
 )
 
 func (w *World) AddBow(b *bow.Bow) int {
@@ -15,7 +15,7 @@ func (w *World) AddBow(b *bow.Bow) int {
 	var spawner = bow.Spawner(w)
 	b.SetSpawner(&spawner)
 
-	var spawn = websocket.Spawn(b)
+	var spawn = ws.Spawn(b)
 	var tickable = logic.Tickable(b)
 	var moveable = engine.Moveable(b)
 

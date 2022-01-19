@@ -4,7 +4,7 @@ import (
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/arrow"
-	"github.com/josephnormandev/murder/server/websocket"
+	"github.com/josephnormandev/murder/server/ws"
 )
 
 func (w *World) AddArrow(a *arrow.Arrow) int {
@@ -14,7 +14,7 @@ func (w *World) AddArrow(a *arrow.Arrow) int {
 	var spawner = arrow.Spawner(w)
 	a.SetSpawner(&spawner)
 
-	var spawn = websocket.Spawn(a)
+	var spawn = ws.Spawn(a)
 	var moveable = engine.Moveable(a)
 	var arrowWall = collisions.ArrowWall(a)
 	var arrowPlayer = collisions.ArrowPlayer(a)

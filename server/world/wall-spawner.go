@@ -3,14 +3,14 @@ package world
 import (
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/entities/wall"
-	"github.com/josephnormandev/murder/server/websocket"
+	"github.com/josephnormandev/murder/server/ws"
 )
 
 func (w *World) AddWall(wl *wall.Wall) int {
 	var id = w.NextAvailableID()
 	wl.SetID(id)
 
-	var spawn = websocket.Spawn(wl)
+	var spawn = ws.Spawn(wl)
 	var wallArrow = collisions.WallArrow(wl)
 	var wallPlayer = collisions.WallPlayer(wl)
 
