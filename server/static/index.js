@@ -11,3 +11,8 @@ const go = new Go();
 WebAssembly.instantiateStreaming(fetch('client.wasm'), go.importObject).then(res => {
     go.run(res.instance)
 });
+
+setTimeout(function() {
+    var username = prompt("What is your username?", "");
+    connectToServer(username);
+}, 1000);

@@ -3,6 +3,7 @@ package ws
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"nhooyr.io/websocket"
 	"time"
@@ -29,22 +30,19 @@ func NewServer(identifiers []string, manager *Manager) *Server {
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var id = mux.Vars(r)["id"]
 
-	fmt.Printf("ID: %s\n", id)
 	connection, err := websocket.Accept(w, r, nil)
 	if err != nil {
 		fmt.Printf("Error accepting WS connection! %v\n", err)
 	}
 	defer (func() {
-		err := connection.Close(websocket.StatusInternalError, "")
-		if err != nil {
-			fmt.Printf("Error closing WS connection! %v\n", err)
-		}
+		var _ = connection.Close(websocket.StatusInternalError, "")
+		// do nothing with error, probably already closed
 	})()
 
 	var client = s.clients[id]
 	err = client.Setup(r.Context(), connection)
 	if err != nil {
-		fmt.Printf("Error with WS! %v\n", err)
+		log.Printf("WS Error %v", err)
 	}
 }
 
