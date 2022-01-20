@@ -80,15 +80,14 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 				return err
 			}
 
-			fmt.Println(byteArray)
 			packetArray, err := manager.DecodeInputs(byteArray)
 			if err != nil {
 				return err
 			}
-			fmt.Println(packetArray)
 
 			err = c.DecodeForListeners(packetArray)
 			if err != nil {
+				fmt.Printf("Error with the decode for listeners %v\n", err)
 				return err
 			}
 		}

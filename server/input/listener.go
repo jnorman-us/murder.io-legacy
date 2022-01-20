@@ -14,6 +14,7 @@ func (m *Manager) HandleData(identifier string, decoder *gob.Decoder) error {
 	var input = &types.Input{}
 	err := decoder.Decode(input)
 	if err != nil {
+		fmt.Printf("ERror with the decode! %v\n", err)
 		return err
 	}
 

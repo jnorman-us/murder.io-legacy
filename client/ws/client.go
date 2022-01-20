@@ -57,7 +57,7 @@ func (c *Client) Connect() error {
 
 func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
 	var manager = c.manager
-	for range time.Tick(1000 * time.Millisecond) {
+	for range time.Tick(50 * time.Millisecond) {
 		select {
 		case <-parentCtx.Done():
 			return parentCtx.Err()

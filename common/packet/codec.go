@@ -77,7 +77,7 @@ func (c *Codec) AddDecoder(channel string) {
 func (c *Codec) BeginDecode(channel string, data []byte) (*gob.Decoder, error) {
 	c.decoderMutexes[channel].Lock()
 	c.Inputs[channel].Reset()
-	_, err := c.Inputs[channel].Read(data)
+	_, err := c.Inputs[channel].Write(data)
 
 	if err != nil {
 		return nil, err
