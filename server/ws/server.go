@@ -39,10 +39,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// do nothing with error, probably already closed
 	})()
 
-	var client = s.clients[id]
-	err = client.Setup(r.Context(), connection)
-	if err != nil {
-		log.Printf("WS Error %v", err)
+	var client, ok = s.clients[id]
+	if ok {
+		err = client.Setup(r.Context(), connection)
+		if err != nil {
+			log.Printf("WS Error %v", err)
+		}
+	} else {
+		var _ = connection.Close(websocket.StatusPolicyViolation, "Username not registered!")
 	}
 }
 
