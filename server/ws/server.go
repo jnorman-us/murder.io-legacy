@@ -56,6 +56,11 @@ func (s *Server) Send() {
 			var client = *c
 			if client.Active() {
 				var packetArray, err = client.EncodeSystems()
+				for _, packet := range packetArray {
+					if packet.ID == 1 {
+						fmt.Println(packet)
+					}
+				}
 				if err != nil {
 					fmt.Printf("Error with sending! %v\n", err)
 				}

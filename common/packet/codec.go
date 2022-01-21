@@ -90,7 +90,6 @@ func (c *Codec) EndDecode(channel string) {
 }
 
 func (c *Codec) EncodeOutputs(ps []Packet) ([]byte, error) {
-	fmt.Println("Packet Output!", ps)
 	c.encoderMutex.Lock()
 	defer c.encoderMutex.Unlock()
 
@@ -120,6 +119,5 @@ func (c *Codec) DecodeInputs(data []byte) ([]Packet, error) {
 	if err != nil {
 		return []Packet{}, nil
 	}
-	fmt.Println("Packet Input!", packets)
 	return *packets, nil
 }

@@ -110,7 +110,6 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 
 			err = c.DecodeForListeners(packetArray)
 			if err != nil {
-				fmt.Printf("Error with the decode for listeners %v\n", err)
 				return err
 			}
 		}
@@ -174,14 +173,19 @@ func (c *Client) EncodeSystems() ([]packet.Packet, error) {
 		}
 		var outputBytes = codec.EndEncode(class)
 
-		fmt.Println(id, class, outputBytes)
-
-		packetArray = append(packetArray, packet.Packet{
+		var packet = packet.Packet{
 			ID:      id,
 			Channel: class,
 			Data:    outputBytes,
-		})
+		}
+
+		if id == 1 {
+			fmt.Println(packet)
+		}
+
+		packetArray = append(packetArray, packet)
 	}
+	fmt.Println(packetArray)
 	return packetArray, nil
 }
 

@@ -40,7 +40,7 @@ func NewInnocent(u string) *Innocent {
 	)
 	innocent.SetColor(types.Colors.Orange)
 	innocent.SetAngularFriction(angularFriction)
-	innocent.SetFriction(friction)
+	// innocent.SetFriction(friction)
 	return innocent
 }
 

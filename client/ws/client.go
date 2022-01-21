@@ -99,7 +99,6 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 			if err != nil {
 				return err
 			}
-			fmt.Println(byteArray, packetArray)
 
 			err = manager.DecodeForListeners(packetArray)
 			if err != nil {

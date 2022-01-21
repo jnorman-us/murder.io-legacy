@@ -26,8 +26,7 @@ type World struct {
 
 	drawer *drawer.Drawer
 	engine *engine.Engine
-
-	input *input.Manager
+	input  *input.Manager
 }
 
 func NewWorld(e *engine.Engine, d *drawer.Drawer, i *input.Manager) *World {
@@ -63,9 +62,9 @@ func (w *World) HandleSpawn(id int, class string, decoder *gob.Decoder) error {
 		var existing, ok = w.Innocents[id]
 		if !ok { // add them
 			w.AddInnocent(newInn)
-			fmt.Printf("Adding %s\n", newInn)
+			fmt.Printf("Adding %v\n", newInn)
 		} else {
-			fmt.Printf("Updating %s\n", existing)
+			fmt.Printf("Updating %v\n", existing)
 			existing.CopyKinetics(newInn.Collider)
 		}
 		break

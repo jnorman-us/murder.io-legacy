@@ -26,8 +26,6 @@ var gameInputs *input.Manager
 var gameCollisions *collisions.Manager
 var wsServer *ws.Server
 
-var logicMS = 33
-
 var names = []string{
 	"Wine_Craft",
 	"Xiehang",
@@ -60,7 +58,7 @@ func main() {
 		gameWorld.AddInnocent(player)
 	}
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 1; i++ {
 		var border = wall.NewWall(rand.Intn(1000))
 		border.SetPosition(types.NewRandomVector(0, 0, 600, 600))
 		border.SetAngle(rand.Float64() * math.Pi * 2)
@@ -83,7 +81,7 @@ func main() {
 }
 
 func tick() {
-	for range time.Tick(time.Duration(logicMS) * time.Millisecond) {
+	for range time.Tick(50 * time.Millisecond) {
 		gameEngine.UpdatePhysics(1)
 		gameCollisions.ResolveCollisions()
 		gameLogic.Tick()

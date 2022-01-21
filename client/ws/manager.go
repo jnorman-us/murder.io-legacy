@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/packet"
 )
 
@@ -75,15 +74,12 @@ func (m *Manager) DecodeForListeners(ps []packet.Packet) error {
 
 			decoder, err := m.BeginDecode(class, data)
 			if err != nil {
-				fmt.Printf("Error with BeginDecode %v\n", err)
 				return err
 			}
-			fmt.Println(id, class, data)
 
 			var spawner = *m.spawner
 			err = spawner.HandleSpawn(id, class, decoder)
 			if err != nil {
-				fmt.Printf("Error with HandleData %v\n", err)
 				return err
 			}
 			m.EndDecode(class)
