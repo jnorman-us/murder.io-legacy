@@ -2,7 +2,6 @@ package ws
 
 import (
 	"context"
-	"fmt"
 	"github.com/josephnormandev/murder/common/packet"
 	"golang.org/x/sync/errgroup"
 	"nhooyr.io/websocket"
@@ -179,13 +178,8 @@ func (c *Client) EncodeSystems() ([]packet.Packet, error) {
 			Data:    outputBytes,
 		}
 
-		if id == 1 {
-			fmt.Println(packet)
-		}
-
 		packetArray = append(packetArray, packet)
 	}
-	fmt.Println(packetArray)
 	return packetArray, nil
 }
 

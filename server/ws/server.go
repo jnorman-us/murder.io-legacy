@@ -51,16 +51,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) Send() {
-	for range time.Tick(1000 * time.Millisecond) {
+	for range time.Tick(50 * time.Millisecond) {
 		for _, c := range s.clients {
 			var client = *c
 			if client.Active() {
 				var packetArray, err = client.EncodeSystems()
-				for _, packet := range packetArray {
-					if packet.ID == 1 {
-						fmt.Println(packet)
-					}
-				}
 				if err != nil {
 					fmt.Printf("Error with sending! %v\n", err)
 				}

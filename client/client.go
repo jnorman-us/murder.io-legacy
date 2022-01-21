@@ -56,5 +56,5 @@ func connectToServer(this js.Value, values []js.Value) interface{} {
 }
 
 func updatePhysics(ms float64) {
-	gameEngine.UpdatePhysics(ms / float64(logicMS))
+	// gameEngine.UpdatePhysics(ms / float64(logicMS))
 }

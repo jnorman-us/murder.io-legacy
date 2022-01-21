@@ -20,24 +20,31 @@ type Bow struct {
 }
 
 func NewBow(h *Holder) *Bow {
-	var holder = *h
 	var bow = &Bow{
 		holder: h,
 		Charge: 10,
 	}
-	bow.SetupCollider(
+	bow.Setup()
+	return bow
+}
+
+func (b *Bow) Setup() {
+	b.SetupCollider(
 		[]collider.Rectangle{
 			collider.NewRectangle(types.NewVector(17, 0), 0, 20, 5),
 		},
 		[]collider.Circle{},
 		1,
 	)
-	bow.SetColor(types.Colors.Blue)
-	bow.SetPosition(holder.GetPosition())
-	bow.SetVelocity(holder.GetVelocity())
-	bow.SetAngle(holder.GetAngle())
-	bow.SetFriction((*h).GetFriction())
-	return bow
+	b.SetColor(types.Colors.Blue)
+
+	if b.holder != nil {
+		var holder = *b.holder
+		b.SetPosition(holder.GetPosition())
+		b.SetVelocity(holder.GetVelocity())
+		b.SetAngle(holder.GetAngle())
+		b.SetFriction(holder.GetFriction())
+	}
 }
 
 func (b *Bow) Tick() {

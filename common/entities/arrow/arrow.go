@@ -17,12 +17,16 @@ type Arrow struct {
 }
 
 func NewArrow(s *Shooter, charge float64) *Arrow {
-	var shooter = *s
 	var arrow = &Arrow{
 		shooter: s,
 		Charge:  charge,
 	}
-	arrow.SetupCollider(
+	arrow.Setup()
+	return arrow
+}
+
+func (a *Arrow) Setup() {
+	a.SetupCollider(
 		[]collider.Rectangle{
 			collider.NewRectangle(types.NewVector(-10, 0), 0, 10, 4),
 		},
@@ -31,17 +35,19 @@ func NewArrow(s *Shooter, charge float64) *Arrow {
 		},
 		1,
 	)
-	arrow.SetColor(types.Colors.Red)
-	arrow.SetAngle(shooter.GetAngle())
-	arrow.SetPosition(shooter.GetPosition())
-	//arrow.SetVelocity(shooter.GetVelocity())
+	a.SetColor(types.Colors.Red)
 
-	var force = types.NewVector(30, 0)
-	force.RotateAbout(shooter.GetAngle(), types.NewZeroVector())
-	force.Scale(charge)
-	arrow.ApplyForce(force)
+	if a.shooter != nil {
+		var shooter = *a.shooter
+		a.SetAngle(shooter.GetAngle())
+		a.SetPosition(shooter.GetPosition())
+		//arrow.SetVelocity(shooter.GetVelocity())
 
-	return arrow
+		var force = types.NewVector(30, 0)
+		force.RotateAbout(shooter.GetAngle(), types.NewZeroVector())
+		force.Scale(a.Charge)
+		a.ApplyForce(force)
+	}
 }
 
 func (a *Arrow) Stop() {
@@ -54,7 +60,7 @@ func (a *Arrow) GetShooter() int {
 }
 
 func (a *Arrow) GetShooterUsername() string {
-	return (*a.shooter).GetUsername()
+	return (*a.shooter).GetIdentifier()
 }
 
 func (a *Arrow) StopAndBreak() {

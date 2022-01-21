@@ -4,7 +4,7 @@ import "github.com/josephnormandev/murder/common/types"
 
 type Shooter interface {
 	GetID() int
-	GetUsername() string
+	GetIdentifier() string
 	GetAngle() float64
 	GetPosition() types.Vector
 	GetVelocity() types.Vector

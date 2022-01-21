@@ -21,3 +21,7 @@ func NewManager() *Manager {
 		classes:   map[string]int{},
 	}
 }
+
+func (m *Manager) GetPacketCount() int {
+	return len(m.systems) + len(m.spawns)
+}

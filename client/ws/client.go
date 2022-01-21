@@ -37,10 +37,7 @@ func (c *Client) Connect() error {
 	}
 	defer (func() {
 		c.Close()
-		err := connection.Close(websocket.StatusNormalClosure, "")
-		if err != nil {
-			fmt.Printf("Error closing WS connection! %v\n", err)
-		}
+		_ = connection.Close(websocket.StatusNormalClosure, "")
 	})()
 
 	group, grpCtx := errgroup.WithContext(ctx)
@@ -57,7 +54,7 @@ func (c *Client) Connect() error {
 
 func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
 	var manager = c.manager
-	for range time.Tick(1000 * time.Millisecond) {
+	for range time.Tick(50 * time.Millisecond) {
 		select {
 		case <-parentCtx.Done():
 			return parentCtx.Err()
@@ -91,7 +88,6 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 		default:
 			_, byteArray, err := conn.Read(parentCtx)
 			if err != nil {
-				fmt.Println("Read err", err)
 				return err
 			}
 

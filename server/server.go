@@ -50,7 +50,7 @@ func main() {
 
 	wsServer = ws.NewServer(names, gamePackets)
 
-	gameWorld = world.NewWorld(gameEngine, gameLogic, gameCollisions, gamePackets)
+	gameWorld = world.NewWorld(gameEngine, gameLogic, gameCollisions, gamePackets, gameInputs)
 
 	for _, name := range names {
 		var player = innocent.NewInnocent(name)

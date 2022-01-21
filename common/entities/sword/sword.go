@@ -16,24 +16,31 @@ type Sword struct {
 }
 
 func NewSword(w *Beholder) *Sword {
-	var wielder = *w
 	var sword = &Sword{
 		wielder: w,
 	}
-	sword.SetupCollider(
+	sword.Setup()
+	return sword
+}
+
+func (s *Sword) Setup() {
+	s.SetupCollider(
 		[]collider.Rectangle{
 			collider.NewRectangle(types.NewVector(30, 0), math.Pi/-4, 30, 2),
 		},
 		[]collider.Circle{},
 		1,
 	)
-	sword.SetColor(types.Colors.Blue)
-	sword.SetPosition(wielder.GetPosition())
-	sword.SetVelocity(wielder.GetVelocity())
-	sword.SetAngle(wielder.GetAngle())
-	sword.SetFriction((*w).GetFriction())
-	sword.SetAngularFriction(.5)
-	return sword
+	s.SetColor(types.Colors.Blue)
+	s.SetAngularFriction(.5)
+
+	if s.wielder != nil {
+		var wielder = *s.wielder
+		s.SetPosition(wielder.GetPosition())
+		s.SetVelocity(wielder.GetVelocity())
+		s.SetAngle(wielder.GetAngle())
+		s.SetFriction(wielder.GetFriction())
+	}
 }
 
 func (s *Sword) Tick() {
@@ -61,7 +68,7 @@ func (s *Sword) GetWielder() int {
 }
 
 func (s *Sword) GetWielderUsername() string {
-	return (*s.wielder).GetUsername()
+	return (*s.wielder).GetIdentifier()
 }
 
 func (s *Sword) GetClass() string {

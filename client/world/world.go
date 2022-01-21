@@ -2,7 +2,6 @@ package world
 
 import (
 	"encoding/gob"
-	"fmt"
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/common/engine"
@@ -50,7 +49,6 @@ func (w *World) GetClasses() []string {
 }
 
 func (w *World) HandleSpawn(id int, class string, decoder *gob.Decoder) error {
-	fmt.Println("HandleSpawn!", id, class)
 	switch class {
 	case "innocent":
 		var newInn = &innocent.Innocent{}
@@ -61,10 +59,9 @@ func (w *World) HandleSpawn(id int, class string, decoder *gob.Decoder) error {
 
 		var existing, ok = w.Innocents[id]
 		if !ok { // add them
+			newInn.Setup()
 			w.AddInnocent(newInn)
-			fmt.Printf("Adding %v\n", newInn)
 		} else {
-			fmt.Printf("Updating %v\n", existing)
 			existing.CopyKinetics(newInn.Collider)
 		}
 		break
@@ -77,6 +74,7 @@ func (w *World) HandleSpawn(id int, class string, decoder *gob.Decoder) error {
 
 		var existing, ok = w.Arrows[id]
 		if !ok {
+			newArr.Setup()
 			w.AddArrow(newArr)
 		} else {
 			existing.CopyKinetics(newArr.Collider)
@@ -91,6 +89,7 @@ func (w *World) HandleSpawn(id int, class string, decoder *gob.Decoder) error {
 
 		var existing, ok = w.Walls[id]
 		if !ok {
+			newWall.Setup()
 			w.AddWall(newWall)
 		} else {
 			existing.CopyKinetics(newWall.Collider)
@@ -105,6 +104,7 @@ func (w *World) HandleSpawn(id int, class string, decoder *gob.Decoder) error {
 
 		var existing, ok = w.Swords[id]
 		if !ok {
+			newSword.Setup()
 			w.AddSword(newSword)
 		} else {
 			existing.CopyKinetics(newSword.Collider)
@@ -119,6 +119,7 @@ func (w *World) HandleSpawn(id int, class string, decoder *gob.Decoder) error {
 
 		var existing, ok = w.Bows[id]
 		if !ok {
+			newBow.Setup()
 			w.AddBow(newBow)
 		} else {
 			existing.CopyKinetics(newBow.Collider)

@@ -10,6 +10,7 @@ import (
 	"github.com/josephnormandev/murder/common/entities/wall"
 	"github.com/josephnormandev/murder/common/logic"
 	"github.com/josephnormandev/murder/common/types"
+	"github.com/josephnormandev/murder/server/input"
 	"github.com/josephnormandev/murder/server/ws"
 )
 
@@ -27,9 +28,10 @@ type World struct {
 	collisions *collisions.Manager
 	engine     *engine.Engine
 	logic      *logic.Manager
+	inputs     *input.Manager
 }
 
-func NewWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *ws.Manager) *World {
+func NewWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *ws.Manager, i *input.Manager) *World {
 	return &World{
 		environment: types.ServerEnvironment(),
 		tick:        0,
@@ -44,6 +46,7 @@ func NewWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *ws.M
 		collisions: c,
 		network:    n,
 		engine:     e,
+		inputs:     i,
 	}
 }
 

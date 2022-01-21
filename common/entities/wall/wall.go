@@ -18,15 +18,19 @@ func NewWall(w int) *Wall {
 	var wall = &Wall{
 		Width: w,
 	}
-	wall.SetupCollider(
+	wall.Setup()
+	return wall
+}
+
+func (w *Wall) Setup() {
+	w.SetupCollider(
 		[]collider.Rectangle{
-			collider.NewRectangle(types.NewVector(0, 0), 0, float64(w), 10),
+			collider.NewRectangle(types.NewVector(0, 0), 0, float64(w.Width), 10),
 		},
 		[]collider.Circle{},
 		10,
 	)
-	wall.SetColor(types.Colors.Gray)
-	return wall
+	w.SetColor(types.Colors.Gray)
 }
 
 func (w *Wall) GetClass() string {

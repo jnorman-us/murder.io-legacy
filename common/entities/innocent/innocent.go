@@ -31,20 +31,24 @@ func NewInnocent(u string) *Innocent {
 	var innocent = &Innocent{
 		Username: u,
 	}
-	innocent.SetupCollider(
+	innocent.Setup()
+	return innocent
+}
+
+func (i *Innocent) Setup() {
+	i.SetupCollider(
 		[]collider.Rectangle{},
 		[]collider.Circle{
 			collider.NewCircle(types.NewVector(0, 0), 10),
 		},
 		mass,
 	)
-	innocent.SetColor(types.Colors.Orange)
-	innocent.SetAngularFriction(angularFriction)
-	// innocent.SetFriction(friction)
-	return innocent
+	i.SetColor(types.Colors.Orange)
+	i.SetAngularFriction(angularFriction)
+	i.SetFriction(friction)
 }
 
-func (i *Innocent) GetUsername() string {
+func (i *Innocent) GetIdentifier() string {
 	return i.Username
 }
 
@@ -57,12 +61,12 @@ func (i *Innocent) ResetMass() {
 }
 
 func (i *Innocent) ShotBy(id int, username string) {
-	fmt.Println(i.GetUsername(), "shot by", username)
+	fmt.Println(i.GetIdentifier(), "shot by", username)
 	(*i.spawner).RemoveInnocent(i.GetID())
 }
 
 func (i *Innocent) SlainBy(id int, username string) {
-	fmt.Println(i.GetUsername(), "slain by", username)
+	fmt.Println(i.GetIdentifier(), "slain by", username)
 	(*i.spawner).RemoveInnocent(i.GetID())
 }
 

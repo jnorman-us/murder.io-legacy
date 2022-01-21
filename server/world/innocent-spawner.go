@@ -7,6 +7,7 @@ import (
 	"github.com/josephnormandev/murder/common/entities/innocent"
 	"github.com/josephnormandev/murder/common/entities/sword"
 	"github.com/josephnormandev/murder/common/logic"
+	"github.com/josephnormandev/murder/server/input"
 	"github.com/josephnormandev/murder/server/ws"
 )
 
@@ -20,6 +21,7 @@ func (w *World) AddInnocent(i *innocent.Innocent) int {
 	var spawn = ws.Spawn(i)
 	var tickable = logic.Tickable(i)
 	var moveable = engine.Moveable(i)
+	var inputable = input.Inputable(i)
 	var playerWall = collisions.PlayerWall(i)
 	var playerArrow = collisions.PlayerArrow(i)
 	var playerSword = collisions.PlayerSword(i)
@@ -27,6 +29,7 @@ func (w *World) AddInnocent(i *innocent.Innocent) int {
 	w.network.AddSpawn(id, &spawn)
 	w.logic.AddTickable(id, &tickable)
 	w.engine.AddMoveable(id, &moveable)
+	w.inputs.AddPlayerListener(id, &inputable)
 	w.collisions.AddPlayerArrow(id, &playerArrow)
 	w.collisions.AddPlayerWall(id, &playerWall)
 	w.collisions.AddPlayerSword(id, &playerSword)
@@ -39,6 +42,7 @@ func (w *World) RemoveInnocent(id int) {
 	w.network.RemoveSpawn(id)
 	w.logic.RemoveTickable(id)
 	w.engine.RemoveMoveable(id)
+	w.inputs.RemovePlayerListener(id)
 	w.collisions.RemovePlayerArrow(id)
 	w.collisions.RemovePlayerWall(id)
 	w.collisions.RemovePlayerSword(id)
