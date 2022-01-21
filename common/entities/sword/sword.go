@@ -68,6 +68,6 @@ func (s *Sword) GetClass() string {
 	return "sword"
 }
 
-func (s *Sword) GetData(e *gob.Encoder) {
-	e.Encode(s)
+func (s *Sword) GetData(e *gob.Encoder) error {
+	return e.Encode(s)
 }

@@ -57,7 +57,7 @@ func (c *Client) Connect() error {
 
 func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
 	var manager = c.manager
-	for range time.Tick(50 * time.Millisecond) {
+	for range time.Tick(1000 * time.Millisecond) {
 		select {
 		case <-parentCtx.Done():
 			return parentCtx.Err()
@@ -82,28 +82,29 @@ func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
 }
 
 func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
-	//var manager = c.manager
+	var manager = c.manager
 
 	for {
 		select {
 		case <-parentCtx.Done():
 			return parentCtx.Err()
 		default:
-			_, _, err := conn.Read(parentCtx)
+			_, byteArray, err := conn.Read(parentCtx)
 			if err != nil {
+				fmt.Println("Read err", err)
 				return err
 			}
 
-			//packetArray, err := manager.DecodeInputs(byteArray)
+			packetArray, err := manager.DecodeInputs(byteArray)
 			if err != nil {
 				return err
 			}
+			fmt.Println(byteArray, packetArray)
 
-			//fmt.Println(packetArray)
-			//err = manager.DecodeForListeners(packetArray)
-			//if err != nil {
-			//	return err
-			//}
+			err = manager.DecodeForListeners(packetArray)
+			if err != nil {
+				return err
+			}
 		}
 	}
 }

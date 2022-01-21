@@ -1,6 +1,9 @@
 package ws
 
-import "github.com/josephnormandev/murder/common/packet"
+import (
+	"fmt"
+	"github.com/josephnormandev/murder/common/packet"
+)
 
 type Manager struct {
 	packet.Codec
@@ -51,29 +54,38 @@ func (m *Manager) DecodeForListeners(ps []packet.Packet) error {
 		var channel = p.Channel
 		var data = p.Data
 
-		if id == -1 {
+		if id == 0 {
 			var l, ok = m.listeners[channel]
 			if ok {
 				decoder, err := m.BeginDecode(channel, data)
 				if err != nil {
 					return err
 				}
+
 				var listener = *l
 				err = listener.HandleData(id, decoder)
 				if err != nil {
 					return err
 				}
+
 				m.EndDecode(channel)
 			}
 		} else {
 			var class = channel
-			var spawner = *m.spawner
 
 			decoder, err := m.BeginDecode(class, data)
 			if err != nil {
+				fmt.Printf("Error with BeginDecode %v\n", err)
 				return err
 			}
-			spawner.HandleSpawn(id, class, decoder)
+			fmt.Println(id, class, data)
+
+			var spawner = *m.spawner
+			err = spawner.HandleSpawn(id, class, decoder)
+			if err != nil {
+				fmt.Printf("Error with HandleData %v\n", err)
+				return err
+			}
 			m.EndDecode(class)
 		}
 	}

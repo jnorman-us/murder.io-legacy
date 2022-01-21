@@ -131,6 +131,6 @@ func (i *Innocent) GetClass() string {
 	return "innocent"
 }
 
-func (i *Innocent) GetData(e *gob.Encoder) {
-	e.Encode(i)
+func (i *Innocent) GetData(e *gob.Encoder) error {
+	return e.Encode(i)
 }

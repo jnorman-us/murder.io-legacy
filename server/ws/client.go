@@ -12,6 +12,7 @@ import (
 type Client struct {
 	identifier string
 	manager    *Manager
+	codec      *packet.Codec
 
 	cancel    func()
 	connected bool
@@ -33,6 +34,8 @@ func (c *Client) Setup(ctx context.Context, conn *websocket.Conn) error {
 	c.cancel = cancel
 	defer c.Close()
 
+	c.setupCodec()
+
 	group, grpCtx := errgroup.WithContext(ctx2)
 
 	group.Go(func() error {
@@ -46,12 +49,32 @@ func (c *Client) Setup(ctx context.Context, conn *websocket.Conn) error {
 	return err
 }
 
+func (c *Client) setupCodec() {
+	c.codec = packet.NewCodec()
+
+	for class := range c.manager.classes {
+		c.codec.AddEncoder(class)
+	}
+	for channel := range c.manager.systems {
+		c.codec.AddEncoder(channel)
+	}
+	for channel := range c.manager.listeners {
+		c.codec.AddDecoder(channel)
+	}
+	c.manager.codecs[c.identifier] = c.codec
+}
+
+func (c *Client) destroyCodec() {
+	c.codec = nil
+	delete(c.manager.codecs, c.identifier)
+}
+
 func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
-	var manager = c.manager
+	var codec = c.codec
 	for {
 		select {
 		case packets := <-c.packetsOut:
-			byteArray, err := manager.EncodeOutputs(packets)
+			byteArray, err := codec.EncodeOutputs(packets)
 			if err != nil {
 				return err
 			}
@@ -68,7 +91,7 @@ func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
 }
 
 func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
-	var manager = c.manager
+	var codec = c.codec
 
 	for {
 		select {
@@ -80,7 +103,7 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 				return err
 			}
 
-			packetArray, err := manager.DecodeInputs(byteArray)
+			packetArray, err := codec.DecodeInputs(byteArray)
 			if err != nil {
 				return err
 			}
@@ -104,6 +127,7 @@ func (c *Client) Send(packetArray []packet.Packet) {
 
 func (c *Client) Close() {
 	c.connected = false
+	c.destroyCodec()
 	if c.cancel != nil {
 		var cancel = c.cancel
 		c.cancel = nil
@@ -113,9 +137,10 @@ func (c *Client) Close() {
 
 // EncodeSystems allows the use of a per-client visibility filter
 // so that each client receives a stream of bytes unique to itself
-func (c *Client) EncodeSystems() []packet.Packet {
+func (c *Client) EncodeSystems() ([]packet.Packet, error) {
 	var packetArray []packet.Packet
 	var manager = c.manager
+	var codec = c.codec
 
 	// perhaps implement this in the manager because
 	// there is no need to make this data unique per client
@@ -123,12 +148,15 @@ func (c *Client) EncodeSystems() []packet.Packet {
 		var system = *s
 		var channel = system.GetChannel()
 
-		var encoder = manager.BeginEncode(channel)
-		system.GetData(encoder)
-		var outputBytes = manager.EndEncode(channel)
+		var encoder = codec.BeginEncode(channel)
+		err := system.GetData(encoder)
+		if err != nil {
+			return []packet.Packet{}, err
+		}
+		var outputBytes = codec.EndEncode(channel)
 
 		packetArray = append(packetArray, packet.Packet{
-			ID:      -1,
+			ID:      0,
 			Channel: channel,
 			Data:    outputBytes,
 		})
@@ -139,9 +167,14 @@ func (c *Client) EncodeSystems() []packet.Packet {
 		var id = spawn.GetID()
 		var class = spawn.GetClass()
 
-		var encoder = manager.BeginEncode(class)
-		spawn.GetData(encoder)
-		var outputBytes = manager.EndEncode(class)
+		var encoder = codec.BeginEncode(class)
+		err := spawn.GetData(encoder)
+		if err != nil {
+			return []packet.Packet{}, err
+		}
+		var outputBytes = codec.EndEncode(class)
+
+		fmt.Println(id, class, outputBytes)
 
 		packetArray = append(packetArray, packet.Packet{
 			ID:      id,
@@ -149,11 +182,12 @@ func (c *Client) EncodeSystems() []packet.Packet {
 			Data:    outputBytes,
 		})
 	}
-	return packetArray
+	return packetArray, nil
 }
 
 func (c *Client) DecodeForListeners(ps []packet.Packet) error {
 	var manager = c.manager
+	var codec = c.codec
 
 	for _, p := range ps {
 		var channel = p.Channel
@@ -162,7 +196,7 @@ func (c *Client) DecodeForListeners(ps []packet.Packet) error {
 		var l, ok = manager.listeners[channel]
 		if ok {
 			var listener = *l
-			decoder, err := manager.BeginDecode(channel, data)
+			decoder, err := codec.BeginDecode(channel, data)
 			if err != nil {
 				return err
 			}
@@ -170,7 +204,7 @@ func (c *Client) DecodeForListeners(ps []packet.Packet) error {
 			if err != nil {
 				return err
 			}
-			manager.EndDecode(channel)
+			codec.EndDecode(channel)
 		}
 	}
 	return nil

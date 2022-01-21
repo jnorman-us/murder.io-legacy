@@ -65,6 +65,6 @@ func (a *Arrow) GetClass() string {
 	return "arrow"
 }
 
-func (a *Arrow) GetData(e *gob.Encoder) {
-	e.Encode(a)
+func (a *Arrow) GetData(e *gob.Encoder) error {
+	return e.Encode(a)
 }

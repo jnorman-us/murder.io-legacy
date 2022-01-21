@@ -33,6 +33,6 @@ func (w *Wall) GetClass() string {
 	return "wall"
 }
 
-func (w *Wall) GetData(e *gob.Encoder) {
-	e.Encode(w)
+func (w *Wall) GetData(e *gob.Encoder) error {
+	return e.Encode(w)
 }

@@ -83,6 +83,6 @@ func (b *Bow) GetClass() string {
 	return "bow"
 }
 
-func (b *Bow) GetData(e *gob.Encoder) {
-	e.Encode(b)
+func (b *Bow) GetData(e *gob.Encoder) error {
+	return e.Encode(b)
 }

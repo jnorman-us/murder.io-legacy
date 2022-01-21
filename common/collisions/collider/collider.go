@@ -224,3 +224,12 @@ func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
 
 	g.FillStroke()
 }
+
+func (c *Collider) CopyKinetics(o Collider) {
+	c.Position = o.Position
+	c.Angle = o.Angle
+	c.Velocity = o.Velocity
+	c.AngularVelocity = o.AngularVelocity
+	c.Friction = o.Friction
+	c.AngularFriction = o.AngularFriction
+}

@@ -10,7 +10,10 @@ type Listener interface {
 func (m *Manager) AddListener(l *Listener) {
 	var channel = (*l).GetChannel()
 	m.listeners[channel] = l
-	m.AddDecoder(channel)
+
+	for _, codec := range m.codecs {
+		codec.AddDecoder(channel)
+	}
 }
 
 func (m *Manager) RemoveListener(channel string) {

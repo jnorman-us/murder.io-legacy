@@ -32,6 +32,8 @@ func main() {
 	gamePackets.AddSystem(&inputsSystem)
 
 	gameWorld = world.NewWorld(gameEngine, gameDrawer, gameInputs)
+	spawner := ws.Spawner(gameWorld)
+	gamePackets.SetSpawner(&spawner)
 
 	go gameDrawer.Start(updatePhysics)
 

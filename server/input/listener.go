@@ -18,6 +18,6 @@ func (m *Manager) HandleData(identifier string, decoder *gob.Decoder) error {
 		return err
 	}
 
-	fmt.Println(identifier, input)
+	// fmt.Println(identifier, input)
 	return nil
 }

@@ -5,17 +5,20 @@ import "encoding/gob"
 type Spawn interface {
 	GetID() int
 	GetClass() string
-	GetData(*gob.Encoder)
+	GetData(*gob.Encoder) error
 }
 
 func (m *Manager) AddSpawn(id int, s *Spawn) {
 	var class = (*s).GetClass()
-	m.spawns[id] = s
+	var _, ok = m.classes[class]
 
-	var _, ok = m.Encoders[class]
+	m.spawns[id] = s
+	m.classes[class] = 0
 
 	if !ok {
-		m.AddEncoder(class)
+		for _, codec := range m.codecs {
+			codec.AddEncoder(class)
+		}
 	}
 }
 
