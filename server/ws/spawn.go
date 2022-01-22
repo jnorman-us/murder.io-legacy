@@ -9,6 +9,9 @@ type Spawn interface {
 }
 
 func (m *Manager) AddSpawn(id int, s *Spawn) {
+	m.spawnMutex.Lock()
+	defer m.spawnMutex.Unlock()
+
 	var class = (*s).GetClass()
 	var _, ok = m.classes[class]
 
@@ -23,5 +26,8 @@ func (m *Manager) AddSpawn(id int, s *Spawn) {
 }
 
 func (m *Manager) RemoveSpawn(id int) {
+	m.spawnMutex.Lock()
+	defer m.spawnMutex.Unlock()
+
 	delete(m.spawns, id)
 }

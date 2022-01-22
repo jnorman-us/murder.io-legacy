@@ -9,6 +9,9 @@ type System interface {
 }
 
 func (m *Manager) AddSystem(s *System) {
+	m.systemMutex.Lock()
+	defer m.systemMutex.Unlock()
+
 	var channel = (*s).GetChannel()
 	m.systems[channel] = s
 
@@ -18,5 +21,8 @@ func (m *Manager) AddSystem(s *System) {
 }
 
 func (m *Manager) RemoveSystem(channel string) {
+	m.systemMutex.Lock()
+	defer m.systemMutex.Unlock()
+
 	delete(m.systems, channel)
 }

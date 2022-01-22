@@ -136,6 +136,11 @@ func (c *Client) Close() {
 // EncodeSystems allows the use of a per-client visibility filter
 // so that each client receives a stream of bytes unique to itself
 func (c *Client) EncodeSystems() ([]packet.Packet, error) {
+	c.manager.systemMutex.Lock()
+	c.manager.spawnMutex.Lock()
+	defer c.manager.systemMutex.Unlock()
+	defer c.manager.spawnMutex.Unlock()
+
 	var packetArray []packet.Packet
 	var manager = c.manager
 	var codec = c.codec

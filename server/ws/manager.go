@@ -1,6 +1,9 @@
 package ws
 
-import "github.com/josephnormandev/murder/common/packet"
+import (
+	"github.com/josephnormandev/murder/common/packet"
+	"sync"
+)
 
 type Manager struct {
 	codecs map[string]*packet.Codec
@@ -9,6 +12,9 @@ type Manager struct {
 	listeners map[string]*Listener
 	spawns    map[int]*Spawn
 	classes   map[string]int
+
+	systemMutex sync.Mutex
+	spawnMutex  sync.Mutex
 }
 
 func NewManager() *Manager {
@@ -19,9 +25,8 @@ func NewManager() *Manager {
 		listeners: map[string]*Listener{},
 		spawns:    map[int]*Spawn{},
 		classes:   map[string]int{},
-	}
-}
 
-func (m *Manager) GetPacketCount() int {
-	return len(m.systems) + len(m.spawns)
+		systemMutex: sync.Mutex{},
+		spawnMutex:  sync.Mutex{},
+	}
 }
