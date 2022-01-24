@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+var username string
+
 var gameWorld *world.World
 var gameEngine *engine.Engine
 var gameDrawer *drawer.Drawer
@@ -18,32 +20,40 @@ var gameInputs *input.Manager
 var gamePackets *ws.Manager
 var wsClient *ws.Client
 
-var logicMS = 50
+var logicMS = 25
 
 func main() {
 	js.Global().Set("connectToServer", js.FuncOf(connectToServer))
 	gameEngine = engine.NewEngine()
 	gameDrawer = drawer.NewDrawer()
 	gamePackets = ws.NewManager()
+	gameWorld = world.NewWorld(gameEngine, gameDrawer)
 
 	var sizeable = input.Sizeable(gameDrawer)
 	gameInputs = input.NewManager(&sizeable)
-	var inputsSystem = ws.System(gameInputs)
-	gamePackets.AddSystem(&inputsSystem)
 
-	gameWorld = world.NewWorld(gameEngine, gameDrawer, gameInputs)
-	spawner := ws.Spawner(gameWorld)
+	var spawner = ws.Spawner(gameWorld)
+	var inputsSystem = ws.System(gameInputs)
+	var deletionsListener = ws.Listener(gameWorld)
+
 	gamePackets.SetSpawner(&spawner)
+	gamePackets.AddSystem(&inputsSystem)
+	gamePackets.AddListener(&deletionsListener)
 
 	go gameDrawer.Start(updatePhysics)
 
 	for range time.Tick(1 * time.Second) {
-
+		if username != "" {
+			var centerable = gameWorld.GetCenterable(username)
+			if centerable != nil {
+				gameDrawer.SetCenterable(centerable)
+			}
+		}
 	}
 }
 
 func connectToServer(this js.Value, values []js.Value) interface{} {
-	var username = values[0].String()
+	username = values[0].String()
 
 	wsClient = ws.NewClient(gamePackets, username)
 	go (func() {

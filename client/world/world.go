@@ -3,7 +3,6 @@ package world
 import (
 	"encoding/gob"
 	"github.com/josephnormandev/murder/client/drawer"
-	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/arrow"
 	"github.com/josephnormandev/murder/common/entities/bow"
@@ -25,10 +24,9 @@ type World struct {
 
 	drawer *drawer.Drawer
 	engine *engine.Engine
-	input  *input.Manager
 }
 
-func NewWorld(e *engine.Engine, d *drawer.Drawer, i *input.Manager) *World {
+func NewWorld(e *engine.Engine, d *drawer.Drawer) *World {
 	return &World{
 		environment: types.ClientEnvironment(),
 		tick:        0,
@@ -38,7 +36,6 @@ func NewWorld(e *engine.Engine, d *drawer.Drawer, i *input.Manager) *World {
 		Bows:        map[int]*bow.Bow{},
 		Arrows:      map[int]*arrow.Arrow{},
 
-		input:  i,
 		drawer: d,
 		engine: e,
 	}
@@ -134,5 +131,36 @@ func (w *World) GetChannel() string {
 }
 
 func (w *World) HandleData(decoder *gob.Decoder) error {
+	var removedIDs = &map[int]int{}
+	err := decoder.Decode(removedIDs)
+
+	for id := range *removedIDs {
+		if _, ok := w.Innocents[id]; ok {
+			w.RemoveInnocent(id)
+		} else if _, ok := w.Arrows[id]; ok {
+			w.RemoveArrow(id)
+		} else if _, ok := w.Walls[id]; ok {
+			w.RemoveWall(id)
+		} else if _, ok := w.Swords[id]; ok {
+			w.RemoveSword(id)
+		} else if _, ok := w.Bows[id]; ok {
+			w.RemoveBow(id)
+		}
+	}
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (w *World) GetCenterable(username string) *drawer.Centerable {
+	for _, i := range w.Innocents {
+		var inn = *i
+		if inn.Username == username {
+			var centerable = drawer.Centerable(i)
+			return &centerable
+		}
+	}
 	return nil
 }

@@ -31,6 +31,7 @@ func (w *World) RemoveBow(id int) {
 	w.network.RemoveSpawn(id)
 	w.logic.RemoveTickable(id)
 	w.engine.RemoveMoveable(id)
+	w.Deletions.RemoveID(id)
 }
 
 func (w *World) SpawnArrow(h *bow.Holder, charge float64) {

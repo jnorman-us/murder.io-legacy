@@ -75,7 +75,7 @@ func (i *Innocent) Tick() {
 	i.SetAngle(in.Direction)
 
 	var angle = 0.0
-	var movementForce = types.NewVector(30, 0)
+	var movementForce = types.NewVector(15, 0)
 	if in.Left && in.Forward {
 		angle = math.Pi / 4 * 5
 	} else if in.Left && in.Backward {

@@ -32,7 +32,7 @@ func (s *Sword) Setup() {
 		1,
 	)
 	s.SetColor(types.Colors.Blue)
-	s.SetAngularFriction(.5)
+	s.SetAngularFriction(.2)
 
 	if s.wielder != nil {
 		var wielder = *s.wielder
@@ -56,7 +56,7 @@ func (s *Sword) UpdatePosition(time float64) {
 }
 
 func (s *Sword) Swing() {
-	s.ApplyTorque(.8)
+	s.ApplyTorque(.3)
 }
 
 func (s *Sword) SwingCompleted() bool {

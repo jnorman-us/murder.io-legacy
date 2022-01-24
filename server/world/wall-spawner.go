@@ -26,4 +26,5 @@ func (w *World) RemoveWall(id int) {
 	w.network.RemoveSpawn(id)
 	w.collisions.RemoveWallArrow(id)
 	w.collisions.RemoveWallPlayer(id)
+	w.Deletions.RemoveID(id)
 }

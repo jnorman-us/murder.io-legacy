@@ -46,6 +46,7 @@ func (w *World) RemoveInnocent(id int) {
 	w.collisions.RemovePlayerArrow(id)
 	w.collisions.RemovePlayerWall(id)
 	w.collisions.RemovePlayerSword(id)
+	w.Deletions.RemoveID(id)
 }
 
 func (w *World) SpawnSword(i *innocent.Innocent) *innocent.Swingable {

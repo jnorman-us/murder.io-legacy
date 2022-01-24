@@ -11,6 +11,7 @@ import (
 	"github.com/josephnormandev/murder/common/logic"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/server/input"
+	"github.com/josephnormandev/murder/server/world/deletions"
 	"github.com/josephnormandev/murder/server/ws"
 )
 
@@ -26,6 +27,7 @@ type World struct {
 
 	network    *ws.Manager
 	collisions *collisions.Manager
+	Deletions  *deletions.Manager
 	engine     *engine.Engine
 	logic      *logic.Manager
 	inputs     *input.Manager
@@ -47,6 +49,8 @@ func NewWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *ws.M
 		network:    n,
 		engine:     e,
 		inputs:     i,
+
+		Deletions: deletions.NewManager(),
 	}
 }
 
@@ -61,4 +65,16 @@ func (w *World) Tick() {
 
 func (w *World) GetTick() int {
 	return w.tick
+}
+
+func (w *World) ResetInnocents() {
+	var toRemove []int
+
+	for id := range w.Innocents {
+		toRemove = append(toRemove, id)
+	}
+
+	for _, id := range toRemove {
+		w.RemoveInnocent(id)
+	}
 }

@@ -6,7 +6,7 @@ import (
 
 type Listener interface {
 	GetChannel() string
-	HandleData(int, *gob.Decoder) error // id, decoder
+	HandleData(*gob.Decoder) error // id, decoder
 }
 
 func (m *Manager) AddListener(l *Listener) {

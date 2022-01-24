@@ -33,6 +33,7 @@ func (w *World) RemoveArrow(id int) {
 	w.engine.RemoveMoveable(id)
 	w.collisions.RemoveArrowWall(id)
 	w.collisions.RemoveArrowPlayer(id)
+	w.Deletions.RemoveID(id)
 }
 
 func (w *World) RemoveArrowCollidable(id int) {

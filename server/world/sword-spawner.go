@@ -31,4 +31,5 @@ func (w *World) RemoveSword(id int) {
 	w.logic.RemoveTickable(id)
 	w.engine.RemoveMoveable(id)
 	w.collisions.RemoveSwordPlayer(id)
+	w.Deletions.RemoveID(id)
 }

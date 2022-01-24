@@ -62,7 +62,7 @@ func (m *Manager) DecodeForListeners(ps []packet.Packet) error {
 				}
 
 				var listener = *l
-				err = listener.HandleData(id, decoder)
+				err = listener.HandleData(decoder)
 				if err != nil {
 					return err
 				}

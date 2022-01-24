@@ -52,6 +52,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) Send() {
 	for range time.Tick(50 * time.Millisecond) {
+		for _, s := range s.manager.systems {
+			var system = *s
+			system.Flush()
+		}
 		for _, c := range s.clients {
 			var client = *c
 			if client.Active() {

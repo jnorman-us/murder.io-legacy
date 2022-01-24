@@ -27,6 +27,7 @@ var gameCollisions *collisions.Manager
 var wsServer *ws.Server
 
 var names = []string{
+	"Jellotinous",
 	"Wine_Craft",
 	"Xiehang",
 	"TheStorminNorman",
@@ -39,24 +40,20 @@ var names = []string{
 }
 
 func main() {
+	gamePackets = ws.NewManager()
 	gameLogic = logic.NewManager()
 	gameEngine = engine.NewEngine()
-	gameCollisions = collisions.NewManager()
 	gameInputs = input.NewManager()
-	gamePackets = ws.NewManager()
-
-	var listener = ws.Listener(gameInputs)
-	gamePackets.AddListener(&listener)
-
-	wsServer = ws.NewServer(names, gamePackets)
-
+	gameCollisions = collisions.NewManager()
 	gameWorld = world.NewWorld(gameEngine, gameLogic, gameCollisions, gamePackets, gameInputs)
 
-	for _, name := range names {
-		var player = innocent.NewInnocent(name)
-		player.SetPosition(types.NewRandomVector(0, 0, 600, 600))
-		gameWorld.AddInnocent(player)
-	}
+	var listener = ws.Listener(gameInputs)
+	var deletionsSystem = ws.System(gameWorld.Deletions)
+
+	gamePackets.AddListener(&listener)
+	gamePackets.AddSystem(&deletionsSystem)
+
+	wsServer = ws.NewServer(names, gamePackets)
 
 	for i := 0; i < 1; i++ {
 		var border = wall.NewWall(rand.Intn(1000))
@@ -67,6 +64,7 @@ func main() {
 
 	go tick()
 	go wsServer.Send()
+	go playerReset()
 
 	var staticFiles = http.FileServer(http.Dir("./server/static"))
 
@@ -80,8 +78,21 @@ func main() {
 	}
 }
 
+func playerReset() {
+	for range time.Tick(500 * time.Millisecond) {
+		if len(gameWorld.Innocents) <= 1 {
+			gameWorld.ResetInnocents()
+			for _, name := range names {
+				var player = innocent.NewInnocent(name)
+				player.SetPosition(types.NewRandomVector(0, 0, 600, 600))
+				gameWorld.AddInnocent(player)
+			}
+		}
+	}
+}
+
 func tick() {
-	for range time.Tick(50 * time.Millisecond) {
+	for range time.Tick(1000 / 40 * time.Millisecond) {
 		gameEngine.UpdatePhysics(1)
 		gameCollisions.ResolveCollisions()
 		gameLogic.Tick()

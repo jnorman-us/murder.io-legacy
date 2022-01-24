@@ -43,7 +43,7 @@ func (a *Arrow) Setup() {
 		a.SetPosition(shooter.GetPosition())
 		//arrow.SetVelocity(shooter.GetVelocity())
 
-		var force = types.NewVector(30, 0)
+		var force = types.NewVector(15, 0)
 		force.RotateAbout(shooter.GetAngle(), types.NewZeroVector())
 		force.Scale(a.Charge)
 		a.ApplyForce(force)

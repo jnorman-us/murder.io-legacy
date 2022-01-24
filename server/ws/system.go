@@ -3,8 +3,8 @@ package ws
 import "encoding/gob"
 
 type System interface {
-	GetID() int
 	GetChannel() string
+	Flush() // for aggregating systems, bookmark data collection
 	GetData(*gob.Encoder) error
 }
 
