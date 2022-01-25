@@ -52,14 +52,16 @@ func (b *Bow) Tick() {
 }
 
 func (b *Bow) UpdatePosition(time float64) {
-	var holder = *b.holder
-	var copyPosition = holder.GetPosition()
-	var copyVelocity = holder.GetVelocity()
-	var copyAngle = holder.GetAngle()
-	b.SetAngle(copyAngle)
-	b.SetPosition(copyPosition)
-	b.SetVelocity(copyVelocity)
-	b.Collider.UpdatePosition(time)
+	if b.holder != nil {
+		var holder = *b.holder
+		var copyPosition = holder.GetPosition()
+		var copyVelocity = holder.GetVelocity()
+		var copyAngle = holder.GetAngle()
+		b.SetAngle(copyAngle)
+		b.SetPosition(copyPosition)
+		b.SetVelocity(copyVelocity)
+		b.Collider.UpdatePosition(time)
+	}
 }
 
 func (b *Bow) ChargeBow() {

@@ -120,8 +120,8 @@ func (c *Collider) UpdatePosition(tick float64) {
 	scaledVelocity.Scale(tick)
 	scaledAngularVelocity *= tick
 
-	var scaledFriction = 1 - c.Friction*tick
-	var scaledAngularFriction = 1 - c.AngularFriction*tick
+	var scaledFriction = 1 - c.Friction*math.Sqrt(tick)
+	var scaledAngularFriction = 1 - c.AngularFriction*math.Sqrt(tick)
 
 	var newPosition = c.GetPosition()
 	var newAngle = c.GetAngle()
