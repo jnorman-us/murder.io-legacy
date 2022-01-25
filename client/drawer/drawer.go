@@ -22,9 +22,10 @@ type Drawer struct {
 	center    *Centerable
 	Drawables map[int]*Drawable
 
-	lastStart     time.Time
-	lastDuration  float64
-	updatePhysics func(float64)
+	lastStart       time.Time
+	lastDuration    float64
+	averageDuration float64
+	updatePhysics   func(float64)
 
 	fontdata draw2d.FontData
 }
@@ -61,19 +62,21 @@ func NewDrawer() *Drawer {
 func (d *Drawer) Start(updatePhysics func(float64)) {
 	d.updatePhysics = updatePhysics
 	d.lastStart = time.Now()
-	d.lastDuration = 10
+	d.lastDuration = 1000 / 60 // duration of 60fps frame
+	d.averageDuration = d.lastDuration
 
 	d.canvas.Start(200, d.render) // random maxFPS, change to some setting later?
 }
 
 func (d *Drawer) GetFPS() int {
-	return int(1000 / d.lastDuration)
+	return int(1000 / d.averageDuration)
 }
 
 func (d *Drawer) render(g *draw2dimg.GraphicContext) bool {
 	d.lastDuration = float64(time.Since(d.lastStart).Milliseconds())
+	d.averageDuration = (1*d.averageDuration + .02*d.lastDuration) / 1.02
 	d.lastStart = time.Now()
-	d.updatePhysics(d.lastDuration)
+	d.updatePhysics(d.averageDuration)
 
 	g.SetFillColor(color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xff})
 	g.Clear()
