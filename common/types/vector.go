@@ -42,6 +42,11 @@ func (v *Vector) Add(o Vector) {
 	v.Y += o.Y
 }
 
+func (v *Vector) Interpolate(b Vector, alpha float64) {
+	v.X += (b.X - v.X) * alpha
+	v.Y += (b.Y - v.Y) * alpha
+}
+
 func (v *Vector) MultiplyBy(o Vector) {
 	v.X *= o.X
 	v.Y *= o.Y

@@ -1,6 +1,7 @@
 package collider
 
 import (
+	"fmt"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/llgcode/draw2d/draw2dimg"
 	"github.com/llgcode/draw2d/draw2dkit"
@@ -226,7 +227,12 @@ func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
 }
 
 func (c *Collider) CopyKinetics(o Collider) {
-	c.Position = o.Position
+	var distance = c.Position.Distance(o.Position)
+
+	if distance >= 1 {
+		c.Position = o.Position
+		fmt.Println(distance)
+	}
 	c.Angle = o.Angle
 	c.Velocity = o.Velocity
 	c.AngularVelocity = o.AngularVelocity
