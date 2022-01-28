@@ -1,12 +1,14 @@
 package ws
 
 import (
-	"github.com/josephnormandev/murder/common/packet"
+	"github.com/josephnormandev/murder/common/communications"
+	"github.com/josephnormandev/murder/common/types"
 	"sync"
 )
 
 type Manager struct {
-	codecs map[string]*packet.Codec
+	timestamp types.Tick
+	codecs    map[string]*communications.Codec
 
 	systems   map[string]*System
 	listeners map[string]*Listener
@@ -19,7 +21,8 @@ type Manager struct {
 
 func NewManager() *Manager {
 	return &Manager{
-		codecs: map[string]*packet.Codec{},
+		timestamp: 0,
+		codecs:    map[string]*communications.Codec{},
 
 		systems:   map[string]*System{},
 		listeners: map[string]*Listener{},

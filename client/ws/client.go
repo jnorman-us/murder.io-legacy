@@ -97,12 +97,12 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 				return err
 			}
 
-			packetArray, err := manager.DecodeInputs(byteArray)
+			packetCollection, err := manager.DecodeInputs(byteArray)
 			if err != nil {
 				return err
 			}
 
-			err = manager.DecodeForListeners(packetArray)
+			err = manager.DecodeForListeners(packetCollection)
 			if err != nil {
 				return err
 			}

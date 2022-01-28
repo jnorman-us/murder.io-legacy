@@ -59,12 +59,13 @@ func (s *Server) Send() {
 		for _, c := range s.clients {
 			var client = *c
 			if client.Active() {
-				var packetArray, err = client.EncodeSystems()
+				var packetCollection, err = client.EncodeSystems()
 				if err != nil {
 					fmt.Printf("Error with sending! %v\n", err)
 				}
-				client.Send(packetArray)
+				client.Send(packetCollection)
 			}
 		}
+		s.manager.timestamp.Iterate()
 	}
 }

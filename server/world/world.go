@@ -17,7 +17,6 @@ import (
 
 type World struct {
 	environment types.Environment
-	tick        int
 	currentID   int
 	Walls       map[int]*wall.Wall
 	Innocents   map[int]*innocent.Innocent
@@ -36,7 +35,6 @@ type World struct {
 func NewWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *ws.Manager, i *input.Manager) *World {
 	return &World{
 		environment: types.ServerEnvironment(),
-		tick:        0,
 		currentID:   0,
 		Walls:       map[int]*wall.Wall{},
 		Innocents:   map[int]*innocent.Innocent{},
@@ -57,14 +55,6 @@ func NewWorld(e *engine.Engine, l *logic.Manager, c *collisions.Manager, n *ws.M
 func (w *World) NextAvailableID() int {
 	w.currentID++
 	return w.currentID
-}
-
-func (w *World) Tick() {
-	w.tick++
-}
-
-func (w *World) GetTick() int {
-	return w.tick
 }
 
 func (w *World) ResetInnocents() {

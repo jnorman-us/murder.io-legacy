@@ -1,11 +1,11 @@
 package ws
 
 import (
-	"github.com/josephnormandev/murder/common/packet"
+	"github.com/josephnormandev/murder/common/communications"
 )
 
 type Manager struct {
-	packet.Codec
+	communications.Codec
 
 	spawner   *Spawner
 	systems   map[string]*System
@@ -13,7 +13,7 @@ type Manager struct {
 }
 
 func NewManager() *Manager {
-	var codec = packet.NewCodec()
+	var codec = communications.NewCodec()
 
 	return &Manager{
 		Codec: *codec,
@@ -23,8 +23,8 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) EncodeSystems() ([]packet.Packet, error) {
-	var packetArray []packet.Packet
+func (m *Manager) EncodeSystems() (communications.PacketCollection, error) {
+	var packetArray []communications.Packet
 
 	for _, s := range m.systems {
 		var system = *s
@@ -33,22 +33,25 @@ func (m *Manager) EncodeSystems() ([]packet.Packet, error) {
 		var encoder = m.BeginEncode(channel)
 		err := system.GetData(encoder)
 		if err != nil {
-			return []packet.Packet{}, err
+			return communications.PacketCollection{}, err
 		}
 		var outputBytes = m.EndEncode(channel)
 
-		packetArray = append(packetArray, packet.Packet{
+		packetArray = append(packetArray, communications.Packet{
 			Channel: channel,
 			ID:      -1,
 			Data:    outputBytes,
 		})
 	}
 
-	return packetArray, nil
+	return communications.PacketCollection{
+		Timestamp:   0,
+		PacketArray: packetArray,
+	}, nil
 }
 
-func (m *Manager) DecodeForListeners(ps []packet.Packet) error {
-	for _, p := range ps {
+func (m *Manager) DecodeForListeners(pc communications.PacketCollection) error {
+	for _, p := range pc.PacketArray {
 		var id = p.ID
 		var channel = p.Channel
 		var data = p.Data

@@ -2,7 +2,7 @@ package ws
 
 import (
 	"context"
-	"github.com/josephnormandev/murder/common/packet"
+	"github.com/josephnormandev/murder/common/communications"
 	"golang.org/x/sync/errgroup"
 	"nhooyr.io/websocket"
 	"time"
@@ -11,19 +11,19 @@ import (
 type Client struct {
 	identifier string
 	manager    *Manager
-	codec      *packet.Codec
+	codec      *communications.Codec
 
 	cancel    func()
 	connected bool
 
-	packetsOut chan []packet.Packet
+	packetsOut chan communications.PacketCollection
 }
 
 func NewClient(id string, m *Manager) *Client {
 	return &Client{
 		identifier: id,
 		manager:    m,
-		packetsOut: make(chan []packet.Packet),
+		packetsOut: make(chan communications.PacketCollection),
 	}
 }
 
@@ -49,7 +49,7 @@ func (c *Client) Setup(ctx context.Context, conn *websocket.Conn) error {
 }
 
 func (c *Client) setupCodec() {
-	c.codec = packet.NewCodec()
+	c.codec = communications.NewCodec()
 
 	for class := range c.manager.classes {
 		c.codec.AddEncoder(class)
@@ -119,8 +119,8 @@ func (c *Client) Active() bool {
 	return c.connected
 }
 
-func (c *Client) Send(packetArray []packet.Packet) {
-	c.packetsOut <- packetArray
+func (c *Client) Send(pc communications.PacketCollection) {
+	c.packetsOut <- pc
 }
 
 func (c *Client) Close() {
@@ -135,13 +135,13 @@ func (c *Client) Close() {
 
 // EncodeSystems allows the use of a per-client visibility filter
 // so that each client receives a stream of bytes unique to itself
-func (c *Client) EncodeSystems() ([]packet.Packet, error) {
+func (c *Client) EncodeSystems() (communications.PacketCollection, error) {
 	c.manager.systemMutex.Lock()
 	c.manager.spawnMutex.Lock()
 	defer c.manager.systemMutex.Unlock()
 	defer c.manager.spawnMutex.Unlock()
 
-	var packetArray []packet.Packet
+	var packetArray []communications.Packet
 	var manager = c.manager
 	var codec = c.codec
 
@@ -154,11 +154,11 @@ func (c *Client) EncodeSystems() ([]packet.Packet, error) {
 		var encoder = codec.BeginEncode(channel)
 		err := system.GetData(encoder)
 		if err != nil {
-			return []packet.Packet{}, err
+			return communications.PacketCollection{}, err
 		}
 		var outputBytes = codec.EndEncode(channel)
 
-		packetArray = append(packetArray, packet.Packet{
+		packetArray = append(packetArray, communications.Packet{
 			ID:      0,
 			Channel: channel,
 			Data:    outputBytes,
@@ -173,11 +173,11 @@ func (c *Client) EncodeSystems() ([]packet.Packet, error) {
 		var encoder = codec.BeginEncode(class)
 		err := spawn.GetData(encoder)
 		if err != nil {
-			return []packet.Packet{}, err
+			return communications.PacketCollection{}, err
 		}
 		var outputBytes = codec.EndEncode(class)
 
-		var packet = packet.Packet{
+		var packet = communications.Packet{
 			ID:      id,
 			Channel: class,
 			Data:    outputBytes,
@@ -185,14 +185,17 @@ func (c *Client) EncodeSystems() ([]packet.Packet, error) {
 
 		packetArray = append(packetArray, packet)
 	}
-	return packetArray, nil
+	return communications.PacketCollection{
+		PacketArray: packetArray,
+		Timestamp:   manager.timestamp,
+	}, nil
 }
 
-func (c *Client) DecodeForListeners(ps []packet.Packet) error {
+func (c *Client) DecodeForListeners(pc communications.PacketCollection) error {
 	var manager = c.manager
 	var codec = c.codec
 
-	for _, p := range ps {
+	for _, p := range pc.PacketArray {
 		var channel = p.Channel
 		var data = p.Data
 
