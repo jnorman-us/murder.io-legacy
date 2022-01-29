@@ -1,7 +1,10 @@
 package engine
 
+import "github.com/josephnormandev/murder/common/collisions/collider"
+
 type Moveable interface {
 	GetID() int
+	GetCollider() *collider.Collider
 	UpdatePosition(float64)
 }
 

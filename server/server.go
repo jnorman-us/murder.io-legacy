@@ -48,14 +48,16 @@ func main() {
 	gameWorld = world.NewWorld(gameEngine, gameLogic, gameCollisions, gamePackets, gameInputs)
 
 	var listener = ws.Listener(gameInputs)
-	var deletionsSystem = ws.System(gameWorld.Deletions)
-
 	gamePackets.AddListener(&listener)
+
+	var deletionsSystem = ws.System(gameWorld.Deletions)
+	var positionsSystem = ws.System(gameEngine)
 	gamePackets.AddSystem(&deletionsSystem)
+	gamePackets.AddSystem(&positionsSystem)
 
 	wsServer = ws.NewServer(names, gamePackets)
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 4; i++ {
 		var border = wall.NewWall(rand.Intn(1000))
 		border.SetPosition(types.NewRandomVector(0, 0, 600, 600))
 		border.SetAngle(rand.Float64() * math.Pi * 2)

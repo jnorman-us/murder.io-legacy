@@ -1,7 +1,6 @@
 package collider
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/llgcode/draw2d/draw2dimg"
 	"github.com/llgcode/draw2d/draw2dkit"
@@ -15,8 +14,8 @@ type Collider struct {
 	Angle           float64
 	Velocity        types.Vector
 	AngularVelocity float64
-	Friction        float64
-	AngularFriction float64
+	friction        float64
+	angularFriction float64
 	rectangles      []Rectangle
 	circles         []Circle
 	color           color.RGBA
@@ -121,8 +120,8 @@ func (c *Collider) UpdatePosition(tick float64) {
 	scaledVelocity.Scale(tick)
 	scaledAngularVelocity *= tick
 
-	var scaledFriction = 1 - c.Friction*math.Sqrt(tick)
-	var scaledAngularFriction = 1 - c.AngularFriction*math.Sqrt(tick)
+	var scaledFriction = 1 - c.friction*math.Sqrt(tick)
+	var scaledAngularFriction = 1 - c.angularFriction*math.Sqrt(tick)
 
 	var newPosition = c.GetPosition()
 	var newAngle = c.GetAngle()
@@ -143,7 +142,7 @@ func (c *Collider) UpdatePosition(tick float64) {
 func (c *Collider) BounceBack() {
 	var newPosition = c.GetPosition()
 	var newVelocity = c.GetVelocity()
-	newVelocity.Scale(-1 / (1 - c.Friction))
+	newVelocity.Scale(-1 / (1 - c.friction))
 	newPosition.Add(newVelocity)
 
 	c.SetPosition(newPosition)
@@ -181,11 +180,11 @@ func (c *Collider) SetVelocity(velocity types.Vector) {
 }
 
 func (c *Collider) GetFriction() float64 {
-	return c.Friction
+	return c.friction
 }
 
 func (c *Collider) SetFriction(coefficient float64) {
-	c.Friction = coefficient
+	c.friction = coefficient
 }
 
 func (c *Collider) GetAngularVelocity() float64 {
@@ -197,7 +196,7 @@ func (c *Collider) SetAngularVelocity(angularVelocity float64) {
 }
 
 func (c *Collider) SetAngularFriction(coefficient float64) {
-	c.AngularFriction = coefficient
+	c.angularFriction = coefficient
 }
 
 func (c *Collider) SetColor(co color.RGBA) {
@@ -227,15 +226,10 @@ func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
 }
 
 func (c *Collider) CopyKinetics(o Collider) {
-	var distance = c.Position.Distance(o.Position)
-
-	if distance >= 1 {
-		c.Position = o.Position
-		fmt.Println(distance)
-	}
+	c.Position = o.Position
 	c.Angle = o.Angle
 	c.Velocity = o.Velocity
 	c.AngularVelocity = o.AngularVelocity
-	c.Friction = o.Friction
-	c.AngularFriction = o.AngularFriction
+	c.friction = o.friction
+	c.angularFriction = o.angularFriction
 }

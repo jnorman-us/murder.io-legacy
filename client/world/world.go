@@ -3,7 +3,7 @@ package world
 import (
 	"encoding/gob"
 	"github.com/josephnormandev/murder/client/drawer"
-	"github.com/josephnormandev/murder/common/engine"
+	"github.com/josephnormandev/murder/client/engine"
 	"github.com/josephnormandev/murder/common/entities/arrow"
 	"github.com/josephnormandev/murder/common/entities/bow"
 	"github.com/josephnormandev/murder/common/entities/innocent"
@@ -23,10 +23,10 @@ type World struct {
 	Arrows    map[int]*arrow.Arrow
 
 	drawer *drawer.Drawer
-	engine *engine.Engine
+	engine *engine.Manager
 }
 
-func NewWorld(e *engine.Engine, d *drawer.Drawer) *World {
+func NewWorld(e *engine.Manager, d *drawer.Drawer) *World {
 	return &World{
 		environment: types.ClientEnvironment(),
 		tick:        0,

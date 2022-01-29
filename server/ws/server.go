@@ -66,6 +66,6 @@ func (s *Server) Send() {
 				client.Send(packetCollection)
 			}
 		}
-		s.manager.timestamp.Iterate()
+		s.manager.timestamp++
 	}
 }

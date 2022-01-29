@@ -2,7 +2,7 @@ package world
 
 import (
 	"github.com/josephnormandev/murder/client/drawer"
-	"github.com/josephnormandev/murder/common/engine"
+	"github.com/josephnormandev/murder/client/engine"
 	"github.com/josephnormandev/murder/common/entities/sword"
 )
 

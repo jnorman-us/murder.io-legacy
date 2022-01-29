@@ -126,18 +126,3 @@ func (c *Client) Close() {
 func (c *Client) Send() {
 
 }
-
-/*
-	c, _, err := ws.Dial(ctx, "ws://localhost:8080", nil)
-	if err != nil {
-		// ...
-	}
-	defer c.Close(ws.StatusInternalError, "the sky is falling")
-
-	err = wsjson.Write(ctx, c, "hi")
-	if err != nil {
-		// ...
-	}
-
-	c.Close(ws.StatusNormalClosure, "")
-*/

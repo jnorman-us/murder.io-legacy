@@ -2,14 +2,21 @@ package ws
 
 import (
 	"github.com/josephnormandev/murder/common/communications"
+	"github.com/josephnormandev/murder/common/types"
+	"time"
 )
 
 type Manager struct {
+	types.Tick
 	communications.Codec
 
-	spawner   *Spawner
-	systems   map[string]*System
-	listeners map[string]*Listener
+	spawner         *Spawner
+	systems         map[string]*System
+	listeners       map[string]*Listener
+	futureListeners map[string]*FutureListener
+
+	receivedFirst bool
+	updateQueue   []communications.PacketCollection
 }
 
 func NewManager() *Manager {
@@ -18,9 +25,41 @@ func NewManager() *Manager {
 	return &Manager{
 		Codec: *codec,
 
-		systems:   map[string]*System{},
-		listeners: map[string]*Listener{},
+		systems:         map[string]*System{},
+		listeners:       map[string]*Listener{},
+		futureListeners: map[string]*FutureListener{},
+
+		receivedFirst: false,
+		updateQueue:   make([]communications.PacketCollection, 0),
 	}
+}
+
+func (m *Manager) SteadyTick() error {
+	var ms = time.Duration(50)
+	for range time.Tick(ms * time.Millisecond) {
+		var currentTimestamp = m.Tick - 2
+
+		for len(m.updateQueue) > 0 {
+			var pc = m.updateQueue[0]
+			if pc.Timestamp <= currentTimestamp {
+				err := m.EmitToListeners(pc)
+				if err != nil {
+					return err
+				}
+				m.updateQueue = m.updateQueue[1:]
+			} else if pc.Timestamp == currentTimestamp+1 {
+				err := m.EmitToFutureListeners(pc, ms)
+				if err != nil {
+					return err
+				}
+				break
+			} else {
+				break
+			}
+		}
+		m.Tick++
+	}
+	return nil
 }
 
 func (m *Manager) EncodeSystems() (communications.PacketCollection, error) {
@@ -51,6 +90,15 @@ func (m *Manager) EncodeSystems() (communications.PacketCollection, error) {
 }
 
 func (m *Manager) DecodeForListeners(pc communications.PacketCollection) error {
+	if !m.receivedFirst {
+		m.receivedFirst = true
+		m.Tick = pc.Timestamp
+	}
+	m.updateQueue = append(m.updateQueue, pc)
+	return nil
+}
+
+func (m *Manager) EmitToListeners(pc communications.PacketCollection) error {
 	for _, p := range pc.PacketArray {
 		var id = p.ID
 		var channel = p.Channel
@@ -86,6 +134,33 @@ func (m *Manager) DecodeForListeners(pc communications.PacketCollection) error {
 				return err
 			}
 			m.EndDecode(class)
+		}
+	}
+	return nil
+}
+
+func (m *Manager) EmitToFutureListeners(pc communications.PacketCollection, ms time.Duration) error {
+	for _, p := range pc.PacketArray {
+		var id = p.ID
+		var channel = p.Channel
+		var data = p.Data
+
+		if id == 0 {
+			var l, ok = m.futureListeners[channel]
+			if ok {
+				decoder, err := m.BeginDecode(channel, data)
+				if err != nil {
+					return err
+				}
+
+				var listener = *l
+				err = listener.HandleFutureData(decoder, ms)
+				if err != nil {
+					return err
+				}
+
+				m.EndDecode(channel)
+			}
 		}
 	}
 	return nil

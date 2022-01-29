@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/josephnormandev/murder/client/drawer"
+	"github.com/josephnormandev/murder/client/engine"
 	"github.com/josephnormandev/murder/client/input"
 	"github.com/josephnormandev/murder/client/world"
 	"github.com/josephnormandev/murder/client/ws"
-	"github.com/josephnormandev/murder/common/engine"
 	"syscall/js"
 	"time"
 )
@@ -14,7 +14,7 @@ import (
 var username string
 
 var gameWorld *world.World
-var gameEngine *engine.Engine
+var gameEngine *engine.Manager
 var gameDrawer *drawer.Drawer
 var gameInputs *input.Manager
 var gamePackets *ws.Manager
@@ -24,7 +24,7 @@ var logicMS = 25
 
 func main() {
 	js.Global().Set("connectToServer", js.FuncOf(connectToServer))
-	gameEngine = engine.NewEngine()
+	gameEngine = engine.NewManager()
 	gameDrawer = drawer.NewDrawer()
 	gamePackets = ws.NewManager()
 	gameWorld = world.NewWorld(gameEngine, gameDrawer)
@@ -35,12 +35,20 @@ func main() {
 	var spawner = ws.Spawner(gameWorld)
 	var inputsSystem = ws.System(gameInputs)
 	var deletionsListener = ws.Listener(gameWorld)
+	var futurePositionListener = ws.FutureListener(gameEngine)
 
 	gamePackets.SetSpawner(&spawner)
 	gamePackets.AddSystem(&inputsSystem)
 	gamePackets.AddListener(&deletionsListener)
+	gamePackets.AddFutureListener(&futurePositionListener)
 
 	go gameDrawer.Start(updatePhysics)
+	go func() {
+		err := gamePackets.SteadyTick()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
 
 	for range time.Tick(1 * time.Second) {
 		if username != "" {
@@ -66,5 +74,5 @@ func connectToServer(this js.Value, values []js.Value) interface{} {
 }
 
 func updatePhysics(ms float64) {
-	gameEngine.UpdatePhysics(ms / float64(logicMS))
+	gameEngine.UpdatePhysics(ms)
 }
