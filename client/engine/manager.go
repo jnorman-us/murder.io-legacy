@@ -52,8 +52,7 @@ func (m *Manager) UpdatePhysics(ms float64) {
 			moveable.SetPosition(currentPos)
 			moveable.SetAngle(currentAngle)
 		} else {
-			fmt.Println("Probelmm!")
-			// moveable.UpdatePosition(ms)
+			moveable.UpdatePosition(ms / (1000 / 40))
 		}
 	}
 }
