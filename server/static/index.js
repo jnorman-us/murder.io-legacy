@@ -14,7 +14,7 @@ WebAssembly.instantiateStreaming(fetch('client.wasm'), go.importObject).then(res
 });
 
 function handleLogin() {
-    const username = prompt("What is your username?", "Wine_Craft");
+    const username = prompt("What is your username? (Press enter to play as \"Beta Tester\")", "Beta Tester");
     const location = window.location;
     const hostname = location.hostname;
     const matches = location.href.matchAll(/:([\d]{2,4})/g);

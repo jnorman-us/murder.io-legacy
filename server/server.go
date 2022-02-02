@@ -37,6 +37,7 @@ var names = []string{
 	"Jinseng",
 	"Laerir",
 	"JoeyD",
+	"Beta Tester",
 }
 
 func main() {
