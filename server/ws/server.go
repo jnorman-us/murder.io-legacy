@@ -3,7 +3,6 @@ package ws
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 	"nhooyr.io/websocket"
 	"time"
@@ -41,9 +40,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	var client, ok = s.clients[id]
 	if ok {
-		err = client.Setup(r.Context(), connection)
-		if err != nil {
-			log.Printf("WS Error %v", err)
+		if !client.Active() {
+			fmt.Printf("\"%s\" has connected from \"%s\"!\n", client.identifier, r.RemoteAddr)
+			err = client.Setup(r.Context(), connection)
+			if err != nil {
+				// log.Printf("WS Error %v", err)
+			}
+		} else {
+			var _ = connection.Close(websocket.StatusPolicyViolation, "Already connected from another location")
 		}
 	} else {
 		var _ = connection.Close(websocket.StatusPolicyViolation, "Username not registered!")

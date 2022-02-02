@@ -1,5 +1,3 @@
-console.log('test');
-
 if (!WebAssembly.instantiateStreaming) { // polyfill
     WebAssembly.instantiateStreaming = async (resp, importObject) => {
         const source = await (await resp).arrayBuffer();
@@ -9,10 +7,21 @@ if (!WebAssembly.instantiateStreaming) { // polyfill
 
 const go = new Go();
 WebAssembly.instantiateStreaming(fetch('client.wasm'), go.importObject).then(res => {
-    go.run(res.instance)
+    go.run(res.instance).then(r => {
+        console.log('testasd')
+    });
+    handleLogin();
 });
 
-setTimeout(function() {
-    var username = prompt("What is your username?", "");
-    connectToServer(username);
-}, 1000);
+function handleLogin() {
+    const username = prompt("What is your username?", "Wine_Craft");
+    const location = window.location;
+    const hostname = location.hostname;
+    const matches = location.href.matchAll(/:([\d]{2,4})/g);
+
+    let port = 80;
+    for(const match of matches) {
+        port = parseInt(match[1]);
+    }
+    connectToServer(hostname, port, username);
+}

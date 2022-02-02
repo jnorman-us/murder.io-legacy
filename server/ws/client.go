@@ -2,6 +2,7 @@ package ws
 
 import (
 	"context"
+	"fmt"
 	"github.com/josephnormandev/murder/common/communications"
 	"golang.org/x/sync/errgroup"
 	"nhooyr.io/websocket"
@@ -124,6 +125,7 @@ func (c *Client) Send(pc communications.PacketCollection) {
 }
 
 func (c *Client) Close() {
+	fmt.Printf("\"%s\" is disconnecting.\n", c.identifier)
 	c.connected = false
 	c.destroyCodec()
 	if c.cancel != nil {

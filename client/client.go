@@ -61,9 +61,11 @@ func main() {
 }
 
 func connectToServer(this js.Value, values []js.Value) interface{} {
-	username = values[0].String()
+	var hostname = values[0].String()
+	var port = values[1].Int()
+	username = values[2].String()
 
-	wsClient = ws.NewClient(gamePackets, username)
+	wsClient = ws.NewClient(gamePackets, hostname, port, username)
 	go (func() {
 		err := wsClient.Connect()
 		if err != nil {

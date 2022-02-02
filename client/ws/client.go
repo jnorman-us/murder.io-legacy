@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"golang.org/x/sync/errgroup"
 	"nhooyr.io/websocket"
-	"strings"
-	"syscall/js"
 	"time"
 )
 
@@ -20,12 +18,8 @@ type Client struct {
 
 // NewClient accepts a pointer to Manager, and a string with the
 // identifier of the current client
-func NewClient(m *Manager, id string) *Client {
-	var location = js.Global().Get("location")
-	var hostname = location.Get("hostname").String()
-	var href = location.Get("href").String()
-	var port = strings.Split(strings.Split(href, ":")[2], "/")[0]
-	var url = fmt.Sprintf("ws://%s:%s/ws/%s", hostname, port, id)
+func NewClient(m *Manager, hostname string, port int, id string) *Client {
+	var url = fmt.Sprintf("ws://%s:%d/ws/%s", hostname, port, id)
 	return &Client{
 		manager: m,
 		url:     url,
