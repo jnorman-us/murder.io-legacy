@@ -95,7 +95,7 @@ func playerReset() {
 }
 
 func tick() {
-	for range time.Tick(1000 / 40 * time.Millisecond) {
+	for range time.Tick(1000 / 60 * time.Millisecond) {
 		gameEngine.UpdatePhysics(1)
 		gameCollisions.ResolveCollisions()
 		gameLogic.Tick()

@@ -11,14 +11,33 @@ type Circle struct {
 	localPosition types.Vector
 	radius        float64
 	collider      *Collider
-	colliding     bool
+
+	inertial bool
+	friction float64
+	mass     float64
 }
 
+// NewCircle defines a circle at
+// p-position,
+// r-radius,
+// f-friction,
+// m-mass
 func NewCircle(p types.Vector, r float64) Circle {
 	return Circle{
 		localPosition: p,
 		radius:        r,
-		colliding:     false,
+		inertial:      false,
+	}
+}
+
+func NewInertialCircle(p types.Vector, r, f, m float64) Circle {
+	return Circle{
+		localPosition: p,
+		radius:        r,
+
+		inertial: true,
+		friction: f,
+		mass:     m,
 	}
 }
 
@@ -35,10 +54,6 @@ func (c *Circle) checkCircleCollision(o *Circle) bool {
 	var r2 = o.radius
 
 	var colliding = math.Pow(dist, 2) < (r1+r2)*(r1+r2)
-	if colliding == true {
-		c.colliding = true
-		o.colliding = true
-	}
 	return colliding
 }
 
@@ -70,8 +85,6 @@ func (c *Circle) checkRectangleCollision(r *Rectangle) bool {
 
 	var distance = rotCirclePos.Distance(closestPos)
 	if distance < c.radius {
-		r.colliding = true
-		c.colliding = true
 		return true
 	}
 	return false

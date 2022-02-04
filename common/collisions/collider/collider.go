@@ -10,12 +10,13 @@ import (
 
 type Collider struct {
 	mass            float64
+	forceBuffer     types.Vector
+	torqueBuffer    float64
 	Position        types.Vector
 	Angle           float64
 	Velocity        types.Vector
 	AngularVelocity float64
 	friction        float64
-	angularFriction float64
 	rectangles      []Rectangle
 	circles         []Circle
 	color           color.RGBA
@@ -43,17 +44,6 @@ func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle, mass 
 		G: 0xff,
 		A: 0xff,
 	})
-}
-
-func (c *Collider) Clear() {
-	for i := range c.circles {
-		var circle = &c.circles[i]
-		circle.colliding = false
-	}
-	for i := range c.rectangles {
-		var rectangle = &c.rectangles[i]
-		rectangle.colliding = false
-	}
 }
 
 func (c *Collider) CheckCollision(o *Collider) bool {
@@ -105,38 +95,58 @@ func (c *Collider) CheckCollision(o *Collider) bool {
 	return colliding
 }
 
+func (c *Collider) ClearBuffers() {
+	c.forceBuffer = types.NewZeroVector()
+	c.torqueBuffer = 0
+}
+
 func (c *Collider) ApplyForce(force types.Vector) {
-	force.Scale(1 / c.mass)
-	c.Velocity.Add(force)
+	c.forceBuffer.Add(force)
+}
+
+func (c *Collider) ApplyPositionalForce(force types.Vector, position types.Vector) {
+	c.forceBuffer.Add(force)
+	var offset = c.Position.Offset(position)
+	c.ApplyTorque(offset.X*force.Y - offset.Y*force.X)
 }
 
 func (c *Collider) ApplyTorque(torque float64) {
-	c.AngularVelocity += torque / c.mass
+	c.torqueBuffer += torque
 }
 
-func (c *Collider) UpdatePosition(tick float64) {
-	var scaledVelocity = c.GetVelocity()
-	var scaledAngularVelocity = c.GetAngularVelocity()
-	scaledVelocity.Scale(tick)
-	scaledAngularVelocity *= tick
+func (c *Collider) CalculateFrictionForces(time float64) {
 
-	var scaledFriction = 1 - c.friction*math.Sqrt(tick)
-	var scaledAngularFriction = 1 - c.angularFriction*math.Sqrt(tick)
+}
 
-	var newPosition = c.GetPosition()
-	var newAngle = c.GetAngle()
-	var newVelocity = c.GetVelocity()
-	var newAngularVelocity = c.GetAngularVelocity()
+func (c *Collider) UpdatePosition(time float64) {
+	var timeSquared = math.Pow(time*1, 2)
+	var frictionAir = 1 - c.friction
 
-	newPosition.Add(scaledVelocity)
-	newVelocity.Scale(scaledFriction)
-	newAngle += scaledAngularVelocity
-	newAngularVelocity *= scaledAngularFriction
+	var acceleration = c.forceBuffer
+	acceleration.Scale(1 / c.mass)
+	acceleration.Scale(timeSquared)
 
-	c.SetPosition(newPosition)
-	c.SetAngle(newAngle)
+	var newVelocity = c.Velocity
+	newVelocity.Scale(frictionAir)
+	newVelocity.Add(acceleration)
 	c.SetVelocity(newVelocity)
+
+	var newPosition = c.Position
+	newPosition.Add(newVelocity)
+	c.SetPosition(newPosition)
+
+	var angularAcceleration = c.torqueBuffer
+	angularAcceleration /= c.mass
+	angularAcceleration *= timeSquared
+
+	var newAngularVelocity = c.AngularVelocity
+	newAngularVelocity *= frictionAir
+	newAngularVelocity += angularAcceleration
 	c.SetAngularVelocity(newAngularVelocity)
+
+	var newAngle = c.Angle
+	newAngle += newAngularVelocity
+	c.SetAngle(newAngle)
 }
 
 func (c *Collider) BounceBack() {
@@ -195,10 +205,6 @@ func (c *Collider) SetAngularVelocity(angularVelocity float64) {
 	c.AngularVelocity = angularVelocity
 }
 
-func (c *Collider) SetAngularFriction(coefficient float64) {
-	c.angularFriction = coefficient
-}
-
 func (c *Collider) SetColor(co color.RGBA) {
 	c.color = co
 }
@@ -212,8 +218,8 @@ func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
 	}
 
 	var directionPoint = c.Position
-	directionPoint.Add(types.NewVector(0, 20))
-	directionPoint.RotateAbout(c.Angle-math.Pi/2, c.Position)
+	directionPoint.Add(types.NewVector(20, 0))
+	directionPoint.RotateAbout(c.Angle, c.Position)
 
 	// draw centerpoint for reference
 	g.SetFillColor(color.RGBA{A: 0xff})
@@ -231,5 +237,4 @@ func (c *Collider) CopyKinetics(o Collider) {
 	c.Velocity = o.Velocity
 	c.AngularVelocity = o.AngularVelocity
 	c.friction = o.friction
-	c.angularFriction = o.angularFriction
 }

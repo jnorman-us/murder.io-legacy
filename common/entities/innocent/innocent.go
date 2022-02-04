@@ -6,7 +6,6 @@ import (
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
-	"math"
 )
 
 type Innocent struct {
@@ -23,7 +22,6 @@ type Innocent struct {
 	bow   *Shootable
 }
 
-var angularFriction = .1
 var friction = .5
 var mass = 10.0
 
@@ -37,14 +35,18 @@ func NewInnocent(u string) *Innocent {
 
 func (i *Innocent) Setup() {
 	i.SetupCollider(
-		[]collider.Rectangle{},
+		[]collider.Rectangle{
+			collider.NewInertialRectangle(types.NewVector(0, 0), 0, 60, 30, 0, 10),
+		},
 		[]collider.Circle{
-			collider.NewCircle(types.NewVector(0, 0), 10),
+			collider.NewInertialCircle(types.NewVector(15, 15), 5, .5, 1),
+			collider.NewInertialCircle(types.NewVector(-15, 15), 5, .5, 1),
+			collider.NewInertialCircle(types.NewVector(15, -15), 5, .5, 1),
+			collider.NewInertialCircle(types.NewVector(-15, -15), 5, .5, 1),
 		},
 		mass,
 	)
 	i.SetColor(types.Colors.Orange)
-	i.SetAngularFriction(angularFriction)
 	i.SetFriction(friction)
 }
 
@@ -72,32 +74,29 @@ func (i *Innocent) SlainBy(id int, username string) {
 
 func (i *Innocent) Tick() {
 	var in = i.input
-	i.SetAngle(in.Direction)
 
-	var angle = 0.0
-	var movementForce = types.NewVector(15, 0)
-	if in.Left && in.Forward {
-		angle = math.Pi / 4 * 5
-	} else if in.Left && in.Backward {
-		angle = math.Pi / 4 * 3
-	} else if in.Right && in.Forward {
-		angle = math.Pi / 4 * 7
-	} else if in.Right && in.Backward {
-		angle = math.Pi / 4 * 1
-	} else if in.Left {
-		angle = math.Pi
-	} else if in.Forward {
-		angle = math.Pi / 2 * 3
-	} else if in.Backward {
-		angle = math.Pi / 2
+	var angle = i.GetAngle()
+	if in.Left {
+		angle += .001
 	} else if in.Right {
-		angle = 0
+		angle -= .001
+	}
+
+	var movementForce = types.NewVector(15, 0)
+	if in.Forward {
+		movementForce.Scale(1)
+	} else if in.Backward {
+		movementForce.Scale(-1)
 	} else {
 		movementForce.Scale(0)
 	}
 
 	movementForce.RotateAbout(angle, types.NewZeroVector())
-	i.Collider.ApplyForce(movementForce)
+
+	var backAxle = types.NewVector(-15, 0)
+	backAxle.Add(i.GetPosition())
+	backAxle.RotateAbout(i.GetAngle(), i.GetPosition())
+	i.Collider.ApplyPositionalForce(movementForce, backAxle)
 
 	var spawner = *i.spawner
 	if in.AttackClick && i.sword == nil { // initialize sword

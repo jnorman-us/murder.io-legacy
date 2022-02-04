@@ -32,7 +32,7 @@ func (s *Sword) Setup() {
 		1,
 	)
 	s.SetColor(types.Colors.Blue)
-	s.SetAngularFriction(.2)
+	s.SetFriction(.2)
 
 	if s.wielder != nil {
 		var wielder = *s.wielder

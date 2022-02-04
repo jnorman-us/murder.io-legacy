@@ -14,7 +14,10 @@ type Rectangle struct {
 	width         float64
 	height        float64
 	collider      *Collider
-	colliding     bool
+
+	inertial bool
+	friction float64
+	mass     float64
 }
 
 func NewRectangle(p types.Vector, a, w, h float64) Rectangle {
@@ -23,6 +26,20 @@ func NewRectangle(p types.Vector, a, w, h float64) Rectangle {
 		localAngle:    a,
 		width:         w,
 		height:        h,
+		inertial:      false,
+	}
+}
+
+func NewInertialRectangle(p types.Vector, a, w, h, f, m float64) Rectangle {
+	return Rectangle{
+		localPosition: p,
+		localAngle:    a,
+		width:         w,
+		height:        h,
+
+		inertial: true,
+		friction: f,
+		mass:     m,
 	}
 }
 

@@ -4,7 +4,9 @@ import "github.com/josephnormandev/murder/common/collisions/collider"
 
 type Moveable interface {
 	GetID() int
+	ClearBuffers()
 	GetCollider() *collider.Collider
+	CalculateFrictionForces(float64)
 	UpdatePosition(float64)
 }
 

@@ -71,6 +71,13 @@ func (v *Vector) Scale(scalar float64) {
 	v.Y = v.Y * scalar
 }
 
+func (v *Vector) Offset(o Vector) Vector {
+	return Vector{
+		X: o.X - v.X,
+		Y: o.Y - v.Y,
+	}
+}
+
 func (v *Vector) Distance(o Vector) float64 {
 	var x = v.X - o.X
 	var y = v.Y - o.Y

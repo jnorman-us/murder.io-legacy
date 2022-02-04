@@ -50,5 +50,5 @@ The ultimate racing machine: unmatched maneuverability and acceleration, with an
   - **Poles**: objects from which cars can attach their grapple. They can be used to swing in order to generate a speed boost
   - **Ramps**: obstacles that can be climbed on top of to become airborne (kinda like a blast cone)
   - **Obstructions**: destructible elements that cause the vehicle to slow down when crashed into (maybe cactus, bushes, fence posts)
-  - **Refueling Stations**: 
+  - **Refueling Stations**: a spot on the ground where health packs can spawn on top of
   - **Entrance Ramps**: respawn points that occur along the length of the highway (3 per team) where destroyed cars can reenter the game
