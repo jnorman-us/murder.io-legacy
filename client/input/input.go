@@ -103,6 +103,9 @@ func (i *Manager) updatePlayerInput(key int, active bool) {
 	if key == i.keyBinds.abilityRanged {
 		newInputs.RangedClick = active
 	}
+	if key == i.keyBinds.abilitySpecial {
+		newInputs.Special = active
+	}
 	if !i.inputs.Equals(newInputs) {
 		i.inputs = newInputs
 		if i.playerListener != nil {

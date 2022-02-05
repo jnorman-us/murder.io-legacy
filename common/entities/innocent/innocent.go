@@ -6,6 +6,7 @@ import (
 	"github.com/josephnormandev/murder/common/collisions/collider"
 	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
+	"math"
 )
 
 type Innocent struct {
@@ -36,13 +37,13 @@ func NewInnocent(u string) *Innocent {
 func (i *Innocent) Setup() {
 	i.SetupCollider(
 		[]collider.Rectangle{
-			collider.NewInertialRectangle(types.NewVector(0, 0), 0, 60, 30, 0, 10),
+			collider.NewInertialRectangle(types.NewVector(22.5, 0), 0, 60, 30, 0, 10),
 		},
 		[]collider.Circle{
-			collider.NewInertialCircle(types.NewVector(15, 15), 5, .5, 1),
-			collider.NewInertialCircle(types.NewVector(-15, 15), 5, .5, 1),
-			collider.NewInertialCircle(types.NewVector(15, -15), 5, .5, 1),
-			collider.NewInertialCircle(types.NewVector(-15, -15), 5, .5, 1),
+			collider.NewInertialCircle(types.NewVector(45, 15), 5, .5, 1),
+			collider.NewInertialCircle(types.NewVector(0, 15), 5, .5, 1),
+			collider.NewInertialCircle(types.NewVector(45, -15), 5, .5, 1),
+			collider.NewInertialCircle(types.NewVector(0, -15), 5, .5, 1),
 		},
 		mass,
 	)
@@ -75,13 +76,6 @@ func (i *Innocent) SlainBy(id int, username string) {
 func (i *Innocent) Tick() {
 	var in = i.input
 
-	var angle = i.GetAngle()
-	if in.Left {
-		angle += .001
-	} else if in.Right {
-		angle -= .001
-	}
-
 	var movementForce = types.NewVector(15, 0)
 	if in.Forward {
 		movementForce.Scale(1)
@@ -90,13 +84,25 @@ func (i *Innocent) Tick() {
 	} else {
 		movementForce.Scale(0)
 	}
+	movementForce.RotateAbout(i.GetAngle(), types.NewZeroVector())
+	i.Collider.ApplyForce(movementForce)
 
-	movementForce.RotateAbout(angle, types.NewZeroVector())
-
-	var backAxle = types.NewVector(-15, 0)
-	backAxle.Add(i.GetPosition())
-	backAxle.RotateAbout(i.GetAngle(), i.GetPosition())
-	i.Collider.ApplyPositionalForce(movementForce, backAxle)
+	var speed = i.Velocity.Magnitude()
+	var turningForce = types.NewVector(0, .005)
+	turningForce.Scale(math.Sqrt(speed))
+	fmt.Println(i.Velocity.Magnitude())
+	if in.Left {
+		turningForce.Scale(-1)
+	} else if in.Right {
+		turningForce.Scale(1)
+	} else {
+		turningForce.Scale(0)
+	}
+	turningForce.RotateAbout(i.GetAngle(), types.NewZeroVector())
+	var frontAxle = types.NewVector(30, 0)
+	frontAxle.Add(i.GetPosition())
+	frontAxle.RotateAbout(i.GetAngle(), i.GetPosition())
+	i.Collider.ApplyPositionalForce(turningForce, frontAxle)
 
 	var spawner = *i.spawner
 	if in.AttackClick && i.sword == nil { // initialize sword

@@ -78,6 +78,10 @@ func (v *Vector) Offset(o Vector) Vector {
 	}
 }
 
+func (v *Vector) Magnitude() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
 func (v *Vector) Distance(o Vector) float64 {
 	var x = v.X - o.X
 	var y = v.Y - o.Y
