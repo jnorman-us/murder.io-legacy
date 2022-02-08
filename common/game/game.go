@@ -7,22 +7,24 @@ import (
 )
 
 type Game struct {
-	entityID types.ID
+	Players map[types.UserID]int
 
-	players map[types.UserID]int
-
-	// cars
-	drifters map[types.ID]*drifter.Drifter
-
-	// terrain elements
-	poles map[types.ID]*pole.Pole
+	deletions *Deletions
+	Drifters  map[types.ID]*drifter.Drifter // cars
+	Poles     map[types.ID]*pole.Pole       // terrain elements
 }
 
 func NewGame() *Game {
 	var game = &Game{
-		drifters: map[types.ID]*drifter.Drifter{},
+		Players: map[types.UserID]int{},
 
-		poles: map[types.ID]*pole.Pole{},
+		deletions: NewDeletions(),
+		Drifters:  map[types.ID]*drifter.Drifter{},
+		Poles:     map[types.ID]*pole.Pole{},
 	}
 	return game
+}
+
+func (g *Game) Deletions() *Deletions {
+	return g.deletions
 }

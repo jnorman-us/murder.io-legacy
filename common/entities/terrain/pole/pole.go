@@ -8,7 +8,6 @@ import (
 type Pole struct {
 	types.ID
 	collider.Collider
-	types.Input
 }
 
 func NewPole() *Pole {

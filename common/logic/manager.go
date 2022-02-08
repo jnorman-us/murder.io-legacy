@@ -1,18 +1,25 @@
 package logic
 
+import "github.com/josephnormandev/murder/common/types"
+
 type Manager struct {
-	Tickables map[int]*Tickable
+	Tickables  map[types.ID]*Tickable
+	Driveables map[types.ID]*Driveable
 }
 
 func NewManager() *Manager {
 	var manager = &Manager{
-		Tickables: map[int]*Tickable{},
+		Tickables:  map[types.ID]*Tickable{},
+		Driveables: map[types.ID]*Driveable{},
 	}
 	return manager
 }
 
 func (m *Manager) Tick() {
-	for id := range m.Tickables {
-		(*m.Tickables[id]).Tick()
+	for _, d := range m.Driveables {
+		m.Drive(d)
+	}
+	for _, t := range m.Tickables {
+		(*t).Tick()
 	}
 }

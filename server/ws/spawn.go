@@ -1,14 +1,17 @@
 package ws
 
-import "encoding/gob"
+import (
+	"encoding/gob"
+	"github.com/josephnormandev/murder/common/types"
+)
 
 type Spawn interface {
-	GetID() int
+	GetID() types.ID
 	GetClass() string
 	GetData(*gob.Encoder) error
 }
 
-func (m *Lobby) AddSpawn(id int, s *Spawn) {
+func (m *Lobby) AddSpawn(id types.ID, s *Spawn) {
 	m.spawnMutex.Lock()
 	defer m.spawnMutex.Unlock()
 
@@ -25,7 +28,7 @@ func (m *Lobby) AddSpawn(id int, s *Spawn) {
 	}
 }
 
-func (m *Lobby) RemoveSpawn(id int) {
+func (m *Lobby) RemoveSpawn(id types.ID) {
 	m.spawnMutex.Lock()
 	defer m.spawnMutex.Unlock()
 

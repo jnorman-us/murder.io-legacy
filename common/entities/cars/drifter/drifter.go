@@ -10,6 +10,7 @@ var friction = 0.5
 
 type Drifter struct {
 	types.ID
+	types.UserID
 	collider.Collider
 	types.Input
 }
@@ -32,6 +33,11 @@ func (d *Drifter) Setup() {
 			collider.NewCircle(types.NewVector(0, -15), 5),
 		},
 	)
+	d.Collider.SetColor(types.Colors.Red)
 	d.Collider.SetMass(mass)
 	d.Collider.SetFriction(friction)
+}
+
+func (d *Drifter) Tick() {
+
 }

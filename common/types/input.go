@@ -31,3 +31,7 @@ func (s *Input) SetInput(o Input) {
 	s.Special = o.Special
 	s.Direction = o.Direction
 }
+
+func (s *Input) GetInput() Input {
+	return *s
+}

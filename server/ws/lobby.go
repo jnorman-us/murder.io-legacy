@@ -14,7 +14,7 @@ type Lobby struct {
 
 	systems   map[string]*System
 	listeners map[string]*Listener
-	spawns    map[int]*Spawn
+	spawns    map[types.ID]*Spawn
 	classes   map[string]int
 
 	systemMutex sync.Mutex
@@ -29,7 +29,7 @@ func NewLobby(info *LobbyInfo) *Lobby {
 
 		systems:   map[string]*System{},
 		listeners: map[string]*Listener{},
-		spawns:    map[int]*Spawn{},
+		spawns:    map[types.ID]*Spawn{},
 		classes:   map[string]int{},
 
 		systemMutex: sync.Mutex{},

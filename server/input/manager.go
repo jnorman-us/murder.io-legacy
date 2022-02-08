@@ -3,13 +3,13 @@ package input
 import "github.com/josephnormandev/murder/common/types"
 
 type Manager struct {
-	inputables     map[int]*Inputable
-	identifierToID map[types.UserID]int
+	inputables     map[types.ID]*Inputable
+	identifierToID map[types.UserID]types.ID
 }
 
 func NewManager() *Manager {
 	return &Manager{
-		inputables:     map[int]*Inputable{},
-		identifierToID: map[types.UserID]int{},
+		inputables:     map[types.ID]*Inputable{},
+		identifierToID: map[types.UserID]types.ID{},
 	}
 }

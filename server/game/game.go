@@ -13,6 +13,7 @@ import (
 type ServerGame struct {
 	types.ID
 	game.Game
+	entityID   types.ID
 	logic      *logic.Manager
 	engine     *engine.Engine
 	packets    *ws.Lobby
@@ -22,8 +23,9 @@ type ServerGame struct {
 
 func NewServerGame(id types.ID) *ServerGame {
 	var game = &ServerGame{
-		ID:   id,
-		Game: *game.NewGame(),
+		ID:       id,
+		entityID: 0,
+		Game:     *game.NewGame(),
 	}
 	var packetsInfo = ws.LobbyInfo(game)
 
@@ -37,9 +39,11 @@ func NewServerGame(id types.ID) *ServerGame {
 	packets.AddListener(&inputListener)
 
 	var positionsSystem = ws.System(gEngine)
-	var gameSystem = ws.System(game)
+	var deletionsSystem = ws.System(game.Deletions())
+	// var gameSystem = ws.System(game)
 	packets.AddSystem(&positionsSystem)
-	packets.AddSystem(&gameSystem)
+	packets.AddSystem(&deletionsSystem)
+	// packets.AddSystem(&gameSystem)
 
 	game.logic = gLogic
 	game.engine = gEngine
