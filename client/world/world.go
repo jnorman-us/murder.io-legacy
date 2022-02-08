@@ -4,11 +4,11 @@ import (
 	"encoding/gob"
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/engine"
-	"github.com/josephnormandev/murder/common/entities/arrow"
-	"github.com/josephnormandev/murder/common/entities/bow"
-	"github.com/josephnormandev/murder/common/entities/innocent"
-	"github.com/josephnormandev/murder/common/entities/sword"
-	"github.com/josephnormandev/murder/common/entities/wall"
+	"github.com/josephnormandev/murder/common/legacy-entities/arrow"
+	"github.com/josephnormandev/murder/common/legacy-entities/bow"
+	"github.com/josephnormandev/murder/common/legacy-entities/innocent"
+	"github.com/josephnormandev/murder/common/legacy-entities/sword"
+	"github.com/josephnormandev/murder/common/legacy-entities/wall"
 	"github.com/josephnormandev/murder/common/types"
 )
 

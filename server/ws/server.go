@@ -3,73 +3,59 @@ package ws
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/josephnormandev/murder/common/types"
 	"net/http"
 	"nhooyr.io/websocket"
-	"time"
 )
 
 type Server struct {
-	manager *Manager
-	clients map[string]*Client
+	lobbies map[types.ID]*Lobby // per game Manager
 }
 
-func NewServer(identifiers []string, manager *Manager) *Server {
-	var clients = map[string]*Client{}
-	for _, identifier := range identifiers {
-		clients[identifier] = NewClient(identifier, manager)
-	}
-
+func NewServer() *Server {
 	var server = &Server{
-		manager: manager,
-		clients: clients,
+		lobbies: map[types.ID]*Lobby{},
 	}
 	return server
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var id = mux.Vars(r)["id"]
+	var id = types.UserID(mux.Vars(r)["id"])
 
 	connection, err := websocket.Accept(w, r, nil)
 	if err != nil {
 		fmt.Printf("Error accepting WS connection! %v\n", err)
 	}
 	defer (func() {
-		var _ = connection.Close(websocket.StatusInternalError, "")
+		_ = connection.Close(websocket.StatusInternalError, "")
 		// do nothing with error, probably already closed
 	})()
 
-	var client, ok = s.clients[id]
-	if ok {
-		if !client.Active() {
-			fmt.Printf("\"%s\" has connected from \"%s\"!\n", client.identifier, r.RemoteAddr)
-			err = client.Setup(r.Context(), connection)
-			if err != nil {
-				// log.Printf("WS Error %v", err)
+	// find the lobby that the client is in, if any
+	for _, l := range s.lobbies {
+		var lobby = *l
+		var lobbyInfo = *lobby.info
+		if lobbyInfo.ContainsPlayer(types.UserID(id)) {
+			var client = NewClient(id, l)
+			existingClient, ok := lobby.clients[id]
+
+			if !ok && !existingClient.Active() {
+				lobby.clients[id] = client
+				err := client.Setup(r.Context(), connection)
+				if err != nil {
+					delete(lobby.clients, id)
+				}
+			} else {
+				_ = connection.Close(websocket.StatusPolicyViolation, "Already connected from another location")
 			}
-		} else {
-			var _ = connection.Close(websocket.StatusPolicyViolation, "Already connected from another location")
+			break
 		}
-	} else {
-		var _ = connection.Close(websocket.StatusPolicyViolation, "Username not registered!")
 	}
+	// perhaps here, we'd connect them to the queueing lobby...
+	_ = connection.Close(websocket.StatusPolicyViolation, "Username not registered!")
 }
 
-func (s *Server) Send() {
-	for range time.Tick(50 * time.Millisecond) {
-		for _, s := range s.manager.systems {
-			var system = *s
-			system.Flush()
-		}
-		for _, c := range s.clients {
-			var client = *c
-			if client.Active() {
-				var packetCollection, err = client.EncodeSystems()
-				if err != nil {
-					fmt.Printf("Error with sending! %v\n", err)
-				}
-				client.Send(packetCollection)
-			}
-		}
-		s.manager.timestamp++
-	}
+func (s *Server) AddLobby(l *Lobby) {
+	var id = (*l.info).GetID()
+	s.lobbies[id] = l
 }

@@ -3,7 +3,7 @@ package world
 import (
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/engine"
-	"github.com/josephnormandev/murder/common/entities/sword"
+	"github.com/josephnormandev/murder/common/legacy-entities/sword"
 )
 
 func (w *World) AddSword(s *sword.Sword) int {

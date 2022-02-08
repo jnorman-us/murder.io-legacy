@@ -4,8 +4,8 @@ import "github.com/josephnormandev/murder/common/types"
 
 type Inputable interface {
 	GetID() int
-	GetIdentifier() string
-	HandleInputStateChange(types.Input)
+	GetIdentifier() types.UserID
+	SetInput(types.Input)
 }
 
 func (m *Manager) AddPlayerListener(id int, i *Inputable) {

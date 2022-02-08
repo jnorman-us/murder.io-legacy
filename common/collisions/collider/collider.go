@@ -26,10 +26,9 @@ func (c *Collider) GetCollider() *Collider {
 	return c
 }
 
-func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle, mass float64) {
+func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle) {
 	c.rectangles = rectangles
 	c.circles = circles
-	c.mass = mass
 
 	for i := range c.rectangles {
 		var rectangle = &c.rectangles[i]

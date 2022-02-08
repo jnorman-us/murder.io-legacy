@@ -2,7 +2,7 @@ package world
 
 import (
 	"github.com/josephnormandev/murder/client/drawer"
-	"github.com/josephnormandev/murder/common/entities/wall"
+	"github.com/josephnormandev/murder/common/legacy-entities/wall"
 )
 
 func (w *World) AddWall(wl *wall.Wall) int {

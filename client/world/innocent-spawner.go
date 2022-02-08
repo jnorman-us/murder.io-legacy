@@ -3,7 +3,7 @@ package world
 import (
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/engine"
-	"github.com/josephnormandev/murder/common/entities/innocent"
+	"github.com/josephnormandev/murder/common/legacy-entities/innocent"
 )
 
 func (w *World) AddInnocent(i *innocent.Innocent) int {

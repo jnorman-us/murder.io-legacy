@@ -4,14 +4,15 @@ import (
 	"context"
 	"fmt"
 	"github.com/josephnormandev/murder/common/communications"
+	"github.com/josephnormandev/murder/common/types"
 	"golang.org/x/sync/errgroup"
 	"nhooyr.io/websocket"
 	"time"
 )
 
 type Client struct {
-	identifier string
-	manager    *Manager
+	identifier types.UserID
+	lobby      *Lobby
 	codec      *communications.Codec
 
 	cancel    func()
@@ -20,10 +21,10 @@ type Client struct {
 	packetsOut chan communications.PacketCollection
 }
 
-func NewClient(id string, m *Manager) *Client {
+func NewClient(id types.UserID, m *Lobby) *Client {
 	return &Client{
 		identifier: id,
-		manager:    m,
+		lobby:      m,
 		packetsOut: make(chan communications.PacketCollection),
 	}
 }
@@ -52,21 +53,19 @@ func (c *Client) Setup(ctx context.Context, conn *websocket.Conn) error {
 func (c *Client) setupCodec() {
 	c.codec = communications.NewCodec()
 
-	for class := range c.manager.classes {
+	for class := range c.lobby.classes {
 		c.codec.AddEncoder(class)
 	}
-	for channel := range c.manager.systems {
+	for channel := range c.lobby.systems {
 		c.codec.AddEncoder(channel)
 	}
-	for channel := range c.manager.listeners {
+	for channel := range c.lobby.listeners {
 		c.codec.AddDecoder(channel)
 	}
-	c.manager.codecs[c.identifier] = c.codec
 }
 
 func (c *Client) destroyCodec() {
 	c.codec = nil
-	delete(c.manager.codecs, c.identifier)
 }
 
 func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
@@ -138,18 +137,18 @@ func (c *Client) Close() {
 // EncodeSystems allows the use of a per-client visibility filter
 // so that each client receives a stream of bytes unique to itself
 func (c *Client) EncodeSystems() (communications.PacketCollection, error) {
-	c.manager.systemMutex.Lock()
-	c.manager.spawnMutex.Lock()
-	defer c.manager.systemMutex.Unlock()
-	defer c.manager.spawnMutex.Unlock()
+	c.lobby.systemMutex.Lock()
+	c.lobby.spawnMutex.Lock()
+	defer c.lobby.systemMutex.Unlock()
+	defer c.lobby.spawnMutex.Unlock()
 
 	var packetArray []communications.Packet
-	var manager = c.manager
+	var lobby = c.lobby
 	var codec = c.codec
 
 	// perhaps implement this in the manager because
 	// there is no need to make this data unique per client
-	for _, s := range manager.systems {
+	for _, s := range lobby.systems {
 		var system = *s
 		var channel = system.GetChannel()
 
@@ -167,7 +166,7 @@ func (c *Client) EncodeSystems() (communications.PacketCollection, error) {
 		})
 	}
 
-	for _, s := range manager.spawns {
+	for _, s := range lobby.spawns {
 		var spawn = *s
 		var id = spawn.GetID()
 		var class = spawn.GetClass()
@@ -189,19 +188,19 @@ func (c *Client) EncodeSystems() (communications.PacketCollection, error) {
 	}
 	return communications.PacketCollection{
 		PacketArray: packetArray,
-		Timestamp:   manager.timestamp,
+		Timestamp:   lobby.timestamp,
 	}, nil
 }
 
 func (c *Client) DecodeForListeners(pc communications.PacketCollection) error {
-	var manager = c.manager
+	var lobby = c.lobby
 	var codec = c.codec
 
 	for _, p := range pc.PacketArray {
 		var channel = p.Channel
 		var data = p.Data
 
-		var l, ok = manager.listeners[channel]
+		var l, ok = lobby.listeners[channel]
 		if ok {
 			var listener = *l
 			decoder, err := codec.BeginDecode(channel, data)

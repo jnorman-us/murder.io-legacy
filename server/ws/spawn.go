@@ -8,7 +8,7 @@ type Spawn interface {
 	GetData(*gob.Encoder) error
 }
 
-func (m *Manager) AddSpawn(id int, s *Spawn) {
+func (m *Lobby) AddSpawn(id int, s *Spawn) {
 	m.spawnMutex.Lock()
 	defer m.spawnMutex.Unlock()
 
@@ -19,13 +19,13 @@ func (m *Manager) AddSpawn(id int, s *Spawn) {
 	m.classes[class] = 0
 
 	if !ok {
-		for _, codec := range m.codecs {
-			codec.AddEncoder(class)
+		for _, c := range m.clients {
+			c.codec.AddEncoder(class)
 		}
 	}
 }
 
-func (m *Manager) RemoveSpawn(id int) {
+func (m *Lobby) RemoveSpawn(id int) {
 	m.spawnMutex.Lock()
 	defer m.spawnMutex.Unlock()
 

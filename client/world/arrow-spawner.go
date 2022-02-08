@@ -3,7 +3,7 @@ package world
 import (
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/engine"
-	"github.com/josephnormandev/murder/common/entities/arrow"
+	"github.com/josephnormandev/murder/common/legacy-entities/arrow"
 )
 
 func (w *World) AddArrow(a *arrow.Arrow) int {

@@ -1,21 +1,24 @@
 package ws
 
-import "encoding/gob"
+import (
+	"encoding/gob"
+	"github.com/josephnormandev/murder/common/types"
+)
 
 type Listener interface {
 	GetChannel() string
-	HandleData(string, *gob.Decoder) error // client, decoder
+	HandleData(types.UserID, *gob.Decoder) error // client, decoder
 }
 
-func (m *Manager) AddListener(l *Listener) {
+func (m *Lobby) AddListener(l *Listener) {
 	var channel = (*l).GetChannel()
 	m.listeners[channel] = l
 
-	for _, codec := range m.codecs {
-		codec.AddDecoder(channel)
+	for _, c := range m.clients {
+		c.codec.AddDecoder(channel)
 	}
 }
 
-func (m *Manager) RemoveListener(channel string) {
+func (m *Lobby) RemoveListener(channel string) {
 	delete(m.listeners, channel)
 }
