@@ -5,8 +5,8 @@ import (
 	"github.com/josephnormandev/murder/common/types"
 )
 
-func (m *Manager) GetChannel() string {
-	return "INPUT"
+func (m *Manager) GetChannel() byte {
+	return 0x02
 }
 
 func (m *Manager) HandleData(identifier types.UserID, decoder *gob.Decoder) error {

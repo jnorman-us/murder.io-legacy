@@ -12,10 +12,10 @@ type Lobby struct {
 	timestamp types.Tick
 	clients   map[types.UserID]*Client // per user Client
 
-	systems   map[string]*System
-	listeners map[string]*Listener
+	systems   map[byte]*System
+	listeners map[byte]*Listener
 	spawns    map[types.ID]*Spawn
-	classes   map[string]int
+	classes   map[byte]int
 
 	systemMutex sync.Mutex
 	spawnMutex  sync.Mutex
@@ -27,10 +27,10 @@ func NewLobby(info *LobbyInfo) *Lobby {
 		timestamp: 0,
 		clients:   map[types.UserID]*Client{},
 
-		systems:   map[string]*System{},
-		listeners: map[string]*Listener{},
+		systems:   map[byte]*System{},
+		listeners: map[byte]*Listener{},
 		spawns:    map[types.ID]*Spawn{},
-		classes:   map[string]int{},
+		classes:   map[byte]int{},
 
 		systemMutex: sync.Mutex{},
 		spawnMutex:  sync.Mutex{},
@@ -53,6 +53,6 @@ func (l *Lobby) Send() {
 				client.Send(packetCollection)
 			}
 		}
+		l.timestamp++
 	}
-	l.timestamp++
 }

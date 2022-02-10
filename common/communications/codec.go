@@ -6,10 +6,10 @@ import (
 )
 
 type Codec struct {
-	Decoders map[string]*gob.Decoder
-	Inputs   map[string]*bytes.Buffer
-	Encoders map[string]*gob.Encoder
-	Outputs  map[string]*bytes.Buffer
+	Decoders map[byte]*gob.Decoder
+	Inputs   map[byte]*bytes.Buffer
+	Encoders map[byte]*gob.Encoder
+	Outputs  map[byte]*bytes.Buffer
 
 	packetEncoder *gob.Encoder
 	outputBuffer  *bytes.Buffer
@@ -22,10 +22,10 @@ func NewCodec() *Codec {
 	var inputBuffer = new(bytes.Buffer)
 
 	return &Codec{
-		Decoders: map[string]*gob.Decoder{},
-		Inputs:   map[string]*bytes.Buffer{},
-		Encoders: map[string]*gob.Encoder{},
-		Outputs:  map[string]*bytes.Buffer{},
+		Decoders: map[byte]*gob.Decoder{},
+		Inputs:   map[byte]*bytes.Buffer{},
+		Encoders: map[byte]*gob.Encoder{},
+		Outputs:  map[byte]*bytes.Buffer{},
 
 		packetDecoder: gob.NewDecoder(inputBuffer),
 		packetEncoder: gob.NewEncoder(outputBuffer),
@@ -34,30 +34,30 @@ func NewCodec() *Codec {
 	}
 }
 
-func (c *Codec) AddEncoder(channel string) {
+func (c *Codec) AddEncoder(channel byte) {
 	var channelOutput = new(bytes.Buffer)
 	c.Outputs[channel] = channelOutput
 	c.Encoders[channel] = gob.NewEncoder(channelOutput)
 }
 
-func (c *Codec) BeginEncode(channel string) *gob.Encoder {
+func (c *Codec) BeginEncode(channel byte) *gob.Encoder {
 	c.Outputs[channel].Reset()
 	return c.Encoders[channel]
 }
 
-func (c *Codec) EndEncode(channel string) []byte {
+func (c *Codec) EndEncode(channel byte) []byte {
 	var byteArray = make([]byte, c.Outputs[channel].Len())
 	copy(byteArray, c.Outputs[channel].Bytes())
 	return byteArray
 }
 
-func (c *Codec) AddDecoder(channel string) {
+func (c *Codec) AddDecoder(channel byte) {
 	var channelInput = new(bytes.Buffer)
 	c.Inputs[channel] = channelInput
 	c.Decoders[channel] = gob.NewDecoder(channelInput)
 }
 
-func (c *Codec) BeginDecode(channel string, data []byte) (*gob.Decoder, error) {
+func (c *Codec) BeginDecode(channel byte, data []byte) (*gob.Decoder, error) {
 	c.Inputs[channel].Reset()
 	_, err := c.Inputs[channel].Write(data)
 
@@ -67,7 +67,7 @@ func (c *Codec) BeginDecode(channel string, data []byte) (*gob.Decoder, error) {
 	return c.Decoders[channel], nil
 }
 
-func (c *Codec) EndDecode(channel string) {
+func (c *Codec) EndDecode(channel byte) {
 }
 
 func (c *Codec) EncodeOutputs(pc PacketCollection) ([]byte, error) {

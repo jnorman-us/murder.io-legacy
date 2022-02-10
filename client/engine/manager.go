@@ -4,13 +4,14 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/josephnormandev/murder/common/collisions/collider"
+	"github.com/josephnormandev/murder/common/types"
 	"math"
 	"time"
 )
 
 type Manager struct {
-	colliders map[int]collider.Collider
-	moveables map[int]*Moveable
+	colliders map[types.ID]collider.Collider
+	moveables map[types.ID]*Moveable
 
 	dataLifeStart time.Time
 	dataLifeEnd   time.Time
@@ -18,8 +19,8 @@ type Manager struct {
 
 func NewManager() *Manager {
 	return &Manager{
-		colliders: map[int]collider.Collider{},
-		moveables: map[int]*Moveable{},
+		colliders: map[types.ID]collider.Collider{},
+		moveables: map[types.ID]*Moveable{},
 	}
 }
 
@@ -57,12 +58,12 @@ func (m *Manager) UpdatePhysics(ms float64) {
 	}
 }
 
-func (m *Manager) GetChannel() string {
-	return "pos"
+func (m *Manager) GetChannel() byte {
+	return 0x04
 }
 
 func (m *Manager) HandleFutureData(decoder *gob.Decoder, ttl time.Duration) error {
-	var colliderMap = &map[int]collider.Collider{}
+	var colliderMap = &map[types.ID]collider.Collider{}
 
 	err := decoder.Decode(colliderMap)
 	if err != nil {

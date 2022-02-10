@@ -3,6 +3,7 @@ package ws
 import (
 	"context"
 	"fmt"
+	"github.com/josephnormandev/murder/common/types"
 	"golang.org/x/sync/errgroup"
 	"nhooyr.io/websocket"
 	"time"
@@ -18,7 +19,7 @@ type Client struct {
 
 // NewClient accepts a pointer to Manager, and a string with the
 // identifier of the current client
-func NewClient(m *Manager, hostname string, port int, id string) *Client {
+func NewClient(m *Manager, hostname string, port int, id types.UserID) *Client {
 	var url = fmt.Sprintf("ws://%s:%d/ws/%s", hostname, port, id)
 	return &Client{
 		manager: m,

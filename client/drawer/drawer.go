@@ -20,7 +20,7 @@ type Drawer struct {
 	canvasDimensions types.Vector
 
 	center    *Centerable
-	Drawables map[int]*Drawable
+	Drawables map[types.ID]*Drawable
 
 	lastStart       time.Time
 	lastDuration    float64
@@ -47,7 +47,7 @@ func NewDrawer() *Drawer {
 	var drawer = &Drawer{
 		canvas:           c,
 		canvasDimensions: types.NewVector(float64(c.Width()), float64(c.Height())),
-		Drawables:        map[int]*Drawable{},
+		Drawables:        map[types.ID]*Drawable{},
 		fontdata:         draw2d.FontData{Name: "goregular", Family: draw2d.FontFamilyMono, Style: draw2d.FontStyleNormal},
 	}
 

@@ -24,13 +24,14 @@ func NewDrifter() *Drifter {
 func (d *Drifter) Setup() {
 	d.Collider.SetupCollider(
 		[]collider.Rectangle{
-			collider.NewRectangle(types.NewVector(22.5, 0), 0, 60, 30),
+			collider.NewRectangle(types.NewVector(-15, 0), 0, 30, 25),
+			collider.NewRectangle(types.NewVector(15, 0), 0, 30, 15),
 		},
 		[]collider.Circle{
-			collider.NewCircle(types.NewVector(45, 15), 5),
-			collider.NewCircle(types.NewVector(0, 15), 5),
-			collider.NewCircle(types.NewVector(45, -15), 5),
-			collider.NewCircle(types.NewVector(0, -15), 5),
+			collider.NewCircle(types.NewVector(22.5, 12), 5),
+			collider.NewCircle(types.NewVector(-22.5, 15), 5),
+			collider.NewCircle(types.NewVector(-22.5, -15), 5),
+			collider.NewCircle(types.NewVector(22.5, -12), 5),
 		},
 	)
 	d.Collider.SetColor(types.Colors.Red)

@@ -3,7 +3,7 @@ package ws
 import "encoding/gob"
 
 type System interface {
-	GetChannel() string
+	GetChannel() byte
 	Flush() // for aggregating systems, bookmark data collection
 	GetData(*gob.Encoder) error
 }
@@ -20,7 +20,7 @@ func (m *Lobby) AddSystem(s *System) {
 	}
 }
 
-func (m *Lobby) RemoveSystem(channel string) {
+func (m *Lobby) RemoveSystem(channel byte) {
 	m.systemMutex.Lock()
 	defer m.systemMutex.Unlock()
 

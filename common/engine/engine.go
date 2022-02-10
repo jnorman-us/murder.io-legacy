@@ -25,8 +25,8 @@ func (e *Engine) UpdatePhysics(time float64) {
 	}
 }
 
-func (e *Engine) GetChannel() string {
-	return "pos"
+func (e *Engine) GetChannel() byte {
+	return 0x04
 }
 
 func (e *Engine) Flush() {

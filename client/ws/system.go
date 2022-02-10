@@ -5,7 +5,7 @@ import (
 )
 
 type System interface {
-	GetChannel() string
+	GetChannel() byte
 	GetData(*gob.Encoder) error
 }
 
@@ -15,6 +15,6 @@ func (m *Manager) AddSystem(s *System) {
 	m.AddEncoder(channel)
 }
 
-func (m *Manager) RemoveSystem(channel string) {
+func (m *Manager) RemoveSystem(channel byte) {
 	delete(m.systems, channel)
 }

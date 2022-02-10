@@ -3,7 +3,7 @@ package engine
 import "github.com/josephnormandev/murder/common/types"
 
 type Moveable interface {
-	GetID() int
+	GetID() types.ID
 
 	SetPosition(types.Vector)
 	SetAngle(float64)
@@ -14,10 +14,10 @@ type Moveable interface {
 	UpdatePosition(float64)
 }
 
-func (m *Manager) AddMoveable(id int, mo *Moveable) {
+func (m *Manager) AddMoveable(id types.ID, mo *Moveable) {
 	m.moveables[id] = mo
 }
 
-func (m *Manager) RemoveMoveable(id int) {
+func (m *Manager) RemoveMoveable(id types.ID) {
 	delete(m.moveables, id)
 }

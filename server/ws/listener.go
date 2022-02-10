@@ -6,7 +6,7 @@ import (
 )
 
 type Listener interface {
-	GetChannel() string
+	GetChannel() byte
 	HandleData(types.UserID, *gob.Decoder) error // client, decoder
 }
 
@@ -19,6 +19,6 @@ func (m *Lobby) AddListener(l *Listener) {
 	}
 }
 
-func (m *Lobby) RemoveListener(channel string) {
+func (m *Lobby) RemoveListener(channel byte) {
 	delete(m.listeners, channel)
 }

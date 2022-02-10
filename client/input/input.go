@@ -19,9 +19,8 @@ type Manager struct {
 	current map[int]bool
 }
 
-func NewManager(s *Sizeable) *Manager {
+func NewManager() *Manager {
 	var input = &Manager{
-		sizeable: s,
 		window:   js.Global(),
 		current:  map[int]bool{},
 		keyBinds: LoadSettings(),
@@ -132,8 +131,8 @@ func (m *Manager) updatePlayerDirection(x, y float64) {
 	}
 }
 
-func (m *Manager) GetChannel() string {
-	return "INPUT"
+func (m *Manager) GetChannel() byte {
+	return 0x02
 }
 
 func (m *Manager) GetData(e *gob.Encoder) error {

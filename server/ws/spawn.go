@@ -7,7 +7,7 @@ import (
 
 type Spawn interface {
 	GetID() types.ID
-	GetClass() string
+	GetClass() byte
 	GetData(*gob.Encoder) error
 }
 

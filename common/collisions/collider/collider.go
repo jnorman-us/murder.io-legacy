@@ -109,6 +109,12 @@ func (c *Collider) ApplyPositionalForce(force types.Vector, position types.Vecto
 	c.ApplyTorque(offset.X*force.Y - offset.Y*force.X)
 }
 
+func (c *Collider) ApplyPositionalForceAround(force types.Vector, position types.Vector, pivot types.Vector) {
+	c.forceBuffer.Add(force)
+	var offset = pivot.Offset(position)
+	c.ApplyTorque(offset.X*force.Y - offset.Y*force.X)
+}
+
 func (c *Collider) ApplyTorque(torque float64) {
 	c.torqueBuffer += torque
 }

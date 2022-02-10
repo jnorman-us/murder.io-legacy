@@ -9,7 +9,7 @@ import (
 )
 
 type Server struct {
-	lobbies map[types.ID]*Lobby // per game Manager
+	lobbies map[types.ID]*Lobby // per world Manager
 }
 
 func NewServer() *Server {
@@ -37,9 +37,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var lobbyInfo = *lobby.info
 		if lobbyInfo.ContainsPlayer(types.UserID(id)) {
 			var client = NewClient(id, l)
-			existingClient, ok := lobby.clients[id]
+			_, ok := lobby.clients[id]
 
-			if !ok && !existingClient.Active() {
+			if !ok {
 				lobby.clients[id] = client
 				err := client.Setup(r.Context(), connection)
 				if err != nil {

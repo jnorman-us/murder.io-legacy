@@ -6,12 +6,12 @@ import (
 )
 
 type Listener interface {
-	GetChannel() string
+	GetChannel() byte
 	HandleData(*gob.Decoder) error // id, decoder
 }
 
 type FutureListener interface {
-	GetChannel() string
+	GetChannel() byte
 	HandleFutureData(*gob.Decoder, time.Duration) error // decoder, ttl
 }
 
@@ -21,7 +21,7 @@ func (m *Manager) AddListener(l *Listener) {
 	m.AddDecoder(channel)
 }
 
-func (m *Manager) RemoveListener(channel string) {
+func (m *Manager) RemoveListener(channel byte) {
 	delete(m.listeners, channel)
 }
 
@@ -31,6 +31,6 @@ func (m *Manager) AddFutureListener(l *FutureListener) {
 	m.AddDecoder(channel)
 }
 
-func (m *Manager) RemoveFutureListener(channel string) {
+func (m *Manager) RemoveFutureListener(channel byte) {
 	delete(m.futureListeners, channel)
 }

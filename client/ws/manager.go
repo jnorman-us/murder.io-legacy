@@ -12,9 +12,9 @@ type Manager struct {
 	communications.Codec
 
 	spawner         *Spawner
-	systems         map[string]*System
-	listeners       map[string]*Listener
-	futureListeners map[string]*FutureListener
+	systems         map[byte]*System
+	listeners       map[byte]*Listener
+	futureListeners map[byte]*FutureListener
 
 	receivedFirst bool
 	updateQueue   []communications.PacketCollection
@@ -26,9 +26,9 @@ func NewManager() *Manager {
 	return &Manager{
 		Codec: *codec,
 
-		systems:         map[string]*System{},
-		listeners:       map[string]*Listener{},
-		futureListeners: map[string]*FutureListener{},
+		systems:         map[byte]*System{},
+		listeners:       map[byte]*Listener{},
+		futureListeners: map[byte]*FutureListener{},
 
 		receivedFirst: false,
 		updateQueue:   make([]communications.PacketCollection, 0),
