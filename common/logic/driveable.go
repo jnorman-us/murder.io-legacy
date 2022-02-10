@@ -11,6 +11,7 @@ type Driveable interface {
 	GetTurningFactor() float64
 	GetDrivingForce() float64
 	GetDriftingFactor() float64
+	GetDriftingReduction() float64
 	GetFrontOfCar() types.Vector
 	GetRearOfCar() types.Vector
 	GetInput() types.Input
@@ -47,35 +48,27 @@ func (m *Manager) Drive(d *Driveable) {
 	} else {
 		drivingForce.Scale(0)
 	}
+	if input.Left {
+		drivingForce.RotateAbout(-1*driveable.GetTurningFactor(), types.NewZeroVector())
+	} else if input.Right {
+		drivingForce.RotateAbout(driveable.GetTurningFactor(), types.NewZeroVector())
+	}
 
 	var velocity = driveable.GetVelocity()
 	var speed = velocity.Magnitude()
 
-	var turnMagnitude = speed
-	turnMagnitude = math.Pow(turnMagnitude, 1/3)
-	turnMagnitude *= driveable.GetTurningFactor()
-	var turningForce = types.NewVector(0, turnMagnitude)
-	turningForce.RotateAbout(driveable.GetAngle(), types.NewZeroVector())
-	if input.Left {
-		turningForce.Scale(-1)
-	} else if input.Right {
-		turningForce.Scale(1)
-	} else {
-		turningForce.Scale(0)
-	}
-
 	var driftingForce = velocity
-	driftingForce.Scale(math.Pow(speed, 1/3))
+	driftingForce.Scale(math.Pow(speed, 1/2))
 	driftingForce.Scale(driveable.GetDriftingFactor())
-	driftingForce.RotateAbout(velocity.Angle(), types.NewZeroVector())
 
 	if !input.Special {
 		driftingForce.Scale(0)
+	} else {
+		drivingForce.Scale(driveable.GetDriftingReduction())
 	}
 
-	driveable.ApplyPositionalForce(drivingForce, rearOfCar)
-	driveable.ApplyPositionalForceAround(turningForce, frontOfCar, rearOfCar)
-	driveable.ApplyPositionalForce(driftingForce, rearOfCar)
+	driveable.ApplyPositionalForceAround(drivingForce, frontOfCar, rearOfCar)
+	driveable.ApplyPositionalForceAround(driftingForce, rearOfCar, frontOfCar)
 
 	// TO DO, driving logic
 

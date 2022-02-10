@@ -1,6 +1,7 @@
 package collider
 
 import (
+	"fmt"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/llgcode/draw2d/draw2dimg"
 	"github.com/llgcode/draw2d/draw2dkit"
@@ -17,8 +18,8 @@ type Collider struct {
 	Velocity        types.Vector
 	AngularVelocity float64
 	friction        float64
-	rectangles      []Rectangle
-	circles         []Circle
+	rectangles      []*Rectangle
+	circles         []*Circle
 	color           color.RGBA
 }
 
@@ -27,18 +28,22 @@ func (c *Collider) GetCollider() *Collider {
 }
 
 func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle) {
-	c.rectangles = rectangles
-	c.circles = circles
+	c.rectangles = []*Rectangle{}
+	c.circles = []*Circle{}
 
-	for i := range c.rectangles {
-		var rectangle = &c.rectangles[i]
+	for i := range rectangles {
+		var rectangle = &rectangles[i]
 		rectangle.setCollider(c)
+		c.rectangles = append(c.rectangles, rectangle)
 	}
 
-	for i := range c.circles {
-		var circle = &c.circles[i]
+	for i := range circles {
+		var circle = &circles[i]
 		circle.setCollider(c)
+		c.circles = append(c.circles, circle)
 	}
+	fmt.Println(c.circles)
+	fmt.Println(c.rectangles)
 	c.SetColor(color.RGBA{
 		G: 0xff,
 		A: 0xff,
@@ -48,30 +53,30 @@ func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle) {
 func (c *Collider) CheckCollision(o *Collider) bool {
 	// circle on circle collisions
 	var colliding = false
-	for i := range c.circles {
-		for j := range o.circles {
-			var circle = &c.circles[i]
-			var otherCircle = &o.circles[j]
+	for _, c := range c.circles {
+		for _, o := range o.circles {
+			var circle = *c
+			var otherCircle = o
 			if circle.checkCircleCollision(otherCircle) {
 				colliding = true
 			}
 		}
 	}
 	// then circle on rect collisions
-	for i := range c.rectangles {
-		for j := range o.circles {
-			var rectangle = &c.rectangles[i]
-			var otherCircle = &o.circles[j]
+	for _, r := range c.rectangles {
+		for _, c := range o.circles {
+			var rectangle = *r
+			var otherCircle = c
 			if rectangle.checkCircleCollision(otherCircle) {
 				colliding = true
 			}
 		}
 	}
 
-	for i := range c.circles {
-		for j := range o.rectangles {
-			var circle = &c.circles[i]
-			var otherRectangle = &o.rectangles[j]
+	for _, c := range c.circles {
+		for _, r := range o.rectangles {
+			var circle = *c
+			var otherRectangle = r
 			if circle.checkRectangleCollision(otherRectangle) {
 				colliding = true
 			}
@@ -215,11 +220,11 @@ func (c *Collider) SetColor(co color.RGBA) {
 }
 
 func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
-	for _, circle := range c.circles {
-		circle.drawHitbox(g)
+	for _, c := range c.circles {
+		(*c).drawHitbox(g)
 	}
-	for _, rectangle := range c.rectangles {
-		rectangle.drawHitbox(g)
+	for _, r := range c.rectangles {
+		(*r).drawHitbox(g)
 	}
 
 	var directionPoint = c.Position

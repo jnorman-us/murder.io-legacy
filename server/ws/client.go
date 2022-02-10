@@ -7,6 +7,7 @@ import (
 	"github.com/josephnormandev/murder/common/types"
 	"golang.org/x/sync/errgroup"
 	"nhooyr.io/websocket"
+	"sync"
 	"time"
 )
 
@@ -15,10 +16,12 @@ type Client struct {
 	lobby      *Lobby
 	codec      *communications.Codec
 
-	cancel    func()
-	connected bool
+	cancel        func()
+	connected     bool
+	receivedFirst bool
 
-	packetsOut chan communications.PacketCollection
+	packetsOut  chan communications.PacketCollection
+	channelLock sync.Mutex
 }
 
 func NewClient(id types.UserID, m *Lobby) *Client {
@@ -26,10 +29,14 @@ func NewClient(id types.UserID, m *Lobby) *Client {
 		identifier: id,
 		lobby:      m,
 		packetsOut: make(chan communications.PacketCollection),
+
+		connected:     false,
+		receivedFirst: false,
 	}
 }
 
 func (c *Client) Setup(ctx context.Context, conn *websocket.Conn) error {
+	fmt.Printf("\"%s\" is connecting.\n", c.identifier)
 	ctx2, cancel := context.WithCancel(ctx)
 	c.connected = true
 	c.cancel = cancel
@@ -79,6 +86,7 @@ func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
 			}
 			err = conn.Write(parentCtx, websocket.MessageBinary, byteArray)
 			if err != nil {
+				c.disconnect()
 				return err
 			}
 		case <-parentCtx.Done():
@@ -97,8 +105,10 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 		case <-parentCtx.Done():
 			return parentCtx.Err()
 		default:
+			c.receivedFirst = true
 			_, byteArray, err := conn.Read(parentCtx)
 			if err != nil {
+				c.disconnect()
 				return err
 			}
 
@@ -116,21 +126,32 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 }
 
 func (c *Client) Active() bool {
-	return c.connected
+	return c.connected && c.receivedFirst
+}
+
+func (c *Client) disconnect() {
+	c.channelLock.Lock()
+	defer c.channelLock.Unlock()
+	if c.connected {
+		close(c.packetsOut)
+	}
+	c.connected = false
 }
 
 func (c *Client) Send(pc communications.PacketCollection) {
-	c.packetsOut <- pc
+	c.channelLock.Lock()
+	defer c.channelLock.Unlock()
+	if c.Active() {
+		c.packetsOut <- pc
+	}
 }
 
 func (c *Client) Close() {
 	fmt.Printf("\"%s\" is disconnecting.\n", c.identifier)
-	c.connected = false
+	c.disconnect()
 	c.destroyCodec()
 	if c.cancel != nil {
-		var cancel = c.cancel
-		c.cancel = nil
-		cancel()
+		c.cancel()
 	}
 }
 

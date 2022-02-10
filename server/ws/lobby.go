@@ -44,13 +44,12 @@ func (l *Lobby) Send() {
 			system.Flush()
 		}
 		for _, c := range l.clients {
-			var client = *c
-			if client.Active() {
-				var packetCollection, err = client.EncodeSystems()
+			if (*c).Active() {
+				var packetCollection, err = (*c).EncodeSystems()
 				if err != nil {
 					fmt.Printf("Error with sending! %v\n", err)
 				}
-				client.Send(packetCollection)
+				(*c).Send(packetCollection)
 			}
 		}
 		l.timestamp++

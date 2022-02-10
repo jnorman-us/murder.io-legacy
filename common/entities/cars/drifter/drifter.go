@@ -6,7 +6,7 @@ import (
 )
 
 var mass = 100.0
-var friction = 0.5
+var friction = 0.3
 
 type Drifter struct {
 	types.ID

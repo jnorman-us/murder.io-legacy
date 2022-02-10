@@ -27,8 +27,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Error accepting WS connection! %v\n", err)
 	}
 	defer (func() {
-		_ = connection.Close(websocket.StatusInternalError, "")
-		// do nothing with error, probably already closed
+		err = connection.Close(websocket.StatusInternalError, "")
+		if err != nil {
+			// fmt.Println(err)
+		}
 	})()
 
 	// find the lobby that the client is in, if any
@@ -43,6 +45,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				lobby.clients[id] = client
 				err := client.Setup(r.Context(), connection)
 				if err != nil {
+					// fmt.Println("Error with socket", err)
 					delete(lobby.clients, id)
 				}
 			} else {

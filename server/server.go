@@ -14,11 +14,11 @@ var wsServer *ws.Server
 var soleGame *match.Match
 
 var names = []types.UserID{
-	"Jellotinous",
-	"Wine_Craft",
-	"Xiehang",
-	"TheStorminNorman",
-	"ShadowDragon",
+	//"Jellotinous",
+	//"Wine_Craft",
+	//"Xiehang",
+	//"TheStorminNorman",
+	//"ShadowDragon",
 	"Society Member",
 	"Envii",
 	"Jinseng",

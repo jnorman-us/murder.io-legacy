@@ -3,7 +3,7 @@ package drifter
 import "github.com/josephnormandev/murder/common/types"
 
 func (d *Drifter) GetTurningFactor() float64 {
-	return .08
+	return .0002
 }
 
 func (d *Drifter) GetDrivingForce() float64 {
@@ -11,7 +11,11 @@ func (d *Drifter) GetDrivingForce() float64 {
 }
 
 func (d *Drifter) GetDriftingFactor() float64 {
-	return .1
+	return .02
+}
+
+func (d *Drifter) GetDriftingReduction() float64 {
+	return .7
 }
 
 func (d *Drifter) GetFrontOfCar() types.Vector {
