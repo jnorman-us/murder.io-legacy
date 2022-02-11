@@ -1,6 +1,8 @@
 package drifter
 
-import "encoding/gob"
+import (
+	"encoding/gob"
+)
 
 func (d *Drifter) GetClass() byte {
 	return Class

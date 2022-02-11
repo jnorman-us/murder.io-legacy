@@ -14,15 +14,15 @@ var wsServer *ws.Server
 var soleGame *match.Match
 
 var names = []types.UserID{
-	//"Jellotinous",
-	//"Wine_Craft",
-	//"Xiehang",
-	//"TheStorminNorman",
-	//"ShadowDragon",
+	/*"Jellotinous",
+	"Wine_Craft",
+	"Xiehang",
+	"TheStorminNorman",
+	"ShadowDragon",
 	"Society Member",
 	"Envii",
 	"Jinseng",
-	"Laerir",
+	"Laerir",*/
 	"JoeyD",
 	"Beta Tester",
 }
@@ -41,7 +41,7 @@ func main() {
 	for _, name := range names {
 		var drifter = drifter.NewDrifter()
 		drifter.UserID = name
-		drifter.SetPosition(types.NewRandomVector(0, 0, 1000, 1000))
+		drifter.SetPosition(types.NewRandomVector(0, 0, 400, 400))
 		soleGame.AddDrifter(drifter)
 	}
 

@@ -1,7 +1,6 @@
 package collider
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/llgcode/draw2d/draw2dimg"
 	"github.com/llgcode/draw2d/draw2dkit"
@@ -42,8 +41,7 @@ func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle) {
 		circle.setCollider(c)
 		c.circles = append(c.circles, circle)
 	}
-	fmt.Println(c.circles)
-	fmt.Println(c.rectangles)
+
 	c.SetColor(color.RGBA{
 		G: 0xff,
 		A: 0xff,

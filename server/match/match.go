@@ -27,7 +27,7 @@ type Match struct {
 func NewMatch(id types.ID) *Match {
 	var match = &Match{
 		ID:       id,
-		entityID: 0,
+		entityID: 1,
 		World:    *world.NewWorld(),
 		Game:     *game.NewGame(),
 	}
