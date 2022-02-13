@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"github.com/josephnormandev/murder/common/entities/cars/drifter"
+	"github.com/josephnormandev/murder/common/entities/terrain/pole"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/server/match"
 	"github.com/josephnormandev/murder/server/ws"
@@ -27,6 +28,13 @@ var names = []types.UserID{
 	"Beta Tester",
 }
 
+var polePositions = []types.Vector{
+	types.NewVector(0, 0),
+	types.NewVector(500, 0),
+	types.NewVector(0, 500),
+	types.NewVector(500, 500),
+}
+
 func main() {
 	soleGame = match.NewMatch(0)
 	wsServer = ws.NewServer()
@@ -43,6 +51,12 @@ func main() {
 		drifter.UserID = name
 		drifter.SetPosition(types.NewRandomVector(0, 0, 400, 400))
 		soleGame.AddDrifter(drifter)
+	}
+
+	for _, position := range polePositions {
+		var newPole = pole.NewPole()
+		newPole.SetPosition(position)
+		soleGame.AddPole(newPole)
 	}
 
 	var staticFiles = http.FileServer(http.Dir("./server/static"))

@@ -100,3 +100,7 @@ func (v *Vector) Angle() float64 {
 	}
 	return output
 }
+
+func (v *Vector) Equals(o Vector) bool {
+	return v.X == o.X && v.Y == o.Y
+}

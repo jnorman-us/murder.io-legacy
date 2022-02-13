@@ -105,8 +105,10 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 		case <-parentCtx.Done():
 			return parentCtx.Err()
 		default:
-			c.receivedFirst = true
 			_, byteArray, err := conn.Read(parentCtx)
+			if !c.receivedFirst {
+				c.receiveFirst()
+			}
 			if err != nil {
 				c.disconnect()
 				return err
@@ -127,6 +129,12 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 
 func (c *Client) Active() bool {
 	return c.connected && c.receivedFirst
+}
+
+func (c *Client) receiveFirst() {
+	c.channelLock.Lock()
+	defer c.channelLock.Unlock()
+	c.receivedFirst = true
 }
 
 func (c *Client) disconnect() {

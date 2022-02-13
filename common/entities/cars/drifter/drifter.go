@@ -2,17 +2,21 @@ package drifter
 
 import (
 	"github.com/josephnormandev/murder/common/collisions/collider"
+	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
 )
 
-var mass = 100.0
-var friction = 0.3
+const Mass = 100.0
+const Friction = 0.3
+const MaxHealth = 200
 
 type Drifter struct {
+	entities.Health
 	types.ID
 	types.UserID
 	collider.Collider
 	types.Input
+	spawner *Spawner
 }
 
 func NewDrifter() *Drifter {
@@ -34,9 +38,10 @@ func (d *Drifter) Setup() {
 			collider.NewCircle(types.NewVector(22.5, -12), 5),
 		},
 	)
+	d.Health.SetHealth(MaxHealth)
 	d.Collider.SetColor(types.Colors.Red)
-	d.Collider.SetMass(mass)
-	d.Collider.SetFriction(friction)
+	d.Collider.SetMass(Mass)
+	d.Collider.SetFriction(Friction)
 }
 
 func (d *Drifter) Tick() {

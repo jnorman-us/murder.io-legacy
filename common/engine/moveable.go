@@ -7,9 +7,10 @@ import (
 
 type Moveable interface {
 	GetID() types.ID
+	Reset()
+	Changed() bool
 	ClearBuffers()
 	GetCollider() *collider.Collider
-	CalculateFrictionForces(float64)
 	UpdatePosition(float64)
 }
 

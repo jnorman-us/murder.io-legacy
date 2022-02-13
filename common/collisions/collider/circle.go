@@ -15,8 +15,6 @@ type Circle struct {
 	inertial bool
 	friction float64
 	mass     float64
-
-	history []types.Vector
 }
 
 // NewCircle defines a circle at
@@ -29,7 +27,6 @@ func NewCircle(p types.Vector, r float64) Circle {
 		localPosition: p,
 		radius:        r,
 		inertial:      false,
-		history:       make([]types.Vector, 0, 25),
 	}
 }
 
@@ -107,22 +104,9 @@ func (c *Circle) getOffsetAngle() float64 {
 func (c *Circle) drawHitbox(g *draw2dimg.GraphicContext) {
 	var position = c.getOffsetPosition()
 
-	g.SetFillColor(types.Colors.Orange)
-	g.SetStrokeColor(types.Colors.Orange)
-	for _, historical := range c.history {
-		g.BeginPath()
-		draw2dkit.Circle(g, historical.X, historical.Y, c.radius/2)
-		g.FillStroke()
-	}
-
 	g.SetFillColor(c.collider.color)
 	g.SetStrokeColor(c.collider.color)
 	g.BeginPath()
 	draw2dkit.Circle(g, position.X, position.Y, c.radius)
 	g.FillStroke()
-
-	if len(c.history) == 25 {
-		c.history = c.history[1:]
-	}
-	c.history = append(c.history, position)
 }

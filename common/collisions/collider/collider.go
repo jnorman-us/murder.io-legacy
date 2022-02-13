@@ -9,6 +9,7 @@ import (
 )
 
 type Collider struct {
+	types.Change
 	mass            float64
 	forceBuffer     types.Vector
 	torqueBuffer    float64
@@ -46,17 +47,19 @@ func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle) {
 		G: 0xff,
 		A: 0xff,
 	})
+	c.Set()
 }
 
-func (c *Collider) CheckCollision(o *Collider) bool {
+func (c *Collider) CheckCollision(o *Collider) Collision {
+	var collision = NewCollision()
+
 	// circle on circle collisions
-	var colliding = false
 	for _, c := range c.circles {
 		for _, o := range o.circles {
 			var circle = *c
 			var otherCircle = o
 			if circle.checkCircleCollision(otherCircle) {
-				colliding = true
+				collision.SetColliding(true)
 			}
 		}
 	}
@@ -66,7 +69,7 @@ func (c *Collider) CheckCollision(o *Collider) bool {
 			var rectangle = *r
 			var otherCircle = c
 			if rectangle.checkCircleCollision(otherCircle) {
-				colliding = true
+				collision.SetColliding(true)
 			}
 		}
 	}
@@ -76,7 +79,7 @@ func (c *Collider) CheckCollision(o *Collider) bool {
 			var circle = *c
 			var otherRectangle = r
 			if circle.checkRectangleCollision(otherRectangle) {
-				colliding = true
+				collision.SetColliding(true)
 			}
 		}
 	}
@@ -94,7 +97,7 @@ func (c *Collider) CheckCollision(o *Collider) bool {
 		}
 	*/
 
-	return colliding
+	return collision
 }
 
 func (c *Collider) ClearBuffers() {
@@ -141,6 +144,9 @@ func (c *Collider) UpdatePosition(time float64) {
 
 	var newPosition = c.Position
 	newPosition.Add(newVelocity)
+	if !newPosition.Equals(c.Position) {
+		c.Set()
+	}
 	c.SetPosition(newPosition)
 
 	var angularAcceleration = c.torqueBuffer
@@ -154,6 +160,9 @@ func (c *Collider) UpdatePosition(time float64) {
 
 	var newAngle = c.Angle
 	newAngle += newAngularVelocity
+	if newAngle != c.Angle {
+		c.Set()
+	}
 	c.SetAngle(newAngle)
 }
 

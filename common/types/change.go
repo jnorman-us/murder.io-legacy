@@ -1,17 +1,17 @@
 package types
 
 type Change struct {
-	changed bool
+	Flag bool
 }
 
 func (c *Change) Set() {
-	c.changed = true
+	c.Flag = true
 }
 
 func (c *Change) Changed() bool {
-	return c.changed
+	return c.Flag
 }
 
 func (c *Change) Reset() {
-	c.changed = false
+	c.Flag = false
 }
