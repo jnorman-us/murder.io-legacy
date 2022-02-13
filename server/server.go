@@ -15,7 +15,7 @@ var wsServer *ws.Server
 var soleGame *match.Match
 
 var names = []types.UserID{
-	/*"Jellotinous",
+	"Jellotinous",
 	"Wine_Craft",
 	"Xiehang",
 	"TheStorminNorman",
@@ -23,7 +23,7 @@ var names = []types.UserID{
 	"Society Member",
 	"Envii",
 	"Jinseng",
-	"Laerir",*/
+	"Laerir",
 	"JoeyD",
 	"Beta Tester",
 }
@@ -41,8 +41,9 @@ func main() {
 
 	var lobby = soleGame.GetPackets()
 	wsServer.AddLobby(lobby)
-	go lobby.Send()
+
 	go soleGame.Tick()
+	go lobby.Send()
 
 	soleGame.SetPlayers(names)
 

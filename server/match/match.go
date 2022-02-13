@@ -9,6 +9,7 @@ import (
 	"github.com/josephnormandev/murder/common/world"
 	"github.com/josephnormandev/murder/server/input"
 	"github.com/josephnormandev/murder/server/ws"
+	"sync"
 	"time"
 )
 
@@ -16,6 +17,7 @@ type Match struct {
 	types.ID
 	world.World // keeps track of Spawns and Entities
 	game.Game   // keeps track of Game state
+	worldLock   *sync.Mutex
 	entityID    types.ID
 	logic       *logic.Manager
 	engine      *engine.Engine
@@ -26,9 +28,10 @@ type Match struct {
 
 func NewMatch(id types.ID) *Match {
 	var match = &Match{
-		ID:       id,
-		entityID: 1,
-		Game:     *game.NewGame(),
+		ID:        id,
+		entityID:  1,
+		worldLock: &sync.Mutex{},
+		Game:      *game.NewGame(),
 	}
 	var spawner = world.Spawner(match)
 	match.World = *world.NewWorld(&spawner)
@@ -37,7 +40,7 @@ func NewMatch(id types.ID) *Match {
 
 	var gLogic = logic.NewManager()
 	var gEngine = engine.NewEngine()
-	var packets = ws.NewLobby(&packetsInfo)
+	var packets = ws.NewLobby(&packetsInfo, match.worldLock)
 	var inputs = input.NewManager()
 	var gCollisions = collisions.NewManager()
 
@@ -63,10 +66,16 @@ func (m *Match) GetPackets() *ws.Lobby {
 	return m.packets
 }
 
+func (m *Match) GetWorldLock() *sync.Mutex {
+	return m.worldLock
+}
+
 func (m *Match) Tick() {
 	for range time.Tick(25 * time.Millisecond) {
+		m.worldLock.Lock()
 		m.logic.Tick()
 		m.engine.UpdatePhysics(1)
 		m.collisions.ResolveCollisions()
+		m.worldLock.Unlock()
 	}
 }

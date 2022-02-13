@@ -17,11 +17,12 @@ type Lobby struct {
 	spawns    map[types.ID]*Spawn
 	classes   map[byte]int
 
+	worldLock   *sync.Mutex
 	systemMutex sync.Mutex
 	spawnMutex  sync.Mutex
 }
 
-func NewLobby(info *LobbyInfo) *Lobby {
+func NewLobby(info *LobbyInfo, lock *sync.Mutex) *Lobby {
 	return &Lobby{
 		info:      info,
 		timestamp: 0,
@@ -32,6 +33,7 @@ func NewLobby(info *LobbyInfo) *Lobby {
 		spawns:    map[types.ID]*Spawn{},
 		classes:   map[byte]int{},
 
+		worldLock:   lock,
 		systemMutex: sync.Mutex{},
 		spawnMutex:  sync.Mutex{},
 	}
@@ -39,6 +41,7 @@ func NewLobby(info *LobbyInfo) *Lobby {
 
 func (l *Lobby) Send() {
 	for range time.Tick(50 * time.Millisecond) {
+		l.worldLock.Lock()
 		for _, s := range l.systems {
 			var system = *s
 			system.Flush()
@@ -52,6 +55,7 @@ func (l *Lobby) Send() {
 				(*c).Send(packetCollection)
 			}
 		}
+		l.worldLock.Unlock()
 		l.timestamp++
 	}
 }

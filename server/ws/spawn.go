@@ -11,26 +11,26 @@ type Spawn interface {
 	GetData(*gob.Encoder) error
 }
 
-func (m *Lobby) AddSpawn(id types.ID, s *Spawn) {
-	m.spawnMutex.Lock()
-	defer m.spawnMutex.Unlock()
+func (l *Lobby) AddSpawn(id types.ID, s *Spawn) {
+	l.spawnMutex.Lock()
+	defer l.spawnMutex.Unlock()
 
 	var class = (*s).GetClass()
-	var _, ok = m.classes[class]
+	var _, ok = l.classes[class]
 
-	m.spawns[id] = s
-	m.classes[class] = 0
+	l.spawns[id] = s
+	l.classes[class] = 0
 
 	if !ok {
-		for _, c := range m.clients {
+		for _, c := range l.clients {
 			c.codec.AddEncoder(class)
 		}
 	}
 }
 
-func (m *Lobby) RemoveSpawn(id types.ID) {
-	m.spawnMutex.Lock()
-	defer m.spawnMutex.Unlock()
+func (l *Lobby) RemoveSpawn(id types.ID) {
+	l.spawnMutex.Lock()
+	defer l.spawnMutex.Unlock()
 
-	delete(m.spawns, id)
+	delete(l.spawns, id)
 }

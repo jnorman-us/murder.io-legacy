@@ -10,15 +10,15 @@ type Listener interface {
 	HandleData(types.UserID, *gob.Decoder) error // client, decoder
 }
 
-func (m *Lobby) AddListener(l *Listener) {
-	var channel = (*l).GetChannel()
-	m.listeners[channel] = l
+func (l *Lobby) AddListener(li *Listener) {
+	var channel = (*li).GetChannel()
+	l.listeners[channel] = li
 
-	for _, c := range m.clients {
+	for _, c := range l.clients {
 		c.codec.AddDecoder(channel)
 	}
 }
 
-func (m *Lobby) RemoveListener(channel byte) {
-	delete(m.listeners, channel)
+func (l *Lobby) RemoveListener(channel byte) {
+	delete(l.listeners, channel)
 }

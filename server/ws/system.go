@@ -8,21 +8,21 @@ type System interface {
 	GetData(*gob.Encoder) error
 }
 
-func (m *Lobby) AddSystem(s *System) {
-	m.systemMutex.Lock()
-	defer m.systemMutex.Unlock()
+func (l *Lobby) AddSystem(s *System) {
+	l.systemMutex.Lock()
+	defer l.systemMutex.Unlock()
 
 	var channel = (*s).GetChannel()
-	m.systems[channel] = s
+	l.systems[channel] = s
 
-	for _, c := range m.clients {
+	for _, c := range l.clients {
 		c.codec.AddEncoder(channel)
 	}
 }
 
-func (m *Lobby) RemoveSystem(channel byte) {
-	m.systemMutex.Lock()
-	defer m.systemMutex.Unlock()
+func (l *Lobby) RemoveSystem(channel byte) {
+	l.systemMutex.Lock()
+	defer l.systemMutex.Unlock()
 
-	delete(m.systems, channel)
+	delete(l.systems, channel)
 }

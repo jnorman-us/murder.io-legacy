@@ -77,12 +77,14 @@ func (m *Match) SpawnBullet(b *bullet.Bullet) types.ID {
 	var spawn = ws.Spawn(b)
 	var fireable = logic.Fireable(b)
 	var moveable = engine.Moveable(b)
+	var dynamicStatic = collisions.DynamicStatic(b)
 	var bulletShootable = collisions.BulletShootable(b)
 
 	b.SetSpawner(&spawner)
 	m.packets.AddSpawn(id, &spawn)
 	m.logic.AddFireable(id, &fireable)
 	m.engine.AddMoveable(id, &moveable)
+	m.collisions.AddDynamicStatic(id, &dynamicStatic)
 	m.collisions.AddBulletShootable(id, &bulletShootable)
 
 	b.ID = id
@@ -93,5 +95,6 @@ func (m *Match) DespawnBullet(id types.ID) {
 	m.packets.RemoveSpawn(id)
 	m.logic.RemoveFireable(id)
 	m.engine.RemoveMoveable(id)
+	m.collisions.RemoveDynamicStatic(id)
 	m.collisions.RemoveBulletShootable(id)
 }
