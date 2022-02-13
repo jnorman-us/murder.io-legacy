@@ -28,11 +28,10 @@ func NewMatch(id types.ID) *Match {
 	var match = &Match{
 		ID:       id,
 		entityID: 1,
-		World:    *world.NewWorld(),
 		Game:     *game.NewGame(),
 	}
 	var spawner = world.Spawner(match)
-	match.SetSpawner(&spawner)
+	match.World = *world.NewWorld(&spawner)
 
 	var packetsInfo = ws.LobbyInfo(match)
 

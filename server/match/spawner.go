@@ -24,7 +24,9 @@ func (m *Match) SpawnDrifter(d *drifter.Drifter) types.ID {
 	var driveable = logic.Driveable(d)
 	var moveable = engine.Moveable(d)
 	var dynamicStatic = collisions.DynamicStatic(d)
+	var shootableBullet = collisions.ShootableBullet(d)
 
+	d.SetSpawner(&spawner)
 	m.packets.AddSpawn(id, &spawn)
 	// m.logic.AddTickable(id, &tickable)
 	m.logic.AddDriveable(id, &driveable)
@@ -32,8 +34,8 @@ func (m *Match) SpawnDrifter(d *drifter.Drifter) types.ID {
 	m.engine.AddMoveable(id, &moveable)
 	m.inputs.AddPlayerListener(id, &inputable)
 	m.collisions.AddDynamicStatic(id, &dynamicStatic)
+	m.collisions.AddShootableBullet(id, &shootableBullet)
 
-	d.SetSpawner(&spawner)
 	d.ID = id
 	return id
 }
@@ -45,6 +47,7 @@ func (m *Match) DespawnDrifter(id types.ID) {
 	m.engine.RemoveMoveable(id)
 	m.inputs.RemovePlayerListener(id)
 	m.collisions.RemoveDynamicStatic(id)
+	m.collisions.RemoveShootableBullet(id)
 }
 
 func (m *Match) SpawnPole(p *pole.Pole) types.ID {
@@ -70,15 +73,17 @@ func (m *Match) SpawnBullet(b *bullet.Bullet) types.ID {
 	var id = m.entityID
 	m.entityID++
 
+	var spawner = bullet.Spawner(m)
 	var spawn = ws.Spawn(b)
-	// var fireable = logic.Fireable(b)
+	var fireable = logic.Fireable(b)
 	var moveable = engine.Moveable(b)
-	// var bulletShootable = collisions.BulletShootable(b)
+	var bulletShootable = collisions.BulletShootable(b)
 
+	b.SetSpawner(&spawner)
 	m.packets.AddSpawn(id, &spawn)
-	// m.logic.AddFireable(id, &fireable)
+	m.logic.AddFireable(id, &fireable)
 	m.engine.AddMoveable(id, &moveable)
-	// m.collisions.AddBulletShootable(id, &bulletShootable)
+	m.collisions.AddBulletShootable(id, &bulletShootable)
 
 	b.ID = id
 	return id
@@ -86,7 +91,7 @@ func (m *Match) SpawnBullet(b *bullet.Bullet) types.ID {
 
 func (m *Match) DespawnBullet(id types.ID) {
 	m.packets.RemoveSpawn(id)
-	// m.logic.RemoveFireable(id)
+	m.logic.RemoveFireable(id)
 	m.engine.RemoveMoveable(id)
-	// m.collisions.RemoveBulletShootable(id)
+	m.collisions.RemoveBulletShootable(id)
 }

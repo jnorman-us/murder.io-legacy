@@ -1,9 +1,9 @@
 package drifter
 
 const NumberBullets = 5
-const BulletSpeed = 10
+const BulletSpeed = 20
 const DamagePerBullet = 5
-const DropOff = 50
+const DropOff = 300
 
 func (d *Drifter) Shoot() {
 	const fanAngle = .02

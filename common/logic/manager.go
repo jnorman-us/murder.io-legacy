@@ -1,6 +1,8 @@
 package logic
 
-import "github.com/josephnormandev/murder/common/types"
+import (
+	"github.com/josephnormandev/murder/common/types"
+)
 
 type Manager struct {
 	Tickables  map[types.ID]*Tickable
@@ -21,7 +23,7 @@ func NewManager() *Manager {
 
 func (m *Manager) Tick() {
 	for _, s := range m.Fireables {
-		m.ShotLogic(s)
+		m.FireableLogic(s)
 	}
 	for _, s := range m.Shootables {
 		m.ShootingLogic(s)

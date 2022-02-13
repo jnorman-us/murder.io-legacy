@@ -6,12 +6,14 @@ import (
 )
 
 type Deletions struct {
+	world   *World
 	deleted map[types.ID]int
 	flushed map[types.ID]int
 }
 
-func NewDeletions() *Deletions {
+func NewDeletions(w *World) *Deletions {
 	return &Deletions{
+		world:   w,
 		deleted: map[types.ID]int{},
 		flushed: map[types.ID]int{},
 	}
@@ -31,16 +33,8 @@ func (d *Deletions) Flush() {
 }
 
 func (d *Deletions) GetData(encoder *gob.Encoder) error {
-	return encoder.Encode(d.flushed)
-}
-
-func (d *Deletions) GetDeletions() []types.ID {
-	d.Flush()
-	var ids []types.ID
-	for id := range d.flushed {
-		ids = append(ids, id)
-	}
-	return ids
+	var flushed = d.flushed
+	return encoder.Encode(flushed)
 }
 
 func (d *Deletions) HandleData(decoder *gob.Decoder) error {
@@ -52,7 +46,15 @@ func (d *Deletions) HandleData(decoder *gob.Decoder) error {
 	}
 
 	for id := range *deleted {
-		d.deleted[id] = 0
+		if _, ok := d.world.Poles[id]; ok {
+			d.world.RemovePole(id)
+		}
+		if _, ok := d.world.Bullets[id]; ok {
+			d.world.RemoveBullet(id)
+		}
+		if _, ok := d.world.Drifters[id]; ok {
+			d.world.RemoveDrifter(id)
+		}
 	}
 	return nil
 }

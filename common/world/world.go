@@ -16,18 +16,15 @@ type World struct {
 	Bullets   map[types.ID]*bullet.Bullet
 }
 
-func NewWorld() *World {
+func NewWorld(s *Spawner) *World {
 	var game = &World{
-		deletions: NewDeletions(),
-		Drifters:  map[types.ID]*drifter.Drifter{},
-		Poles:     map[types.ID]*pole.Pole{},
-		Bullets:   map[types.ID]*bullet.Bullet{},
+		spawner:  s,
+		Drifters: map[types.ID]*drifter.Drifter{},
+		Poles:    map[types.ID]*pole.Pole{},
+		Bullets:  map[types.ID]*bullet.Bullet{},
 	}
+	game.deletions = NewDeletions(game)
 	return game
-}
-
-func (w *World) SetSpawner(s *Spawner) {
-	w.spawner = s
 }
 
 func (w *World) Deletions() *Deletions {

@@ -1,6 +1,8 @@
 package logic
 
-import "github.com/josephnormandev/murder/common/types"
+import (
+	"github.com/josephnormandev/murder/common/types"
+)
 
 // Fireable is a shared logic interface, allowing for bullets to drop
 // off as they move, and other logic specific to damaging projectiles
@@ -19,7 +21,7 @@ func (m *Manager) RemoveFireable(id types.ID) {
 	delete(m.Fireables, id)
 }
 
-func (m *Manager) ShotLogic(f *Fireable) {
+func (m *Manager) FireableLogic(f *Fireable) {
 	var fireable = *f
 	var initPos = fireable.GetInitialPosition()
 	var currentPos = fireable.GetPosition()

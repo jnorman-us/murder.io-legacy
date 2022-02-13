@@ -9,3 +9,8 @@ type Shooter interface {
 	GetBulletDropOff() float64
 	GetBulletSpeed() float64
 }
+
+func (b *Bullet) GetShooter() types.ID {
+	var shooter = *b.shooter
+	return shooter.GetID()
+}

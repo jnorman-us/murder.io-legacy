@@ -44,6 +44,7 @@ func (d *Drifter) Setup() {
 	d.Collider.SetFriction(Friction)
 }
 
-func (d *Drifter) Tick() {
-
+func (d *Drifter) Kill() {
+	var spawner = *d.spawner
+	spawner.RemoveDrifter(d.ID)
 }

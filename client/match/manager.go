@@ -25,11 +25,10 @@ type Manager struct {
 
 func NewManager() *Manager {
 	var manager = &Manager{
-		World: *world.NewWorld(),
-		Game:  *game.NewGame(),
+		Game: *game.NewGame(),
 	}
 	var spawner = world.Spawner(manager)
-	manager.SetSpawner(&spawner)
+	manager.World = *world.NewWorld(&spawner)
 
 	var gEngine = engine.NewManager()
 	var gDrawer = drawer.NewDrawer()

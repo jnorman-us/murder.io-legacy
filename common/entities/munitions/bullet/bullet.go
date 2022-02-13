@@ -11,9 +11,13 @@ const Friction = 0
 type Bullet struct {
 	types.ID
 	collider.Collider
-	Damage  int
-	DropOff float64
+
+	initialPosition types.Vector
+	damage          int
+	dropOff         float64
+
 	shooter *Shooter
+	spawner *Spawner
 }
 
 func NewBullet(s *Shooter, angle float64) *Bullet {
@@ -37,12 +41,30 @@ func (b *Bullet) Setup() {
 	b.Collider.SetFriction(Friction)
 	if b.shooter != nil {
 		var shooter = *b.shooter
-		b.Damage = shooter.GetDamagePerBullet()
-		b.DropOff = shooter.GetBulletDropOff()
-		b.Position = shooter.GetPosition()
+		b.initialPosition = shooter.GetPosition()
+		b.damage = shooter.GetDamagePerBullet()
+		b.dropOff = shooter.GetBulletDropOff()
 
 		var velocity = types.NewVector(shooter.GetBulletSpeed(), 0)
 		velocity.RotateAbout(b.GetAngle(), types.NewZeroVector())
+		b.Collider.SetPosition(b.initialPosition)
 		b.Collider.SetVelocity(velocity)
 	}
+}
+
+func (b *Bullet) GetRange() float64 {
+	return b.dropOff
+}
+
+func (b *Bullet) GetInitialPosition() types.Vector {
+	return b.initialPosition
+}
+
+func (b *Bullet) GetDamage() int {
+	return b.damage
+}
+
+func (b *Bullet) Destroy() {
+	var spawner = *b.spawner
+	spawner.RemoveBullet(b.ID)
 }
