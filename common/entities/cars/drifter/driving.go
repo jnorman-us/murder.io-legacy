@@ -7,7 +7,7 @@ func (d *Drifter) GetTurningFactor() float64 {
 }
 
 func (d *Drifter) GetDrivingForce() float64 {
-	return 300
+	return 220
 }
 
 func (d *Drifter) GetDriftingFactor() float64 {

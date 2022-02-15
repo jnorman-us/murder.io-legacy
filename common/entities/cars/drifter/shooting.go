@@ -1,8 +1,10 @@
 package drifter
 
-const NumberBullets = 5
-const BulletSpeed = 20
-const DamagePerBullet = 5
+import "github.com/josephnormandev/murder/common/types"
+
+const NumberBullets = 10
+const BulletSpeed = 15
+const DamagePerBullet = 9
 const DropOff = 300
 
 func (d *Drifter) Shoot() {
@@ -15,6 +17,10 @@ func (d *Drifter) Shoot() {
 		spawner.DrifterShootBullet(d, angle)
 		angle += fanAngle
 	}
+}
+
+func (d *Drifter) GetShootingCoolDown() *types.CoolDown {
+	return &d.shotgunCoolDown
 }
 
 func (d *Drifter) GetDamagePerBullet() int {

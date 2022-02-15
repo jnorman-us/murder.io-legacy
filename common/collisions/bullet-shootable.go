@@ -6,6 +6,7 @@ import (
 )
 
 type BulletShootable interface {
+	Destroy()
 	GetDamage() int
 	GetShooter() types.ID
 	GetCollider() *collider.Collider
@@ -37,6 +38,7 @@ func (m *Manager) resolveBulletShootables() {
 				if shootable.Dead() {
 					shootable.Kill()
 				}
+				bullet.Destroy()
 			}
 		}
 	}

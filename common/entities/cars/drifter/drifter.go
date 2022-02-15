@@ -16,11 +16,14 @@ type Drifter struct {
 	types.UserID
 	collider.Collider
 	types.Input
-	spawner *Spawner
+	shotgunCoolDown types.CoolDown
+	spawner         *Spawner
 }
 
 func NewDrifter() *Drifter {
-	var drifter = &Drifter{}
+	var drifter = &Drifter{
+		shotgunCoolDown: types.NewCoolDown(60),
+	}
 	drifter.Setup()
 	return drifter
 }

@@ -29,7 +29,7 @@ func (m *Manager) resolveStaticDynamics() {
 				var mass = dynamic.GetMass()
 				var force = dynamic.GetVelocity()
 				force.Scale(-1 * mass)
-				force.Scale(2)
+				force.Scale(1)
 
 				// var position = static.GetPosition()
 

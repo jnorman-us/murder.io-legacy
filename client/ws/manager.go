@@ -36,7 +36,7 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) SteadyTick() error {
-	var ms = time.Duration(50)
+	var ms = time.Duration(1000 / 20)
 	for range time.Tick(ms * time.Millisecond) {
 		var currentTimestamp = m.Tick - 2
 

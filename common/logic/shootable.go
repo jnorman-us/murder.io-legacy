@@ -6,6 +6,7 @@ import "github.com/josephnormandev/murder/common/types"
 // weapons and abilities
 type Shootable interface {
 	GetInput() types.Input
+	GetShootingCoolDown() *types.CoolDown
 	Shoot()
 }
 
@@ -20,8 +21,11 @@ func (m *Manager) RemoveShootable(id types.ID) {
 func (m *Manager) ShootingLogic(s *Shootable) {
 	var shootable = *s
 	var inputs = shootable.GetInput()
+	var coolDown = shootable.GetShootingCoolDown()
 
-	if inputs.AttackClick {
+	if inputs.AttackClick && coolDown.Ready() {
 		shootable.Shoot()
+		coolDown.Reset()
 	}
+	coolDown.Tick()
 }

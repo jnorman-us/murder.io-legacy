@@ -71,7 +71,7 @@ func (m *Match) GetWorldLock() *sync.Mutex {
 }
 
 func (m *Match) Tick() {
-	for range time.Tick(25 * time.Millisecond) {
+	for range time.Tick(1000 / 60 * time.Millisecond) {
 		m.worldLock.Lock()
 		m.logic.Tick()
 		m.engine.UpdatePhysics(1)

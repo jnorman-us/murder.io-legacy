@@ -40,7 +40,8 @@ func NewLobby(info *LobbyInfo, lock *sync.Mutex) *Lobby {
 }
 
 func (l *Lobby) Send() {
-	for range time.Tick(50 * time.Millisecond) {
+	var ms = time.Duration(1000 / 20)
+	for range time.Tick(ms * time.Millisecond) {
 		l.worldLock.Lock()
 		for _, s := range l.systems {
 			var system = *s
