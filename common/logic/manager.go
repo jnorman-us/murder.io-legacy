@@ -5,25 +5,25 @@ import (
 )
 
 type Manager struct {
-	Tickables  map[types.ID]*Tickable
-	Fireables  map[types.ID]*Fireable
-	Shootables map[types.ID]*Shootable
-	Driveables map[types.ID]*Driveable
+	Tickables    map[types.ID]*Tickable
+	Dissolvables map[types.ID]*Dissolvable
+	Shootables   map[types.ID]*Shootable
+	Driveables   map[types.ID]*Driveable
 }
 
 func NewManager() *Manager {
 	var manager = &Manager{
-		Tickables:  map[types.ID]*Tickable{},
-		Fireables:  map[types.ID]*Fireable{},
-		Shootables: map[types.ID]*Shootable{},
-		Driveables: map[types.ID]*Driveable{},
+		Tickables:    map[types.ID]*Tickable{},
+		Dissolvables: map[types.ID]*Dissolvable{},
+		Shootables:   map[types.ID]*Shootable{},
+		Driveables:   map[types.ID]*Driveable{},
 	}
 	return manager
 }
 
 func (m *Manager) Tick() {
-	for _, s := range m.Fireables {
-		m.FireableLogic(s)
+	for _, s := range m.Dissolvables {
+		m.Dissolve(s)
 	}
 	for _, s := range m.Shootables {
 		m.ShootingLogic(s)

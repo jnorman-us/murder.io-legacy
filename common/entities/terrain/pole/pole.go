@@ -1,13 +1,13 @@
 package pole
 
 import (
-	"github.com/josephnormandev/murder/common/collisions/collider"
+	collider2 "github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/types"
 )
 
 type Pole struct {
 	types.ID
-	collider.Collider
+	collider2.Collider
 }
 
 func NewPole() *Pole {
@@ -18,9 +18,9 @@ func NewPole() *Pole {
 
 func (p *Pole) Setup() {
 	p.Collider.SetupCollider(
-		[]collider.Rectangle{},
-		[]collider.Circle{
-			collider.NewCircle(types.NewVector(0, 0), 10),
+		[]collider2.Rectangle{},
+		[]collider2.Circle{
+			collider2.NewCircle(types.NewVector(0, 0), 10),
 		},
 	)
 }

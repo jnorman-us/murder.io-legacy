@@ -9,8 +9,7 @@ const DropOff = 300
 
 func (d *Drifter) Shoot() {
 	const fanAngle = .02
-	var angle = d.GetAngle()
-	angle -= (NumberBullets * fanAngle) / 2
+	var angle = (NumberBullets * fanAngle) / 2
 
 	var spawner = *d.spawner
 	for i := 0; i < NumberBullets; i++ {

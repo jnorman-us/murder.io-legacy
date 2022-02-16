@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"github.com/josephnormandev/murder/common/collisions/collider"
+	collider2 "github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -10,7 +10,7 @@ type Moveable interface {
 	Reset()
 	Changed() bool
 	ClearBuffers()
-	GetCollider() *collider.Collider
+	GetCollider() *collider2.Collider
 	UpdatePosition(float64)
 }
 

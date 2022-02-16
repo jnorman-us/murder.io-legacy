@@ -1,7 +1,7 @@
 package bullet
 
 import (
-	"github.com/josephnormandev/murder/common/collisions/collider"
+	"github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -41,14 +41,17 @@ func (b *Bullet) Setup() {
 	b.Collider.SetFriction(Friction)
 	if b.shooter != nil {
 		var shooter = *b.shooter
+		b.SetAngle(b.Angle + shooter.GetAngle())
 		b.initialPosition = shooter.GetPosition()
 		b.damage = shooter.GetDamagePerBullet()
 		b.dropOff = shooter.GetBulletDropOff()
 
-		var velocity = types.NewVector(shooter.GetBulletSpeed(), 0)
-		velocity.RotateAbout(b.GetAngle(), types.NewZeroVector())
+		var bulletVelocity = types.NewVector(shooter.GetBulletSpeed(), 0)
+		bulletVelocity.RotateAbout(b.GetAngle(), types.NewZeroVector())
+		var velocity = shooter.GetVelocity()
+		velocity.Add(bulletVelocity)
 		b.Collider.SetPosition(b.initialPosition)
-		b.Collider.SetVelocity(velocity)
+		b.Collider.SetVelocity(bulletVelocity)
 	}
 }
 
@@ -64,7 +67,7 @@ func (b *Bullet) GetDamage() int {
 	return b.damage
 }
 
-func (b *Bullet) Destroy() {
+func (b *Bullet) Break() {
 	var spawner = *b.spawner
 	spawner.RemoveBullet(b.ID)
 }

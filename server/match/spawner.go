@@ -3,6 +3,7 @@ package match
 import (
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
+	"github.com/josephnormandev/murder/common/entities/cars/dimetrodon"
 	"github.com/josephnormandev/murder/common/entities/cars/drifter"
 	"github.com/josephnormandev/murder/common/entities/munitions/bullet"
 	"github.com/josephnormandev/murder/common/entities/terrain/pole"
@@ -23,18 +24,15 @@ func (m *Match) SpawnDrifter(d *drifter.Drifter) types.ID {
 	var inputable = input.Inputable(d)
 	var driveable = logic.Driveable(d)
 	var moveable = engine.Moveable(d)
-	var dynamicStatic = collisions.DynamicStatic(d)
-	var shootableBullet = collisions.ShootableBullet(d)
+	var dynamic = collisions.Dynamic(d)
 
 	d.SetSpawner(&spawner)
 	m.packets.AddSpawn(id, &spawn)
-	// m.logic.AddTickable(id, &tickable)
 	m.logic.AddDriveable(id, &driveable)
 	m.logic.AddShootable(id, &shootable)
 	m.engine.AddMoveable(id, &moveable)
 	m.inputs.AddPlayerListener(id, &inputable)
-	m.collisions.AddDynamicStatic(id, &dynamicStatic)
-	m.collisions.AddShootableBullet(id, &shootableBullet)
+	m.collisions.AddDynamic(id, &dynamic)
 
 	d.ID = id
 	return id
@@ -42,12 +40,44 @@ func (m *Match) SpawnDrifter(d *drifter.Drifter) types.ID {
 
 func (m *Match) DespawnDrifter(id types.ID) {
 	m.packets.RemoveSpawn(id)
-	// m.logic.RemoveTickable(id)
 	m.logic.RemoveDriveable(id)
+	m.logic.RemoveShootable(id)
 	m.engine.RemoveMoveable(id)
 	m.inputs.RemovePlayerListener(id)
-	m.collisions.RemoveDynamicStatic(id)
-	m.collisions.RemoveShootableBullet(id)
+	m.collisions.RemoveDynamic(id)
+}
+
+func (m *Match) SpawnDimetrodon(d *dimetrodon.Dimetrodon) types.ID {
+	var id = m.entityID
+	m.entityID++
+
+	var spawner = dimetrodon.Spawner(m)
+	var spawn = ws.Spawn(d)
+	var shootable = logic.Shootable(d)
+	var inputable = input.Inputable(d)
+	var driveable = logic.Driveable(d)
+	var moveable = engine.Moveable(d)
+	var dynamic = collisions.Dynamic(d)
+
+	d.SetSpawner(&spawner)
+	m.packets.AddSpawn(id, &spawn)
+	m.logic.AddDriveable(id, &driveable)
+	m.logic.AddShootable(id, &shootable)
+	m.engine.AddMoveable(id, &moveable)
+	m.inputs.AddPlayerListener(id, &inputable)
+	m.collisions.AddDynamic(id, &dynamic)
+
+	d.ID = id
+	return id
+}
+
+func (m *Match) DespawnDimetrodon(id types.ID) {
+	m.packets.RemoveSpawn(id)
+	m.logic.RemoveDriveable(id)
+	m.logic.RemoveShootable(id)
+	m.engine.RemoveMoveable(id)
+	m.inputs.RemovePlayerListener(id)
+	m.collisions.RemoveDynamic(id)
 }
 
 func (m *Match) SpawnPole(p *pole.Pole) types.ID {
@@ -55,10 +85,10 @@ func (m *Match) SpawnPole(p *pole.Pole) types.ID {
 	m.entityID++
 
 	var spawn = ws.Spawn(p)
-	var staticDynamic = collisions.StaticDynamic(p)
+	var static = collisions.Static(p)
 
 	m.packets.AddSpawn(id, &spawn)
-	m.collisions.AddStaticDynamic(id, &staticDynamic)
+	m.collisions.AddStatic(id, &static)
 
 	p.ID = id
 	return id
@@ -66,7 +96,7 @@ func (m *Match) SpawnPole(p *pole.Pole) types.ID {
 
 func (m *Match) DespawnPole(id types.ID) {
 	m.packets.RemoveSpawn(id)
-	m.collisions.RemoveStaticDynamic(id)
+	m.collisions.RemoveStatic(id)
 }
 
 func (m *Match) SpawnBullet(b *bullet.Bullet) types.ID {
@@ -75,17 +105,15 @@ func (m *Match) SpawnBullet(b *bullet.Bullet) types.ID {
 
 	var spawner = bullet.Spawner(m)
 	var spawn = ws.Spawn(b)
-	var fireable = logic.Fireable(b)
+	var dissolvable = logic.Dissolvable(b)
 	var moveable = engine.Moveable(b)
-	var dynamicStatic = collisions.DynamicStatic(b)
-	var bulletShootable = collisions.BulletShootable(b)
+	var dynamic = collisions.Dynamic(b)
 
 	b.SetSpawner(&spawner)
 	m.packets.AddSpawn(id, &spawn)
-	m.logic.AddFireable(id, &fireable)
+	m.logic.AddDissolvable(id, &dissolvable)
 	m.engine.AddMoveable(id, &moveable)
-	m.collisions.AddDynamicStatic(id, &dynamicStatic)
-	m.collisions.AddBulletShootable(id, &bulletShootable)
+	m.collisions.AddDynamic(id, &dynamic)
 
 	b.ID = id
 	return id
@@ -93,8 +121,7 @@ func (m *Match) SpawnBullet(b *bullet.Bullet) types.ID {
 
 func (m *Match) DespawnBullet(id types.ID) {
 	m.packets.RemoveSpawn(id)
-	m.logic.RemoveFireable(id)
+	m.logic.RemoveDissolvable(id)
 	m.engine.RemoveMoveable(id)
-	m.collisions.RemoveDynamicStatic(id)
-	m.collisions.RemoveBulletShootable(id)
+	m.collisions.RemoveDynamic(id)
 }

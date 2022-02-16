@@ -1,13 +1,13 @@
 package bounds
 
 import (
-	"github.com/josephnormandev/murder/common/collisions/collider"
+	collider2 "github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/types"
 )
 
 type Bounds struct {
 	types.ID
-	collider.Collider
+	collider2.Collider
 }
 
 func NewBounds() *Bounds {
@@ -18,12 +18,12 @@ func NewBounds() *Bounds {
 
 func (b *Bounds) Setup() {
 	b.Collider.SetupCollider(
-		[]collider.Rectangle{
-			collider.NewRectangle(types.NewVector(-200, 0), 0, 20, 1000),
-			collider.NewRectangle(types.NewVector(200, 0), 0, 20, 1000),
-			collider.NewRectangle(types.NewVector(0, 500), 0, 20, 400),
-			collider.NewRectangle(types.NewVector(0, -500), 0, 20, 400),
+		[]collider2.Rectangle{
+			collider2.NewRectangle(types.NewVector(-200, 0), 0, 20, 1000),
+			collider2.NewRectangle(types.NewVector(200, 0), 0, 20, 1000),
+			collider2.NewRectangle(types.NewVector(0, 500), 0, 20, 400),
+			collider2.NewRectangle(types.NewVector(0, -500), 0, 20, 400),
 		},
-		[]collider.Circle{},
+		[]collider2.Circle{},
 	)
 }

@@ -3,14 +3,14 @@ package engine
 import (
 	"encoding/gob"
 	"fmt"
-	"github.com/josephnormandev/murder/common/collisions/collider"
+	collider2 "github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/types"
 	"math"
 	"time"
 )
 
 type Manager struct {
-	colliders map[types.ID]collider.Collider
+	colliders map[types.ID]collider2.Collider
 	moveables map[types.ID]*Moveable
 
 	dataLifeStart time.Time
@@ -19,7 +19,7 @@ type Manager struct {
 
 func NewManager() *Manager {
 	return &Manager{
-		colliders: map[types.ID]collider.Collider{},
+		colliders: map[types.ID]collider2.Collider{},
 		moveables: map[types.ID]*Moveable{},
 	}
 }
@@ -63,7 +63,7 @@ func (m *Manager) GetChannel() byte {
 }
 
 func (m *Manager) HandleFutureData(decoder *gob.Decoder, ttl time.Duration) error {
-	var colliderMap = &map[types.ID]collider.Collider{}
+	var colliderMap = &map[types.ID]collider2.Collider{}
 
 	err := decoder.Decode(colliderMap)
 	if err != nil {

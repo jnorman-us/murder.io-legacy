@@ -4,6 +4,8 @@ import "github.com/josephnormandev/murder/common/types"
 
 type Shooter interface {
 	GetID() types.ID
+	GetAngle() float64
+	GetVelocity() types.Vector
 	GetPosition() types.Vector
 	GetDamagePerBullet() int
 	GetBulletDropOff() float64

@@ -1,7 +1,7 @@
 package drifter
 
 import (
-	"github.com/josephnormandev/murder/common/collisions/collider"
+	"github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
 )
@@ -47,7 +47,7 @@ func (d *Drifter) Setup() {
 	d.Collider.SetFriction(Friction)
 }
 
-func (d *Drifter) Kill() {
+func (d *Drifter) Break() {
 	var spawner = *d.spawner
 	spawner.RemoveDrifter(d.ID)
 }

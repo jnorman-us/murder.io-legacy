@@ -2,13 +2,16 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/josephnormandev/murder/common/entities/cars/dimetrodon"
 	"github.com/josephnormandev/murder/common/entities/cars/drifter"
 	"github.com/josephnormandev/murder/common/entities/terrain/pole"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/server/match"
 	"github.com/josephnormandev/murder/server/ws"
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 )
 
 var wsServer *ws.Server
@@ -47,11 +50,19 @@ func main() {
 
 	soleGame.SetPlayers(names)
 
+	rand.Seed(time.Now().UnixNano())
 	for _, name := range names {
-		var drifter = drifter.NewDrifter()
-		drifter.UserID = name
-		drifter.SetPosition(types.NewRandomVector(0, 0, 400, 400))
-		soleGame.AddDrifter(drifter)
+		if rand.Intn(2) == 1 {
+			var d = drifter.NewDrifter()
+			d.UserID = name
+			d.SetPosition(types.NewRandomVector(0, 0, 400, 400))
+			soleGame.AddDrifter(d)
+		} else {
+			var d = dimetrodon.NewDimetrodon()
+			d.UserID = name
+			d.SetPosition(types.NewRandomVector(0, 0, 400, 400))
+			soleGame.AddDimetrodon(d)
+		}
 	}
 
 	for _, position := range polePositions {

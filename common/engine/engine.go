@@ -2,7 +2,7 @@ package engine
 
 import (
 	"encoding/gob"
-	"github.com/josephnormandev/murder/common/collisions/collider"
+	collider2 "github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -34,7 +34,7 @@ func (e *Engine) Flush() {
 }
 
 func (e *Engine) GetData(encoder *gob.Encoder) error {
-	var colliderMap = map[types.ID]collider.Collider{}
+	var colliderMap = map[types.ID]collider2.Collider{}
 
 	for id, m := range e.Moveables {
 		var moveable = *m
