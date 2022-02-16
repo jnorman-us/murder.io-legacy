@@ -1,39 +1,42 @@
 package types
 
 import (
+	"github.com/Tarliton/collision2d"
 	"math"
 	"math/rand"
 )
 
 type Vector struct {
-	X, Y float64
+	collision2d.Vector
 }
 
 func NewZeroVector() Vector {
 	return Vector{
-		X: 0,
-		Y: 0,
+		collision2d.NewVector(0, 0),
 	}
 }
 
 func NewRandomVector(minX, minY, maxX, maxY float64) Vector {
 	return Vector{
-		X: rand.Float64()*(maxX-minX) + minX,
-		Y: rand.Float64()*(maxY-minX) + minY,
+		collision2d.NewVector(
+			rand.Float64()*(maxX-minX)+minX,
+			rand.Float64()*(maxY-minX)+minY,
+		),
 	}
 }
 
 func NewVector(x, y float64) Vector {
 	return Vector{
-		X: x,
-		Y: y,
+		collision2d.NewVector(x, y),
 	}
 }
 
 func (v *Vector) Copy() Vector {
 	return Vector{
-		X: v.X,
-		Y: v.Y,
+		collision2d.Vector{
+			X: v.X,
+			Y: v.Y,
+		},
 	}
 }
 
@@ -73,8 +76,10 @@ func (v *Vector) Scale(scalar float64) {
 
 func (v *Vector) Offset(o Vector) Vector {
 	return Vector{
-		X: o.X - v.X,
-		Y: o.Y - v.Y,
+		collision2d.Vector{
+			X: o.X - v.X,
+			Y: o.Y - v.Y,
+		},
 	}
 }
 

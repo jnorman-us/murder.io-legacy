@@ -22,7 +22,7 @@ type Drifter struct {
 
 func NewDrifter() *Drifter {
 	var drifter = &Drifter{
-		shotgunCoolDown: types.NewCoolDown(60),
+		shotgunCoolDown: types.NewCoolDown(40),
 	}
 	drifter.Setup()
 	return drifter

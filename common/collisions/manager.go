@@ -17,4 +17,5 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) ResolveCollisions() {
+	m.resolveDynamicOnStatics()
 }

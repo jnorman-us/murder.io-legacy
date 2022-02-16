@@ -38,10 +38,10 @@ func (e *Engine) GetData(encoder *gob.Encoder) error {
 
 	for id, m := range e.Moveables {
 		var moveable = *m
-		//if moveable.Changed() {
-		colliderMap[id] = *moveable.GetCollider()
-		//	moveable.Reset()
-		//}
+		if moveable.Changed() {
+			colliderMap[id] = *moveable.GetCollider()
+			moveable.Reset()
+		}
 	}
 
 	err := encoder.Encode(colliderMap)

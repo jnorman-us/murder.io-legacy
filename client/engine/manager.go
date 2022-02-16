@@ -3,14 +3,14 @@ package engine
 import (
 	"encoding/gob"
 	"fmt"
-	collider2 "github.com/josephnormandev/murder/common/collider"
+	"github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/types"
 	"math"
 	"time"
 )
 
 type Manager struct {
-	colliders map[types.ID]collider2.Collider
+	colliders map[types.ID]collider.Collider
 	moveables map[types.ID]*Moveable
 
 	dataLifeStart time.Time
@@ -19,7 +19,7 @@ type Manager struct {
 
 func NewManager() *Manager {
 	return &Manager{
-		colliders: map[types.ID]collider2.Collider{},
+		colliders: map[types.ID]collider.Collider{},
 		moveables: map[types.ID]*Moveable{},
 	}
 }
@@ -35,25 +35,30 @@ func (m *Manager) UpdatePhysics(ms float64) {
 		alpha = math.Min(1, alpha)
 	}
 
-	for id, mo := range m.moveables {
-		var moveable = *mo
-		// var collider, ok = m.colliders[id]
-		var collider, ok1 = m.colliders[id]
-		if ok1 {
-			var currentPos = moveable.GetPosition()
-			var futurePos = collider.GetPosition()
-
-			currentPos.Interpolate(futurePos, alpha)
-
-			var currentAngle = moveable.GetAngle()
-			var futureAngle = collider.GetAngle()
-
-			currentAngle += (futureAngle - currentAngle) * alpha
-
-			moveable.SetPosition(currentPos)
-			moveable.SetAngle(currentAngle)
-		} else {
+	if alpha >= 1 {
+		for _, mo := range m.moveables {
+			// we seem to be missing packets, let's extrapolate...
+			var moveable = *mo
 			moveable.UpdatePosition(ms / (1000 / 60))
+		}
+	} else {
+		for id, mo := range m.moveables {
+			if collider, ok := m.colliders[id]; ok {
+				var moveable = *mo
+				var currentPos = moveable.GetPosition()
+				var futurePos = collider.GetPosition()
+
+				currentPos.Interpolate(futurePos, alpha)
+
+				var currentAngle = moveable.GetAngle()
+				var futureAngle = collider.GetAngle()
+
+				currentAngle += (futureAngle - currentAngle) * alpha
+
+				moveable.SetPosition(currentPos)
+				moveable.SetAngle(currentAngle)
+			}
+			// otherwise, don't even try to move it, this object has stopped moving
 		}
 	}
 }
@@ -63,7 +68,7 @@ func (m *Manager) GetChannel() byte {
 }
 
 func (m *Manager) HandleFutureData(decoder *gob.Decoder, ttl time.Duration) error {
-	var colliderMap = &map[types.ID]collider2.Collider{}
+	var colliderMap = &map[types.ID]collider.Collider{}
 
 	err := decoder.Decode(colliderMap)
 	if err != nil {

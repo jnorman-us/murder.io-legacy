@@ -22,7 +22,7 @@ type Dimetrodon struct {
 
 func NewDimetrodon() *Dimetrodon {
 	var dimetrodon = &Dimetrodon{
-		gattlingGunCoolDown: types.NewCoolDown(5),
+		gattlingGunCoolDown: types.NewCoolDown(2),
 	}
 	dimetrodon.Setup()
 	return dimetrodon
