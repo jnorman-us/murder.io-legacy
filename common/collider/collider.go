@@ -1,6 +1,8 @@
 package collider
 
 import (
+	"fmt"
+	"github.com/Tarliton/collision2d"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/llgcode/draw2d/draw2dimg"
 	"github.com/llgcode/draw2d/draw2dkit"
@@ -10,128 +12,94 @@ import (
 
 type Collider struct {
 	types.Change
-	mass            float64
-	forceBuffer     types.Vector
-	torqueBuffer    float64
+
+	mass         float64
+	forceBuffer  types.Vector
+	torqueBuffer float64
+
 	Position        types.Vector
 	Angle           float64
 	Velocity        types.Vector
 	AngularVelocity float64
-	friction        float64
-	rectangles      []*Rectangle
-	circles         []*Circle
-	color           color.RGBA
+
+	forwardFriction float64
+	lateralFriction float64
+	angularFriction float64
+
+	rectangles map[string]*Rectangle
+	circles    map[string]*Circle
+	color      color.RGBA
 }
 
 func (c *Collider) GetCollider() *Collider {
 	return c
 }
 
-func (c *Collider) SetupCollider(rectangles []Rectangle, circles []Circle) {
-	c.rectangles = []*Rectangle{}
-	c.circles = []*Circle{}
+func (c *Collider) SetupCollider(rectangles map[string]Rectangle, circles map[string]Circle) {
+	c.rectangles = map[string]*Rectangle{}
+	c.circles = map[string]*Circle{}
 
-	for i := range rectangles {
-		var rectangle = &rectangles[i]
+	for id, r := range rectangles {
+		var rectangle = r
 		rectangle.setCollider(c)
-		c.rectangles = append(c.rectangles, rectangle)
+		c.rectangles[id] = &rectangle
 	}
 
-	for i := range circles {
-		var circle = &circles[i]
+	for id, ci := range circles {
+		var circle = ci
 		circle.setCollider(c)
-		c.circles = append(c.circles, circle)
+		c.circles[id] = &circle
 	}
 
-	c.SetColor(color.RGBA{
-		G: 0xff,
-		A: 0xff,
-	})
-	c.Set()
+	c.MarkDirty()
 }
 
 func (c *Collider) CheckCollision(o *Collider) Collision {
-	var collision = NewCollision()
-
-	// circle on circle collisions
-	for _, c := range c.circles {
-		for _, o := range o.circles {
-			var circle = *c
-			var otherCircle = o
-			if circle.checkCircleCollision(otherCircle) {
+	var collision = Collision{}
+	for _, a := range c.circles {
+		var circleA = a.getCircle()
+		for _, b := range o.circles {
+			var circleB = b.getCircle()
+			var collided, _ = collision2d.TestCircleCircle(circleA, circleB)
+			if collided {
 				collision.SetColliding(true)
 			}
 		}
-	}
-	// then circle on rect collisions
-	for _, r := range c.rectangles {
-		for _, c := range o.circles {
-			var rectangle = *r
-			var otherCircle = c
-			if rectangle.checkCircleCollision(otherCircle) {
-				collision.SetColliding(true)
-			}
-		}
-	}
-
-	for _, c := range c.circles {
-		for _, r := range o.rectangles {
-			var circle = *c
-			var otherRectangle = r
-			if circle.checkRectangleCollision(otherRectangle) {
+		for _, b := range o.rectangles {
+			var polygonB = b.getPolygon()
+			var collided, _ = collision2d.TestCirclePolygon(circleA, polygonB)
+			if collided {
+				fmt.Println("Polygon Circle")
 				collision.SetColliding(true)
 			}
 		}
 	}
 
-	/*
-		// then rect on rect collisions
-		for i := range c.rectangles {
-			for j := range o.rectangles {
-				var rectangle = &c.rectangles[i]
-				var otherRectangle = &o.rectangles[j]
-				if rectangle.checkRectangleCollision(otherRectangle) {
-					colliding = true
-				}
+	for _, a := range c.rectangles {
+		var polygonA = a.getPolygon()
+		for _, b := range o.circles {
+			var circleB = b.getCircle()
+			var collided, _ = collision2d.TestPolygonCircle(polygonA, circleB)
+			if collided {
+				fmt.Println("Polygon Circle")
+				collision.SetColliding(true)
 			}
 		}
-	*/
-
+		for _, b := range o.rectangles {
+			var polygonB = b.getPolygon()
+			var collided, _ = collision2d.TestPolygonPolygon(polygonA, polygonB)
+			if collided {
+				fmt.Println("Polygon P{olygon")
+				collision.SetColliding(true)
+			}
+		}
+	}
 	return collision
-}
-
-func (c *Collider) ClearBuffers() {
-	c.forceBuffer = types.NewZeroVector()
-	c.torqueBuffer = 0
-}
-
-func (c *Collider) ApplyForce(force types.Vector) {
-	c.forceBuffer.Add(force)
-}
-
-func (c *Collider) ApplyPositionalForce(force types.Vector, position types.Vector) {
-	c.forceBuffer.Add(force)
-	var offset = c.Position.Offset(position)
-	c.ApplyTorque(offset.X*force.Y - offset.Y*force.X)
-}
-
-func (c *Collider) ApplyPositionalForceAround(force types.Vector, position types.Vector, pivot types.Vector) {
-	c.forceBuffer.Add(force)
-	var offset = pivot.Offset(position)
-	c.ApplyTorque(offset.X*force.Y - offset.Y*force.X)
-}
-
-func (c *Collider) ApplyTorque(torque float64) {
-	c.torqueBuffer += torque
-}
-
-func (c *Collider) CalculateFrictionForces(time float64) {
-
 }
 
 func (c *Collider) UpdatePosition(time float64) {
 	var timeSquared = math.Pow(time*1, 2)
-	var frictionAir = 1 - c.friction
+	var frictionAir = 1 - c.forwardFriction
 
 	var acceleration = c.forceBuffer
 	acceleration.Scale(1 / c.mass)
@@ -145,7 +113,7 @@ func (c *Collider) UpdatePosition(time float64) {
 	var newPosition = c.Position
 	newPosition.Add(newVelocity)
 	if !newPosition.Equals(c.Position) {
-		c.Set()
+		c.MarkDirty()
 	}
 	c.SetPosition(newPosition)
 
@@ -161,65 +129,19 @@ func (c *Collider) UpdatePosition(time float64) {
 	var newAngle = c.Angle
 	newAngle += newAngularVelocity
 	if newAngle != c.Angle {
-		c.Set()
+		c.MarkDirty()
 	}
 	c.SetAngle(newAngle)
+	c.CalculateHitbox()
 }
 
-func (c *Collider) BounceBack() {
-	var newPosition = c.GetPosition()
-	var newVelocity = c.GetVelocity()
-	newVelocity.Scale(-1 / (1 - c.friction))
-	newPosition.Add(newVelocity)
-
-	c.SetPosition(newPosition)
-}
-
-func (c *Collider) GetMass() float64 {
-	return c.mass
-}
-
-func (c *Collider) SetMass(mass float64) {
-	c.mass = mass
-}
-
-func (c *Collider) GetPosition() types.Vector {
-	return c.Position
-}
-
-func (c *Collider) SetPosition(p types.Vector) {
-	c.Position = p
-}
-
-func (c *Collider) GetAngle() float64 {
-	return c.Angle
-}
-
-func (c *Collider) SetAngle(a float64) {
-	c.Angle = a
-}
-func (c *Collider) GetVelocity() types.Vector {
-	return c.Velocity
-}
-
-func (c *Collider) SetVelocity(velocity types.Vector) {
-	c.Velocity = velocity
-}
-
-func (c *Collider) GetFriction() float64 {
-	return c.friction
-}
-
-func (c *Collider) SetFriction(coefficient float64) {
-	c.friction = coefficient
-}
-
-func (c *Collider) GetAngularVelocity() float64 {
-	return c.AngularVelocity
-}
-
-func (c *Collider) SetAngularVelocity(angularVelocity float64) {
-	c.AngularVelocity = angularVelocity
+func (c *Collider) CalculateHitbox() {
+	for _, circle := range c.circles {
+		circle.calculate()
+	}
+	for _, rectangle := range c.rectangles {
+		rectangle.calculate()
+	}
 }
 
 func (c *Collider) SetColor(co color.RGBA) {
@@ -228,10 +150,10 @@ func (c *Collider) SetColor(co color.RGBA) {
 
 func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
 	for _, c := range c.circles {
-		(*c).drawHitbox(g)
+		c.drawHitbox(g)
 	}
 	for _, r := range c.rectangles {
-		(*r).drawHitbox(g)
+		r.drawHitbox(g)
 	}
 
 	var directionPoint = c.Position
@@ -246,12 +168,4 @@ func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
 	draw2dkit.Circle(g, directionPoint.X, directionPoint.Y, 0)
 
 	g.FillStroke()
-}
-
-func (c *Collider) CopyKinetics(o Collider) {
-	c.Position = o.Position
-	c.Angle = o.Angle
-	c.Velocity = o.Velocity
-	c.AngularVelocity = o.AngularVelocity
-	c.friction = o.friction
 }

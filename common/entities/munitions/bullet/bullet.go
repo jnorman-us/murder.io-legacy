@@ -31,14 +31,16 @@ func NewBullet(s *Shooter, angle float64) *Bullet {
 
 func (b *Bullet) Setup() {
 	b.SetupCollider(
-		[]collider.Rectangle{},
-		[]collider.Circle{
-			collider.NewCircle(types.NewVector(0, 0), 5),
+		map[string]collider.Rectangle{
+			"body": collider.NewRectangle(types.NewVector(0, 0), 1, 10, 10),
+		},
+		map[string]collider.Circle{
+			//"body": collider.NewCircle(types.NewVector(0, 0), 5),
 		},
 	)
 	b.Collider.SetColor(types.Colors.Blue)
 	b.Collider.SetMass(Mass)
-	b.Collider.SetFriction(Friction)
+	b.Collider.SetForwardFriction(Friction)
 	if b.shooter != nil {
 		var shooter = *b.shooter
 		b.SetAngle(b.Angle + shooter.GetAngle())

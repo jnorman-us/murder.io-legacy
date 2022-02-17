@@ -4,14 +4,14 @@ type Change struct {
 	Flag bool
 }
 
-func (c *Change) Set() {
+func (c *Change) MarkDirty() {
 	c.Flag = true
 }
 
-func (c *Change) Changed() bool {
+func (c *Change) Dirty() bool {
 	return c.Flag
 }
 
-func (c *Change) Reset() {
+func (c *Change) CleanDirt() {
 	c.Flag = false
 }

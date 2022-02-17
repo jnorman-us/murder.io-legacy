@@ -38,9 +38,9 @@ func (e *Engine) GetData(encoder *gob.Encoder) error {
 
 	for id, m := range e.Moveables {
 		var moveable = *m
-		if moveable.Changed() {
+		if moveable.Dirty() {
 			colliderMap[id] = *moveable.GetCollider()
-			moveable.Reset()
+			moveable.CleanDirt()
 		}
 	}
 

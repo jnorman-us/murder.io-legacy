@@ -30,21 +30,21 @@ func NewDrifter() *Drifter {
 
 func (d *Drifter) Setup() {
 	d.Collider.SetupCollider(
-		[]collider.Rectangle{
-			collider.NewRectangle(types.NewVector(-15, 0), 0, 30, 25),
-			collider.NewRectangle(types.NewVector(15, 0), 0, 30, 15),
+		map[string]collider.Rectangle{
+			"frontBody": collider.NewRectangle(types.NewVector(-15, 0), 0, 30, 25),
+			"backBody":  collider.NewRectangle(types.NewVector(15, 0), 0, 30, 15),
 		},
-		[]collider.Circle{
-			collider.NewCircle(types.NewVector(22.5, 12), 5),
-			collider.NewCircle(types.NewVector(-22.5, 15), 5),
-			collider.NewCircle(types.NewVector(-22.5, -15), 5),
-			collider.NewCircle(types.NewVector(22.5, -12), 5),
+		map[string]collider.Circle{
+			"w0": collider.NewCircle(types.NewVector(22.5, 12), 5),
+			"w1": collider.NewCircle(types.NewVector(-22.5, 15), 5),
+			"w2": collider.NewCircle(types.NewVector(-22.5, -15), 5),
+			"w3": collider.NewCircle(types.NewVector(22.5, -12), 5),
 		},
 	)
 	d.Health.SetHealth(MaxHealth)
 	d.Collider.SetColor(types.Colors.Red)
 	d.Collider.SetMass(Mass)
-	d.Collider.SetFriction(Friction)
+	d.Collider.SetForwardFriction(Friction)
 }
 
 func (d *Drifter) Break() {

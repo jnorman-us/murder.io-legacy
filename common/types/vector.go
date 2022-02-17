@@ -6,37 +6,33 @@ import (
 	"math/rand"
 )
 
-type Vector struct {
-	collision2d.Vector
-}
+type Vector collision2d.Vector
 
 func NewZeroVector() Vector {
 	return Vector{
-		collision2d.NewVector(0, 0),
+		X: 0,
+		Y: 0,
 	}
 }
 
 func NewRandomVector(minX, minY, maxX, maxY float64) Vector {
 	return Vector{
-		collision2d.NewVector(
-			rand.Float64()*(maxX-minX)+minX,
-			rand.Float64()*(maxY-minX)+minY,
-		),
+		X: rand.Float64()*(maxX-minX) + minX,
+		Y: rand.Float64()*(maxY-minX) + minY,
 	}
 }
 
 func NewVector(x, y float64) Vector {
 	return Vector{
-		collision2d.NewVector(x, y),
+		X: x,
+		Y: y,
 	}
 }
 
 func (v *Vector) Copy() Vector {
 	return Vector{
-		collision2d.Vector{
-			X: v.X,
-			Y: v.Y,
-		},
+		X: v.X,
+		Y: v.Y,
 	}
 }
 
@@ -76,10 +72,8 @@ func (v *Vector) Scale(scalar float64) {
 
 func (v *Vector) Offset(o Vector) Vector {
 	return Vector{
-		collision2d.Vector{
-			X: o.X - v.X,
-			Y: o.Y - v.Y,
-		},
+		X: o.X - v.X,
+		Y: o.Y - v.Y,
 	}
 }
 

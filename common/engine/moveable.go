@@ -7,8 +7,8 @@ import (
 
 type Moveable interface {
 	GetID() types.ID
-	Reset()
-	Changed() bool
+	CleanDirt()
+	Dirty() bool
 	ClearBuffers()
 	GetCollider() *collider2.Collider
 	UpdatePosition(float64)

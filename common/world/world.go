@@ -47,7 +47,7 @@ func (w *World) HandleSpawn(id types.ID, class byte, decoder *gob.Decoder) error
 		var _, ok = w.Drifters[id]
 		if !ok { // new, so add it
 			w.AddDrifter(newDrifter)
-		} else { // update
+		} else { // world
 		}
 		break
 	case dimetrodon.Class:
