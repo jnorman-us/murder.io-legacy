@@ -36,11 +36,11 @@ func (m *Manager) UpdatePhysics(ms float64) {
 	}
 
 	if alpha >= 1 {
-		for _, mo := range m.moveables {
+		/*for _, mo := range m.moveables {
 			// we seem to be missing packets, let's extrapolate...
 			var moveable = *mo
 			moveable.UpdatePosition(ms / (1000 / 60))
-		}
+		}*/
 	} else {
 		for id, mo := range m.moveables {
 			if collider, ok := m.colliders[id]; ok {

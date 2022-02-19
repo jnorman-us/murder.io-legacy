@@ -5,7 +5,6 @@ import (
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/llgcode/draw2d/draw2dimg"
 	"github.com/llgcode/draw2d/draw2dkit"
-	"math"
 )
 
 type Rectangle struct {
@@ -44,12 +43,14 @@ func (r *Rectangle) getOffsetAngle() float64 {
 }
 
 func (r *Rectangle) calculate() {
-	var position = collision2d.Vector(r.getOffsetPosition())
-	var angle = r.getOffsetAngle()
 	var width, height = r.width, r.height
-	var box = collision2d.NewBox(position, width, height)
-	var polygon = box.ToPolygon()
-	r.calculatedPolygon = polygon.SetAngle(math.Pi - angle)
+	var angle = r.getOffsetAngle()
+	var position = r.localPosition.Copy()
+	position.Add(types.NewVector(width/-2, height/-2))
+	position.Add(r.collider.GetPosition())
+	position.RotateAbout(angle, r.collider.GetPosition())
+	var box = collision2d.NewBox(collision2d.Vector(position), width, height)
+	r.calculatedPolygon = box.ToPolygon()
 }
 
 func (r *Rectangle) getPolygon() collision2d.Polygon {
