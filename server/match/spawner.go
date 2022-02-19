@@ -125,3 +125,9 @@ func (m *Match) DespawnBullet(id types.ID) {
 	m.engine.RemoveMoveable(id)
 	m.collisions.RemoveDynamic(id)
 }
+
+func (m *Match) DisableBullet(id types.ID) {
+	m.logic.RemoveDissolvable(id)
+	m.engine.RemoveMoveable(id)
+	m.collisions.RemoveDynamic(id)
+}

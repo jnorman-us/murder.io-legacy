@@ -73,3 +73,8 @@ func (b *Bullet) Break() {
 	var spawner = *b.spawner
 	spawner.RemoveBullet(b.ID)
 }
+
+func (b *Bullet) Stop() {
+	var spawner = *b.spawner
+	spawner.DisableBullet(b.ID)
+}
