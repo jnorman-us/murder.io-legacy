@@ -3,8 +3,6 @@ package collider
 import (
 	"github.com/Tarliton/collision2d"
 	"github.com/josephnormandev/murder/common/types"
-	"github.com/llgcode/draw2d/draw2dimg"
-	"github.com/llgcode/draw2d/draw2dkit"
 )
 
 type Rectangle struct {
@@ -57,22 +55,5 @@ func (r *Rectangle) getPolygon() collision2d.Polygon {
 	return r.calculatedPolygon
 }
 
-func (r *Rectangle) drawHitbox(g *draw2dimg.GraphicContext) {
-	var angle = r.getOffsetAngle()
-	var position = r.getOffsetPosition()
-	var width = r.width / 2
-	var height = r.height / 2
-
-	var topLeft = types.NewVector(-width, -height)
-	var bottomRight = types.NewVector(width, height)
-
-	g.Save()
-	g.SetFillColor(r.collider.color)
-	g.SetStrokeColor(r.collider.color)
-	g.Translate(position.X, position.Y)
-	g.Rotate(angle)
-	g.BeginPath()
-	draw2dkit.Rectangle(g, topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y)
-	g.FillStroke()
-	g.Restore()
+func (r *Rectangle) drawHitbox() {
 }

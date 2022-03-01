@@ -8,5 +8,5 @@ type Centerable interface {
 }
 
 func (d *Drawer) SetCenterable(c *Centerable) {
-	d.center = c
+	d.Centerable = c
 }

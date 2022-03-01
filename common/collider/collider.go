@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/Tarliton/collision2d"
 	"github.com/josephnormandev/murder/common/types"
-	"github.com/llgcode/draw2d/draw2dimg"
-	"github.com/llgcode/draw2d/draw2dkit"
 	"image/color"
 	"math"
 )
@@ -148,24 +146,6 @@ func (c *Collider) SetColor(co color.RGBA) {
 	c.color = co
 }
 
-func (c *Collider) DrawHitbox(g *draw2dimg.GraphicContext) {
-	for _, c := range c.circles {
-		c.drawHitbox(g)
-	}
-	for _, r := range c.rectangles {
-		r.drawHitbox(g)
-	}
-
-	var directionPoint = c.Position
-	directionPoint.Add(types.NewVector(20, 0))
-	directionPoint.RotateAbout(c.Angle, c.Position)
-
-	// draw centerpoint for reference
-	g.SetFillColor(color.RGBA{A: 0xff})
-	g.SetStrokeColor(color.RGBA{A: 0xff})
-	g.BeginPath()
-	draw2dkit.Circle(g, c.Position.X, c.Position.Y, 2)
-	draw2dkit.Circle(g, directionPoint.X, directionPoint.Y, 0)
-
-	g.FillStroke()
+func (c *Collider) GetColor() color.RGBA {
+	return c.color
 }

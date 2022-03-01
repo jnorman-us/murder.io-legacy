@@ -3,8 +3,6 @@ package collider
 import (
 	"github.com/Tarliton/collision2d"
 	"github.com/josephnormandev/murder/common/types"
-	"github.com/llgcode/draw2d/draw2dimg"
-	"github.com/llgcode/draw2d/draw2dkit"
 )
 
 type Circle struct {
@@ -47,12 +45,5 @@ func (c *Circle) getCircle() collision2d.Circle {
 	return c.calculatedCircle
 }
 
-func (c *Circle) drawHitbox(g *draw2dimg.GraphicContext) {
-	var position = c.getOffsetPosition()
-
-	g.SetFillColor(c.collider.color)
-	g.SetStrokeColor(c.collider.color)
-	g.BeginPath()
-	draw2dkit.Circle(g, position.X, position.Y, c.radius)
-	g.FillStroke()
+func (c *Circle) drawHitbox() {
 }

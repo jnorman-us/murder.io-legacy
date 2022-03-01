@@ -35,9 +35,6 @@ func NewManager() *Manager {
 	var packets = ws.NewManager()
 	var inputs = input.NewManager()
 
-	var sizeable = input.Sizeable(gDrawer)
-	inputs.SetSizeable(&sizeable)
-
 	var wsSpawner = ws.Spawner(manager)
 	var inputsSystem = ws.System(inputs)
 	var gameListener = ws.Listener(manager)
@@ -62,7 +59,12 @@ func (m *Manager) GetPackets() *ws.Manager {
 }
 
 func (m *Manager) Start() {
-	m.drawer.Start(m.engine.UpdatePhysics)
+	m.drawer.Start(m.Update)
+}
+
+func (m *Manager) Update(ms float64) {
+	m.inputs.PollInputs()
+	m.engine.UpdatePhysics(ms)
 }
 
 func (m *Manager) SteadyTick() {

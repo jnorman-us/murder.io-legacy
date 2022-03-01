@@ -1,24 +1,26 @@
 package input
 
+import "github.com/hajimehoshi/ebiten/v2"
+
 type KeyBinds struct {
-	moveForward    int
-	moveBackward   int
-	moveLeft       int
-	moveRight      int
-	abilitySpecial int
-	abilityAttack  int
-	abilityRanged  int
+	moveForward    ebiten.Key
+	moveBackward   ebiten.Key
+	moveLeft       ebiten.Key
+	moveRight      ebiten.Key
+	abilitySpecial ebiten.Key
+	abilityAttack  ebiten.MouseButton
+	abilityRanged  ebiten.MouseButton
 }
 
 func LoadSettings() KeyBinds {
 	var keyBinds = KeyBinds{
-		moveForward:    87,
-		moveBackward:   83,
-		moveLeft:       65,
-		moveRight:      68,
-		abilitySpecial: 32,
-		abilityAttack:  1,
-		abilityRanged:  3,
+		moveForward:    ebiten.KeyW,
+		moveBackward:   ebiten.KeyS,
+		moveLeft:       ebiten.KeyA,
+		moveRight:      ebiten.KeyD,
+		abilitySpecial: ebiten.KeySpace,
+		abilityAttack:  ebiten.MouseButtonLeft,
+		abilityRanged:  ebiten.MouseButtonRight,
 	}
 	return keyBinds
 }
