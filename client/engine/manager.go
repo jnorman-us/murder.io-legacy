@@ -24,7 +24,7 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) UpdatePhysics(ms float64) {
+func (m *Manager) UpdatePhysics(ms time.Duration) {
 	var currentTime = time.Now()
 	var timeElapsed = currentTime.Sub(m.dataLifeStart)
 	var timeTotal = m.dataLifeEnd.Sub(m.dataLifeStart)

@@ -9,7 +9,11 @@ import (
 	"github.com/josephnormandev/murder/common/game"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
+	"time"
 )
+
+const steadyTime = time.Millisecond * 1000 / 20
+const updateTime = time.Millisecond * 1000 / 60
 
 type Manager struct {
 	world.World
@@ -17,10 +21,11 @@ type Manager struct {
 
 	Username types.UserID
 
-	engine  *engine.Manager
-	packets *ws.Manager
-	drawer  *drawer.Drawer
-	inputs  *input.Manager
+	engine   *engine.Manager
+	packets  *ws.Manager
+	drawer   *drawer.Drawer
+	inputs   *input.Manager
+	wsClient *ws.Client
 }
 
 func NewManager() *Manager {
@@ -54,22 +59,28 @@ func NewManager() *Manager {
 	return manager
 }
 
-func (m *Manager) GetPackets() *ws.Manager {
-	return m.packets
+func (m *Manager) Connect(hostname string, port int, username types.UserID) {
+	m.wsClient = ws.NewClient(m.packets, hostname, port, username)
+	go (func() {
+		err := m.wsClient.Connect()
+		if err != nil {
+			fmt.Printf("Error with WS! %v\n", err)
+		}
+	})()
 }
 
-func (m *Manager) Start() {
-	m.drawer.Start(m.Update)
-}
-
-func (m *Manager) Update(ms float64) {
-	m.inputs.PollInputs()
-	m.engine.UpdatePhysics(ms)
+func (m *Manager) Update() {
+	for range time.Tick(updateTime) {
+		m.engine.UpdatePhysics(updateTime)
+	}
 }
 
 func (m *Manager) SteadyTick() {
-	err := m.packets.SteadyTick()
-	if err != nil {
-		fmt.Println(err)
+	for range time.Tick(steadyTime) {
+		err := m.packets.SteadyTick()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
 	}
 }

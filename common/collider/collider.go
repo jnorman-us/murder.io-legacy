@@ -1,7 +1,6 @@
 package collider
 
 import (
-	"fmt"
 	"github.com/Tarliton/collision2d"
 	"github.com/josephnormandev/murder/common/types"
 	"image/color"
@@ -67,7 +66,6 @@ func (c *Collider) CheckCollision(o *Collider) Collision {
 			var polygonB = b.getPolygon()
 			var collided, _ = collision2d.TestCirclePolygon(circleA, polygonB)
 			if collided {
-				fmt.Println("Polygon Circle")
 				collision.SetColliding(true)
 			}
 		}
@@ -79,7 +77,6 @@ func (c *Collider) CheckCollision(o *Collider) Collision {
 			var circleB = b.getCircle()
 			var collided, _ = collision2d.TestPolygonCircle(polygonA, circleB)
 			if collided {
-				fmt.Println("Polygon Circle")
 				collision.SetColliding(true)
 			}
 		}
@@ -87,7 +84,6 @@ func (c *Collider) CheckCollision(o *Collider) Collision {
 			var polygonB = b.getPolygon()
 			var collided, _ = collision2d.TestPolygonPolygon(polygonA, polygonB)
 			if collided {
-				fmt.Println("Polygon P{olygon")
 				collision.SetColliding(true)
 			}
 		}
