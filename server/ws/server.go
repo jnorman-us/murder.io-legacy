@@ -33,6 +33,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	})()
 
+	fmt.Printf("Incoming connection from %s\n", r.RemoteAddr)
+
 	// find the lobby that the client is in, if any
 	for _, l := range s.lobbies {
 		var lobby = *l
