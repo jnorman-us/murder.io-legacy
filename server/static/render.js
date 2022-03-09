@@ -14,21 +14,19 @@ function createScene(engineUpdate, drawUpdate, centerUpdate) {
     camera.bottom = 1 * -d;
     camera.updateProjectionMatrix();
 
-    const sun_light = new THREE.DirectionalLight(0xFFF6DA, 1);
+    const sun_light = new THREE.DirectionalLight(0xffffff, 3);
     const sun_light_target = new THREE.Object3D();
     sun_light.target = sun_light_target;
     sun_light.castShadow = true;
     sun_light.shadow.mapSize.copy(new THREE.Vector2(2000, 2000));
-    sun_light.shadow.camera.zoom = .02;
+    sun_light.shadow.camera.zoom = .01;
     sun_light.shadow.camera.near = -2000;
     sun_light.shadow.camera.far = 2000;
     scene.add(sun_light);
     scene.add(sun_light_target);
 
-    const ambient_light = new THREE.AmbientLight(0xFFF6DA);
+    const ambient_light = new THREE.AmbientLight(0xFFF6DA, 1);
     scene.add(ambient_light);
-    const ambientLight = new THREE.AmbientLight(0xffffff, .1);
-    //scene.add(ambientLight);
 
     const planeWidth = 1000;
     const planeHeight = 1000;
@@ -85,7 +83,7 @@ function createScene(engineUpdate, drawUpdate, centerUpdate) {
                 mesh.position.x = object.Position.X;
                 mesh.position.z = object.Position.Y;
 
-                mesh.rotation.y = object.Angle;
+                mesh.rotation.y = -object.Angle;
             } else {
                 const geometry = new THREE.BoxGeometry(10, 10, 10);
                 const color = object.Color;
@@ -97,7 +95,7 @@ function createScene(engineUpdate, drawUpdate, centerUpdate) {
                 mesh.position.z = object.Position.Y;
                 mesh.position.y = 5;
 
-                mesh.rotation.y = -object.Angle;
+                mesh.rotation.y = object.Angle;
 
                 mesh.receiveShadow = true;
                 mesh.castShadow = true;
