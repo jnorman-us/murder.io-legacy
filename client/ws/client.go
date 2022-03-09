@@ -14,7 +14,6 @@ type Client struct {
 	url     string
 
 	connected bool
-	cancel    func()
 }
 
 // NewClient accepts a pointer to Manager, and a string with the
@@ -27,9 +26,7 @@ func NewClient(m *Manager, hostname string, port int, id types.UserID) *Client {
 	}
 }
 
-func (c *Client) Connect() error {
-	ctx, cancel := context.WithCancel(context.Background())
-	c.cancel = cancel
+func (c *Client) Connect(ctx context.Context) error {
 	c.connected = true
 
 	connection, _, err := websocket.Dial(ctx, c.url, nil)
@@ -50,6 +47,7 @@ func (c *Client) Connect() error {
 	})
 
 	err = group.Wait()
+	c.Close()
 	return err
 }
 
@@ -111,11 +109,6 @@ func (c *Client) Active() bool {
 
 func (c *Client) Close() {
 	c.connected = false
-	if c.cancel != nil {
-		var cancel = c.cancel
-		c.cancel = nil
-		cancel()
-	}
 }
 
 func (c *Client) Send() {

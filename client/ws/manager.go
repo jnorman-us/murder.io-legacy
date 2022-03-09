@@ -37,30 +37,28 @@ func NewManager() *Manager {
 
 func (m *Manager) SteadyTick() error {
 	var ms = time.Duration(1000 / 20)
-	for range time.Tick(ms * time.Millisecond) {
-		var currentTimestamp = m.Tick - 2
+	var currentTimestamp = m.Tick - 2
 
-		fmt.Println(len(m.updateQueue), m.Tick)
-		for len(m.updateQueue) > 0 {
-			var pc = m.updateQueue[0]
-			if pc.Timestamp <= currentTimestamp {
-				err := m.EmitToListeners(pc)
-				if err != nil {
-					return err
-				}
-				m.updateQueue = m.updateQueue[1:]
-			} else if pc.Timestamp == currentTimestamp+1 {
-				err := m.EmitToFutureListeners(pc, ms)
-				if err != nil {
-					return err
-				}
-				break
-			} else {
-				break
+	fmt.Println(len(m.updateQueue), m.Tick)
+	for len(m.updateQueue) > 0 {
+		var pc = m.updateQueue[0]
+		if pc.Timestamp <= currentTimestamp {
+			err := m.EmitToListeners(pc)
+			if err != nil {
+				return err
 			}
+			m.updateQueue = m.updateQueue[1:]
+		} else if pc.Timestamp == currentTimestamp+1 {
+			err := m.EmitToFutureListeners(pc, ms)
+			if err != nil {
+				return err
+			}
+			break
+		} else {
+			break
 		}
-		m.Tick++
 	}
+	m.Tick++
 	return nil
 }
 

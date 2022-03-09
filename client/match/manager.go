@@ -1,6 +1,7 @@
 package match
 
 import (
+	"context"
 	"fmt"
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/engine"
@@ -59,28 +60,38 @@ func NewManager() *Manager {
 	return manager
 }
 
-func (m *Manager) Connect(hostname string, port int, username types.UserID) {
+func (m *Manager) Connect(background context.Context, hostname string, port int, username types.UserID) error {
 	m.wsClient = ws.NewClient(m.packets, hostname, port, username)
-	go (func() {
-		err := m.wsClient.Connect()
-		if err != nil {
-			fmt.Printf("Error with WS! %v\n", err)
-		}
-	})()
+	err := m.wsClient.Connect(background)
+	fmt.Println("Stopping connection!")
+	return err
 }
 
-func (m *Manager) Update() {
+func (m *Manager) UpdateTick(background context.Context) error {
 	for range time.Tick(updateTime) {
-		m.engine.UpdatePhysics(updateTime)
-	}
-}
-
-func (m *Manager) SteadyTick() {
-	for range time.Tick(steadyTime) {
-		err := m.packets.SteadyTick()
-		if err != nil {
-			fmt.Println(err)
-			break
+		select {
+		case <-background.Done():
+			fmt.Println("Stopping update tick")
+			return background.Err()
+		default:
+			m.engine.UpdatePhysics(updateTime)
 		}
 	}
+	return nil
+}
+
+func (m *Manager) SteadyTick(background context.Context) error {
+	for range time.Tick(steadyTime) {
+		select {
+		case <-background.Done():
+			fmt.Println("Stopping steady tick")
+			return background.Err()
+		default:
+			err := m.packets.SteadyTick()
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
