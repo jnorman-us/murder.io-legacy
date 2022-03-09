@@ -2,6 +2,7 @@ package input
 
 import (
 	"encoding/gob"
+	"fmt"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -19,6 +20,7 @@ func (m *Manager) HandleData(identifier types.UserID, decoder *gob.Decoder) erro
 	var id, ok = m.identifierToID[identifier]
 	if ok {
 		var inputable = *m.inputables[id]
+		fmt.Println(*input)
 		inputable.SetInput(*input)
 	}
 	return nil
