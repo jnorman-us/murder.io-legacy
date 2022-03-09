@@ -61,13 +61,20 @@ func NewManager() *Manager {
 	m.packets = packets
 	m.inputs = inputs
 
-	m.RunGroup, m.RunContext = errgroup.WithContext(context.Background())
-
 	return m
 }
 
-func (m *Manager) ExposeFunctions(document js.Value) {
-	document.Set("connectToServer", js.FuncOf(m.Connect))
-	document.Set("setInputs", js.FuncOf(m.inputs.SetInputs))
-	document.Set("getDrawData", js.FuncOf(m.drawer.GetDrawData))
+func (m *Manager) ExposeFunctions(doc js.Value, group *errgroup.Group, ctx context.Context) {
+	doc.Set("connectToServer", js.FuncOf(func(this js.Value, values []js.Value) interface{} {
+		var hostname = values[0].String()
+		var port = values[1].Int()
+		var username = types.UserID(values[2].String())
+
+		group.Go(func() error {
+			return m.Connect(ctx, hostname, port, username)
+		})
+		return nil
+	}))
+	doc.Set("setInputs", js.FuncOf(m.inputs.SetInputs))
+	doc.Set("getDrawData", js.FuncOf(m.drawer.GetDrawData))
 }
