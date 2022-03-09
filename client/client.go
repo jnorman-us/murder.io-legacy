@@ -16,13 +16,10 @@ func main() {
 	runGroup, runContext := errgroup.WithContext(context.Background())
 
 	runGroup.Go(func() error {
-		return manager.UpdateTick(runContext)
-	})
-	runGroup.Go(func() error {
 		return manager.SteadyTick(runContext)
 	})
 
-	manager.ExposeFunctions(js.Global(), runGroup, runContext)
+	manager.ExposeFunctions(js.Global().Get("golangEngine"), runGroup, runContext)
 
 	err := runGroup.Wait()
 	fmt.Println("Runtime error!", err)

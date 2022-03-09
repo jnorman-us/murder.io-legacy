@@ -6,6 +6,7 @@ import (
 	"github.com/josephnormandev/murder/common/collider"
 	"github.com/josephnormandev/murder/common/types"
 	"math"
+	"syscall/js"
 	"time"
 )
 
@@ -24,9 +25,10 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) UpdatePhysics(ms time.Duration) {
+func (m *Manager) UpdatePhysics(this js.Value, values []js.Value) interface{} {
 	var currentTime = time.Now()
 	var timeElapsed = currentTime.Sub(m.dataLifeStart)
+	// fmt.Println(timeElapsed)
 	var timeTotal = m.dataLifeEnd.Sub(m.dataLifeStart)
 
 	var alpha = 0.0
@@ -61,6 +63,7 @@ func (m *Manager) UpdatePhysics(ms time.Duration) {
 			// otherwise, don't even try to move it, this object has stopped moving
 		}
 	}
+	return nil
 }
 
 func (m *Manager) GetChannel() byte {

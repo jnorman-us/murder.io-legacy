@@ -76,5 +76,7 @@ func (m *Manager) ExposeFunctions(doc js.Value, group *errgroup.Group, ctx conte
 		return nil
 	}))
 	doc.Set("setInputs", js.FuncOf(m.inputs.SetInputs))
-	doc.Set("getDrawData", js.FuncOf(m.drawer.GetDrawData))
+	doc.Set("drawUpdate", js.FuncOf(m.drawer.DrawUpdate))
+	doc.Set("centerUpdate", js.FuncOf(m.drawer.CenterUpdate))
+	doc.Set("engineUpdate", js.FuncOf(m.engine.UpdatePhysics))
 }
