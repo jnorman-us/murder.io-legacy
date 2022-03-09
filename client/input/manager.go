@@ -2,7 +2,9 @@ package input
 
 import (
 	"encoding/gob"
+	"fmt"
 	"github.com/josephnormandev/murder/common/types"
+	"syscall/js"
 )
 
 type Manager struct {
@@ -17,8 +19,9 @@ func NewManager() *Manager {
 	return input
 }
 
-func (m *Manager) SetInputs(inputs types.Input) {
-	m.inputs = inputs
+func (m *Manager) SetInputs(this js.Value, values []js.Value) interface{} {
+	fmt.Println(values)
+	return nil
 }
 
 func (m *Manager) GetChannel() byte {

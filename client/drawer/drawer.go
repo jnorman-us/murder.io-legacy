@@ -2,6 +2,7 @@ package drawer
 
 import (
 	"github.com/josephnormandev/murder/common/types"
+	"syscall/js"
 	"time"
 )
 
@@ -21,4 +22,8 @@ func NewDrawer() *Drawer {
 	}
 
 	return drawer
+}
+
+func (d *Drawer) GetDrawData(this js.Value, values []js.Value) interface{} {
+	return nil
 }

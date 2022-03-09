@@ -8,6 +8,7 @@ if (!WebAssembly.instantiateStreaming) { // polyfill
 const go = new Go();
 WebAssembly.instantiateStreaming(fetch('client.wasm'), go.importObject).then(res => {
     go.run(res.instance).then(r => {
+        console.log("Go stopped running")
     });
     handleLogin();
 });

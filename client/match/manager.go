@@ -2,7 +2,6 @@ package match
 
 import (
 	"context"
-	"fmt"
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/engine"
 	"github.com/josephnormandev/murder/client/input"
@@ -10,6 +9,8 @@ import (
 	"github.com/josephnormandev/murder/common/game"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
+	"golang.org/x/sync/errgroup"
+	"syscall/js"
 	"time"
 )
 
@@ -27,24 +28,27 @@ type Manager struct {
 	drawer   *drawer.Drawer
 	inputs   *input.Manager
 	wsClient *ws.Client
+
+	RunContext context.Context
+	RunGroup   *errgroup.Group
 }
 
 func NewManager() *Manager {
-	var manager = &Manager{
+	var m = &Manager{
 		Game: *game.NewGame(),
 	}
-	var spawner = world.Spawner(manager)
-	manager.World = *world.NewWorld(&spawner)
+	var spawner = world.Spawner(m)
+	m.World = *world.NewWorld(&spawner)
 
 	var gEngine = engine.NewManager()
 	var gDrawer = drawer.NewDrawer()
 	var packets = ws.NewManager()
 	var inputs = input.NewManager()
 
-	var wsSpawner = ws.Spawner(manager)
+	var wsSpawner = ws.Spawner(m)
 	var inputsSystem = ws.System(inputs)
-	var gameListener = ws.Listener(manager)
-	var deletionsListener = ws.Listener(manager.Deletions())
+	var gameListener = ws.Listener(m)
+	var deletionsListener = ws.Listener(m.Deletions())
 	var futurePositionListener = ws.FutureListener(gEngine)
 	packets.SetSpawner(&wsSpawner)
 	packets.AddSystem(&inputsSystem)
@@ -52,46 +56,18 @@ func NewManager() *Manager {
 	packets.AddListener(&deletionsListener)
 	packets.AddFutureListener(&futurePositionListener)
 
-	manager.drawer = gDrawer
-	manager.engine = gEngine
-	manager.packets = packets
-	manager.inputs = inputs
+	m.drawer = gDrawer
+	m.engine = gEngine
+	m.packets = packets
+	m.inputs = inputs
 
-	return manager
+	m.RunGroup, m.RunContext = errgroup.WithContext(context.Background())
+
+	return m
 }
 
-func (m *Manager) Connect(background context.Context, hostname string, port int, username types.UserID) error {
-	m.wsClient = ws.NewClient(m.packets, hostname, port, username)
-	err := m.wsClient.Connect(background)
-	fmt.Println("Stopping connection!")
-	return err
-}
-
-func (m *Manager) UpdateTick(background context.Context) error {
-	for range time.Tick(updateTime) {
-		select {
-		case <-background.Done():
-			fmt.Println("Stopping update tick")
-			return background.Err()
-		default:
-			m.engine.UpdatePhysics(updateTime)
-		}
-	}
-	return nil
-}
-
-func (m *Manager) SteadyTick(background context.Context) error {
-	for range time.Tick(steadyTime) {
-		select {
-		case <-background.Done():
-			fmt.Println("Stopping steady tick")
-			return background.Err()
-		default:
-			err := m.packets.SteadyTick()
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
+func (m *Manager) ExposeFunctions(document js.Value) {
+	document.Set("connectToServer", js.FuncOf(m.Connect))
+	document.Set("setInputs", js.FuncOf(m.inputs.SetInputs))
+	document.Set("getDrawData", js.FuncOf(m.drawer.GetDrawData))
 }
