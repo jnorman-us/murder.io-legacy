@@ -36,8 +36,8 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) SteadyTick() error {
-	var ms = 1000 / 10 * time.Millisecond
-	var currentTimestamp = m.Tick - 2
+	var ms = 1000 / 5 * time.Millisecond
+	var currentTimestamp = m.Tick - 1
 
 	fmt.Println(len(m.updateQueue), m.Tick)
 	for len(m.updateQueue) > 0 {

@@ -2,26 +2,34 @@ package engine
 
 import (
 	"encoding/gob"
-	collider2 "github.com/josephnormandev/murder/common/collider"
+	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
+	"time"
 )
 
 type Engine struct {
 	Moveables map[types.ID]*Moveable
+	kinetics  map[types.ID]*packets.Kinetic
+
+	lastSendTime time.Time
 }
 
 func NewEngine() *Engine {
 	var engine = &Engine{
 		Moveables: map[types.ID]*Moveable{},
+		kinetics:  map[types.ID]*packets.Kinetic{},
 	}
 	return engine
 }
 
 func (e *Engine) UpdatePhysics(time float64) {
-	for _, m := range e.Moveables {
+	for id, m := range e.Moveables {
 		var moveable = *m
 		moveable.UpdatePosition(time)
 		moveable.ClearBuffers()
+
+		var col = moveable.GetCollider()
+		e.kinetics[id].SetData(col.GetPosition(), col.GetAngle())
 	}
 }
 
@@ -30,20 +38,19 @@ func (e *Engine) GetChannel() byte {
 }
 
 func (e *Engine) Flush() {
-
 }
 
 func (e *Engine) GetData(encoder *gob.Encoder) error {
-	var colliderMap = map[types.ID]collider2.Collider{}
+	var kinetics = map[types.ID]packets.Kinetic{}
 
-	for id, m := range e.Moveables {
-		var moveable = *m
-		if moveable.Dirty() {
-			colliderMap[id] = *moveable.GetCollider()
-			moveable.CleanDirt()
+	for id, kinetic := range e.kinetics {
+		if kinetic.Moved() {
+			kinetics[id] = *kinetic
 		}
+		kinetic.Reset()
 	}
+	e.lastSendTime = time.Now()
 
-	err := encoder.Encode(colliderMap)
+	err := encoder.Encode(kinetics)
 	return err
 }

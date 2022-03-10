@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const sendTime = time.Millisecond * 1000 / 10
+const sendTime = time.Millisecond * 1000 / 5
 
 type Lobby struct {
 	info      *LobbyInfo

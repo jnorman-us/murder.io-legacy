@@ -18,7 +18,7 @@ var wsServer *ws.Server
 var soleGame *match.Match
 
 var names = []types.UserID{
-	"Jellotinous",
+	/*"Jellotinous",
 	"Wine_Craft",
 	"Xiehang",
 	"TheStorminNorman",
@@ -27,7 +27,7 @@ var names = []types.UserID{
 	"Envii",
 	"Jinseng",
 	"Laerir",
-	"JoeyD",
+	"JoeyD",*/
 	"Beta Tester",
 }
 

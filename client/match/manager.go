@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-const steadyTime = time.Millisecond * 1000 / 10
+const steadyTime = time.Millisecond * 1000 / 5
 
 type Manager struct {
 	world.World
