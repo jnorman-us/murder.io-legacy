@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const sendTime = time.Millisecond * 1000 / 10
+
 type Lobby struct {
 	info      *LobbyInfo
 	timestamp types.Tick
@@ -40,8 +42,7 @@ func NewLobby(info *LobbyInfo, lock *sync.Mutex) *Lobby {
 }
 
 func (l *Lobby) Send() {
-	var ms = time.Duration(1000 / 20)
-	for range time.Tick(ms * time.Millisecond) {
+	for range time.Tick(sendTime) {
 		l.worldLock.Lock()
 		for _, s := range l.systems {
 			var system = *s

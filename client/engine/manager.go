@@ -80,7 +80,7 @@ func (m *Manager) HandleFutureData(decoder *gob.Decoder, ttl time.Duration) erro
 	}
 
 	m.dataLifeStart = time.Now()
-	m.dataLifeEnd = m.dataLifeStart.Add(ttl * time.Millisecond)
+	m.dataLifeEnd = m.dataLifeStart.Add(ttl)
 	m.colliders = *colliderMap
 	return nil
 }
