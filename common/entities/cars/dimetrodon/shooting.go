@@ -2,7 +2,7 @@ package dimetrodon
 
 import "github.com/josephnormandev/murder/common/types"
 
-const BulletSpeed = 5
+const BulletSpeed = 10
 const DamagePerBullet = 9
 const DropOff = 500
 
