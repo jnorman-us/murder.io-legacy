@@ -217,7 +217,7 @@ func (c *Client) EncodeSystems() (communications.PacketCollection, error) {
 	}
 	return communications.PacketCollection{
 		PacketArray: packetArray,
-		Timestamp:   lobby.timestamp,
+		Timestamp:   lobby.time.Tick,
 	}, nil
 }
 

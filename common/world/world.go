@@ -11,6 +11,7 @@ import (
 
 type World struct {
 	spawner     *Spawner
+	additions   *Additions
 	deletions   *Deletions
 	Drifters    map[types.ID]*drifter.Drifter // cars
 	Dimetrodons map[types.ID]*dimetrodon.Dimetrodon
@@ -26,11 +27,22 @@ func NewWorld(s *Spawner) *World {
 		Poles:       map[types.ID]*pole.Pole{},
 		Bullets:     map[types.ID]*bullet.Bullet{},
 	}
-	game.deletions = NewDeletions(game)
 	return game
 }
 
-func (w *World) Deletions() *Deletions {
+func (w *World) SetAdditions(additions *Additions) {
+	w.additions = additions
+}
+
+func (w *World) SetDeletions(deletions *Deletions) {
+	w.deletions = deletions
+}
+
+func (w *World) GetAdditions() *Additions {
+	return w.additions
+}
+
+func (w *World) GetDeletions() *Deletions {
 	return w.deletions
 }
 

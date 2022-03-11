@@ -4,18 +4,19 @@ import (
 	"encoding/gob"
 	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
-	"time"
 )
 
 type Engine struct {
+	time *types.Time
+
 	Moveables map[types.ID]*Moveable
 	kinetics  map[types.ID]*packets.Kinetic
-
-	lastSendTime time.Time
 }
 
-func NewEngine() *Engine {
+func NewEngine(ot *types.Time) *Engine {
 	var engine = &Engine{
+		time: ot,
+
 		Moveables: map[types.ID]*Moveable{},
 		kinetics:  map[types.ID]*packets.Kinetic{},
 	}
@@ -49,7 +50,6 @@ func (e *Engine) GetData(encoder *gob.Encoder) error {
 		}
 		kinetic.Reset()
 	}
-	e.lastSendTime = time.Now()
 
 	err := encoder.Encode(kinetics)
 	return err

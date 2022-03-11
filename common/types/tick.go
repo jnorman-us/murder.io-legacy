@@ -1,3 +1,3 @@
 package types
 
-type Tick int
+type Tick int32

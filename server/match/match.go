@@ -13,34 +13,45 @@ import (
 	"time"
 )
 
+const tickTime = time.Millisecond * 1000 / 60
+const sendTime = time.Millisecond * 1000 / 5
+
 type Match struct {
 	types.ID
 	world.World // keeps track of Spawns and Entities
 	game.Game   // keeps track of Game state
-	worldLock   *sync.Mutex
-	entityID    types.ID
-	logic       *logic.Manager
-	engine      *engine.Engine
-	packets     *ws.Lobby
-	inputs      *input.Manager
-	collisions  *collisions.Manager
+
+	time       *types.Time
+	worldLock  *sync.Mutex
+	entityID   types.ID
+	logic      *logic.Manager
+	engine     *engine.Engine
+	packets    *ws.Lobby
+	inputs     *input.Manager
+	collisions *collisions.Manager
 }
 
 func NewMatch(id types.ID) *Match {
-	var match = &Match{
+	var time = types.NewTime()
+	var m = &Match{
 		ID:        id,
 		entityID:  1,
+		time:      time,
 		worldLock: &sync.Mutex{},
 		Game:      *game.NewGame(),
 	}
-	var spawner = world.Spawner(match)
-	match.World = *world.NewWorld(&spawner)
+	var spawner = world.Spawner(m)
+	m.World = *world.NewWorld(&spawner)
+	var additions = world.NewAdditions(&m.World, time)
+	var deletions = world.NewDeletions(&m.World, time)
+	m.SetAdditions(additions)
+	m.SetDeletions(deletions)
 
-	var packetsInfo = ws.LobbyInfo(match)
+	var packetsInfo = ws.LobbyInfo(m)
 
 	var gLogic = logic.NewManager()
-	var gEngine = engine.NewEngine()
-	var packets = ws.NewLobby(&packetsInfo, match.worldLock)
+	var gEngine = engine.NewEngine(time)
+	var packets = ws.NewLobby(&packetsInfo, time)
 	var inputs = input.NewManager()
 	var gCollisions = collisions.NewManager()
 
@@ -48,18 +59,20 @@ func NewMatch(id types.ID) *Match {
 	packets.AddListener(&inputListener)
 
 	var positionsSystem = ws.System(gEngine)
-	var deletionsSystem = ws.System(match.Deletions())
-	var gameSystem = ws.System(match)
+	var additionsSystem = ws.System(additions)
+	var deletionsSystem = ws.System(deletions)
+	var gameSystem = ws.System(m)
 	packets.AddSystem(&positionsSystem)
+	packets.AddSystem(&additionsSystem)
 	packets.AddSystem(&deletionsSystem)
 	packets.AddSystem(&gameSystem)
 
-	match.logic = gLogic
-	match.engine = gEngine
-	match.packets = packets
-	match.inputs = inputs
-	match.collisions = gCollisions
-	return match
+	m.logic = gLogic
+	m.engine = gEngine
+	m.packets = packets
+	m.inputs = inputs
+	m.collisions = gCollisions
+	return m
 }
 
 func (m *Match) GetPackets() *ws.Lobby {
@@ -71,11 +84,21 @@ func (m *Match) GetWorldLock() *sync.Mutex {
 }
 
 func (m *Match) Tick() {
-	for range time.Tick(1000 / 60 * time.Millisecond) {
+	for range time.Tick(tickTime) {
 		m.worldLock.Lock()
 		m.logic.Tick()
 		m.engine.UpdatePhysics(1)
 		m.collisions.ResolveCollisions()
+		m.worldLock.Unlock()
+	}
+}
+
+func (m *Match) Send() {
+	for range time.Tick(sendTime) {
+		m.worldLock.Lock()
+		m.time.Reset()
+		m.packets.Send()
+		m.time.Tick++
 		m.worldLock.Unlock()
 	}
 }

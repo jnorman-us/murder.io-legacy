@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/communications"
 	"github.com/josephnormandev/murder/common/types"
 	"time"
@@ -39,7 +38,7 @@ func (m *Manager) SteadyTick() error {
 	var ms = 1000 / 5 * time.Millisecond
 	var currentTimestamp = m.Tick - 1
 
-	fmt.Println(len(m.updateQueue), m.Tick)
+	// fmt.Println(len(m.updateQueue), m.Tick)
 	for len(m.updateQueue) > 0 {
 		var pc = m.updateQueue[0]
 		if pc.Timestamp <= currentTimestamp {

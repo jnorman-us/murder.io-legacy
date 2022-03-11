@@ -46,13 +46,13 @@ func main() {
 	wsServer.AddLobby(lobby)
 
 	go soleGame.Tick()
-	go lobby.Send()
+	go soleGame.Send()
 
 	soleGame.SetPlayers(names)
 
 	rand.Seed(time.Now().UnixNano())
 	for _, name := range names {
-		if rand.Intn(2) == 1 {
+		if false && rand.Intn(2) == 1 {
 			var d = drifter.NewDrifter()
 			d.UserID = name
 			d.SetPosition(types.NewRandomVector(0, 0, 400, 400))

@@ -9,7 +9,7 @@ import (
 // used for historical data as well as transporting over ws
 type Kinetic struct {
 	new        bool
-	Offset     int32
+	Offset     time.Duration
 	StartX     float32
 	StartY     float32
 	StartAngle float32
@@ -54,8 +54,4 @@ func (k *Kinetic) GetStartAngle() float64 {
 
 func (k *Kinetic) GetEndAngle() float64 {
 	return float64(k.EndAngle)
-}
-
-func (k *Kinetic) GetOffsetDuration() time.Duration {
-	return time.Duration(k.Offset)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/josephnormandev/murder/client/ws"
 	"github.com/josephnormandev/murder/common/types"
+	"syscall/js"
 	"time"
 )
 
@@ -23,11 +24,23 @@ func (m *Manager) SteadyTick(ctx context.Context) error {
 			fmt.Println("Stopping steady tick")
 			return ctx.Err()
 		default:
+			m.time.Reset()
 			err := m.packets.SteadyTick()
 			if err != nil {
 				return err
 			}
 		}
 	}
+	return nil
+}
+
+func (m *Manager) Update(this js.Value, values []js.Value) interface{} {
+	var timeElapsed = m.time.GetOffset()
+	var timeTotal = steadyTime
+
+	m.GetAdditions().AddTick(timeElapsed, timeTotal)
+	m.GetDeletions().DeleteTick(timeElapsed, timeTotal)
+	m.engine.UpdatePhysics(timeElapsed, timeTotal)
+
 	return nil
 }

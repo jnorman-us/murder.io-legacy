@@ -20,6 +20,7 @@ type Manager struct {
 	world.World
 	game.Game
 
+	time     *types.Time
 	Username types.UserID
 
 	engine   *engine.Manager
@@ -33,11 +34,17 @@ type Manager struct {
 }
 
 func NewManager() *Manager {
+	var time = types.NewTime()
 	var m = &Manager{
+		time: time,
 		Game: *game.NewGame(),
 	}
 	var spawner = world.Spawner(m)
 	m.World = *world.NewWorld(&spawner)
+	var additions = world.NewAdditions(&m.World, time)
+	var deletions = world.NewDeletions(&m.World, time)
+	m.SetAdditions(additions)
+	m.SetDeletions(deletions)
 
 	var gEngine = engine.NewManager()
 	var gDrawer = drawer.NewDrawer()
@@ -47,12 +54,14 @@ func NewManager() *Manager {
 	var wsSpawner = ws.Spawner(m)
 	var inputsSystem = ws.System(inputs)
 	var gameListener = ws.Listener(m)
-	var deletionsListener = ws.Listener(m.Deletions())
+	var additionsListener = ws.Listener(additions)
+	var deletionsListener = ws.FutureListener(deletions)
 	var futurePositionListener = ws.FutureListener(gEngine)
 	packets.SetSpawner(&wsSpawner)
 	packets.AddSystem(&inputsSystem)
 	packets.AddListener(&gameListener)
-	packets.AddListener(&deletionsListener)
+	packets.AddListener(&additionsListener)
+	packets.AddFutureListener(&deletionsListener)
 	packets.AddFutureListener(&futurePositionListener)
 
 	m.drawer = gDrawer
@@ -77,5 +86,5 @@ func (m *Manager) ExposeFunctions(doc js.Value, group *errgroup.Group, ctx conte
 	doc.Set("setInputs", js.FuncOf(m.inputs.SetInputs))
 	doc.Set("drawUpdate", js.FuncOf(m.drawer.DrawUpdate))
 	doc.Set("centerUpdate", js.FuncOf(m.drawer.CenterUpdate))
-	doc.Set("engineUpdate", js.FuncOf(m.engine.UpdatePhysics))
+	doc.Set("engineUpdate", js.FuncOf(m.Update))
 }
