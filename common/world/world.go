@@ -11,21 +11,35 @@ import (
 
 type World struct {
 	spawner     *Spawner
+	environment types.Environment
 	additions   *Additions
 	deletions   *Deletions
+
 	Drifters    map[types.ID]*drifter.Drifter // cars
 	Dimetrodons map[types.ID]*dimetrodon.Dimetrodon
 	Poles       map[types.ID]*pole.Pole // terrain elements
 	Bullets     map[types.ID]*bullet.Bullet
+
+	// state maps for each type. These are only used upon addition
+	DrifterTemp    map[types.ID]drifter.State
+	DimetrodonTemp map[types.ID]dimetrodon.State
+	PoleTemp       map[types.ID]pole.State
+	BulletTemp     map[types.ID]bullet.State
 }
 
-func NewWorld(s *Spawner) *World {
+func NewWorld(s *Spawner, env types.Environment) *World {
 	var game = &World{
 		spawner:     s,
+		environment: env,
 		Drifters:    map[types.ID]*drifter.Drifter{},
 		Dimetrodons: map[types.ID]*dimetrodon.Dimetrodon{},
 		Poles:       map[types.ID]*pole.Pole{},
 		Bullets:     map[types.ID]*bullet.Bullet{},
+
+		DrifterTemp:    map[types.ID]drifter.State{},
+		DimetrodonTemp: map[types.ID]dimetrodon.State{},
+		PoleTemp:       map[types.ID]pole.State{},
+		BulletTemp:     map[types.ID]bullet.State{},
 	}
 	return game
 }
@@ -49,58 +63,59 @@ func (w *World) GetDeletions() *Deletions {
 func (w *World) HandleSpawn(id types.ID, class byte, decoder *gob.Decoder) error {
 	switch class {
 	case drifter.Class:
-		var newDrifter = &drifter.Drifter{}
+		var newState = &drifter.State{}
 
-		err := decoder.Decode(newDrifter)
+		err := decoder.Decode(newState)
 		if err != nil {
 			return err
 		}
 
-		var _, ok = w.Drifters[id]
-		if !ok { // new, so add it
-			w.AddDrifter(newDrifter)
+		if exDrifter, ok := w.Drifters[id]; !ok { // new, so add it
+			w.DrifterTemp[id] = *newState
 		} else { // world
+			exDrifter.State = *newState
 		}
 		break
 	case dimetrodon.Class:
-		var newDimetrodon = &dimetrodon.Dimetrodon{}
+		var newState = &dimetrodon.State{}
 
-		err := decoder.Decode(newDimetrodon)
+		err := decoder.Decode(newState)
 		if err != nil {
 			return err
 		}
 
-		var _, ok = w.Dimetrodons[id]
-		if !ok { // new, so add it
-			w.AddDimetrodon(newDimetrodon)
+		if exDimetrodon, ok := w.Dimetrodons[id]; !ok { // new, so add it
+			w.DimetrodonTemp[id] = *newState
 		} else { // update
+			exDimetrodon.State = *newState
 		}
 		break
 	case pole.Class:
-		var newPole = &pole.Pole{}
+		var newState = &pole.State{}
 
-		err := decoder.Decode(newPole)
+		err := decoder.Decode(newState)
 		if err != nil {
 			return err
 		}
 
-		var _, ok = w.Poles[id]
-		if !ok {
-			w.AddPole(newPole)
+		if exPole, ok := w.Poles[id]; !ok {
+			w.PoleTemp[id] = *newState
 		} else { // update
+			exPole.State = *newState
 		}
 		break
 	case bullet.Class:
-		var newBullet = &bullet.Bullet{}
+		var newState = &bullet.State{}
 
-		err := decoder.Decode(newBullet)
+		err := decoder.Decode(newState)
 		if err != nil {
 			return err
 		}
-		var _, ok = w.Bullets[id]
-		if !ok {
-			w.AddBullet(newBullet)
+
+		if exBullet, ok := w.Bullets[id]; !ok {
+			w.BulletTemp[id] = *newState
 		} else { // update
+			exBullet.State = *newState
 		}
 		break
 	}

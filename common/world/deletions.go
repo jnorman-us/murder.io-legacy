@@ -47,6 +47,10 @@ func (d *Deletions) GetData(encoder *gob.Encoder) error {
 	return encoder.Encode(flushed)
 }
 
+func (d *Deletions) GetCatchupData(encoder *gob.Encoder) error {
+	return encoder.Encode([]packets.Deletion{})
+}
+
 // HandleFutureData takes the packet data and stores it until the DeleteTick
 // clears it. If it is never cleared, then it will clear it on the next
 // HandleData call

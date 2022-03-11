@@ -108,6 +108,12 @@ func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
 			_, byteArray, err := conn.Read(parentCtx)
 			if !c.receivedFirst {
 				c.receiveFirst()
+
+				packetCollection, err := (*c).EncodeCatchupSystems()
+				if err != nil {
+					return err
+				}
+				c.Send(packetCollection)
 			}
 			if err != nil {
 				c.disconnect()
@@ -197,6 +203,11 @@ func (c *Client) EncodeSystems() (communications.PacketCollection, error) {
 
 	for _, s := range lobby.spawns {
 		var spawn = *s
+		if !spawn.Dirty() {
+			continue
+		}
+		spawn.CleanDirt()
+
 		var id = spawn.GetID()
 		var class = spawn.GetClass()
 
@@ -215,6 +226,63 @@ func (c *Client) EncodeSystems() (communications.PacketCollection, error) {
 
 		packetArray = append(packetArray, packet)
 	}
+	return communications.PacketCollection{
+		PacketArray: packetArray,
+		Timestamp:   lobby.time.Tick,
+	}, nil
+}
+
+func (c *Client) EncodeCatchupSystems() (communications.PacketCollection, error) {
+	c.lobby.systemMutex.Lock()
+	c.lobby.spawnMutex.Lock()
+	defer c.lobby.systemMutex.Unlock()
+	defer c.lobby.spawnMutex.Unlock()
+
+	var packetArray []communications.Packet
+	var lobby = c.lobby
+	var codec = c.codec
+
+	// perhaps implement this in the manager because
+	// there is no need to make this data unique per client
+	for _, s := range lobby.systems {
+		var system = *s
+		var channel = system.GetChannel()
+
+		var encoder = codec.BeginEncode(channel)
+		err := system.GetCatchupData(encoder)
+		if err != nil {
+			return communications.PacketCollection{}, err
+		}
+		var outputBytes = codec.EndEncode(channel)
+
+		packetArray = append(packetArray, communications.Packet{
+			ID:      0,
+			Channel: channel,
+			Data:    outputBytes,
+		})
+	}
+
+	for _, s := range lobby.spawns {
+		var spawn = *s
+		var id = spawn.GetID()
+		var class = spawn.GetClass()
+
+		var encoder = codec.BeginEncode(class)
+		err := spawn.GetData(encoder)
+		if err != nil {
+			return communications.PacketCollection{}, err
+		}
+		var outputBytes = codec.EndEncode(class)
+
+		var packet = communications.Packet{
+			ID:      id,
+			Channel: class,
+			Data:    outputBytes,
+		}
+
+		packetArray = append(packetArray, packet)
+	}
+
 	return communications.PacketCollection{
 		PacketArray: packetArray,
 		Timestamp:   lobby.time.Tick,

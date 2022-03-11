@@ -2,7 +2,6 @@ package dimetrodon
 
 import (
 	"github.com/josephnormandev/murder/common/collider"
-	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -11,9 +10,8 @@ const Friction = 0.3
 const MaxHealth = 250
 
 type Dimetrodon struct {
-	entities.Health
+	State
 	types.ID
-	types.UserID
 	collider.Collider
 	types.Input
 	gattlingGunCoolDown types.CoolDown

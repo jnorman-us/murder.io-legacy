@@ -1,6 +1,7 @@
 package match
 
 import (
+	"fmt"
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/engine"
 	"github.com/josephnormandev/murder/common/entities/cars/dimetrodon"
@@ -15,6 +16,7 @@ func (m *Manager) SpawnDrifter(d *drifter.Drifter) types.ID {
 	d.Setup()
 
 	if d.GetUserID() == m.Username {
+		fmt.Println(m.Username)
 		var centerable = drawer.Centerable(d)
 		m.drawer.SetCenterable(&centerable)
 	}
@@ -38,6 +40,7 @@ func (m *Manager) SpawnDimetrodon(d *dimetrodon.Dimetrodon) types.ID {
 	d.Setup()
 
 	if d.GetUserID() == m.Username {
+		fmt.Println(m.Username)
 		var centerable = drawer.Centerable(d)
 		m.drawer.SetCenterable(&centerable)
 	}

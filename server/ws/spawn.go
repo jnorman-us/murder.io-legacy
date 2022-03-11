@@ -8,6 +8,8 @@ import (
 type Spawn interface {
 	GetID() types.ID
 	GetClass() byte
+	Dirty() bool
+	CleanDirt()
 	GetData(*gob.Encoder) error
 }
 

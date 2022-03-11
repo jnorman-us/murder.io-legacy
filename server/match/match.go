@@ -41,7 +41,7 @@ func NewMatch(id types.ID) *Match {
 		Game:      *game.NewGame(),
 	}
 	var spawner = world.Spawner(m)
-	m.World = *world.NewWorld(&spawner)
+	m.World = *world.NewWorld(&spawner, types.ServerEnvironment())
 	var additions = world.NewAdditions(&m.World, time)
 	var deletions = world.NewDeletions(&m.World, time)
 	m.SetAdditions(additions)

@@ -2,7 +2,6 @@ package drifter
 
 import (
 	"github.com/josephnormandev/murder/common/collider"
-	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -11,9 +10,8 @@ const Friction = 0.3
 const MaxHealth = 200
 
 type Drifter struct {
-	entities.Health
+	State
 	types.ID
-	types.UserID
 	collider.Collider
 	types.Input
 	shotgunCoolDown types.CoolDown
@@ -41,7 +39,7 @@ func (d *Drifter) Setup() {
 			"w3": collider.NewCircle(types.NewVector(22.5, -12), 5),
 		},
 	)
-	d.Health.SetHealth(MaxHealth)
+	d.SetHealth(MaxHealth)
 	d.Collider.SetColor(types.Colors.Red)
 	d.Collider.SetMass(Mass)
 	d.Collider.SetForwardFriction(Friction)

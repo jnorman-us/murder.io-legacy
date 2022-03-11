@@ -7,7 +7,7 @@ func (p *Pole) GetClass() byte {
 }
 
 func (p *Pole) GetData(e *gob.Encoder) error {
-	return e.Encode(p)
+	return e.Encode(p.State)
 }
 
 const Class byte = 0x82

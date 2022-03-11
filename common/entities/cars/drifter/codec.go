@@ -9,7 +9,7 @@ func (d *Drifter) GetClass() byte {
 }
 
 func (d *Drifter) GetData(e *gob.Encoder) error {
-	return e.Encode(d)
+	return e.Encode(d.State)
 }
 
 const Class byte = 0x81

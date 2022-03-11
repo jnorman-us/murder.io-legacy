@@ -8,8 +8,6 @@ import (
 )
 
 type Collider struct {
-	types.Change
-
 	mass         float64
 	forceBuffer  types.Vector
 	torqueBuffer float64
@@ -47,8 +45,6 @@ func (c *Collider) SetupCollider(rectangles map[string]Rectangle, circles map[st
 		circle.setCollider(c)
 		c.circles[id] = &circle
 	}
-
-	c.MarkDirty()
 }
 
 func (c *Collider) CheckCollision(o *Collider) Collision {
@@ -106,9 +102,6 @@ func (c *Collider) UpdatePosition(time float64) {
 
 	var newPosition = c.Position
 	newPosition.Add(newVelocity)
-	if !newPosition.Equals(c.Position) {
-		c.MarkDirty()
-	}
 	c.SetPosition(newPosition)
 
 	var angularAcceleration = c.torqueBuffer
@@ -122,9 +115,6 @@ func (c *Collider) UpdatePosition(time float64) {
 
 	var newAngle = c.Angle
 	newAngle += newAngularVelocity
-	if newAngle != c.Angle {
-		c.MarkDirty()
-	}
 	c.SetAngle(newAngle)
 	c.CalculateHitbox()
 }

@@ -55,3 +55,16 @@ func (k *Kinetic) GetStartAngle() float64 {
 func (k *Kinetic) GetEndAngle() float64 {
 	return float64(k.EndAngle)
 }
+
+func (k *Kinetic) GetStill() Kinetic {
+	return Kinetic{
+		new:        false,
+		Offset:     0,
+		StartX:     k.EndX,
+		StartY:     k.EndY,
+		StartAngle: k.EndAngle,
+		EndX:       k.EndX,
+		EndY:       k.EndY,
+		EndAngle:   k.EndAngle,
+	}
+}

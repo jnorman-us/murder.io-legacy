@@ -14,6 +14,10 @@ func (g *Game) GetData(encoder *gob.Encoder) error {
 	return encoder.Encode(g)
 }
 
+func (g *Game) GetCatchupData(encoder *gob.Encoder) error {
+	return encoder.Encode(g)
+}
+
 func (g *Game) HandleData(decoder *gob.Decoder) error {
 	var newGame = &Game{}
 

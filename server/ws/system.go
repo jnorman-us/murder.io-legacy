@@ -6,6 +6,7 @@ type System interface {
 	GetChannel() byte
 	Flush() // for aggregating systems, bookmark data collection
 	GetData(*gob.Encoder) error
+	GetCatchupData(*gob.Encoder) error
 }
 
 func (l *Lobby) AddSystem(s *System) {

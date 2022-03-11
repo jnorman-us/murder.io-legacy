@@ -7,7 +7,7 @@ func (d *Dimetrodon) GetClass() byte {
 }
 
 func (d *Dimetrodon) GetData(e *gob.Encoder) error {
-	return e.Encode(d)
+	return e.Encode(d.State)
 }
 
 const Class byte = 0x84

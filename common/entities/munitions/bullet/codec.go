@@ -7,7 +7,7 @@ func (b *Bullet) GetClass() byte {
 }
 
 func (b *Bullet) GetData(e *gob.Encoder) error {
-	return e.Encode(b)
+	return e.Encode(b.State)
 }
 
 const Class byte = 0x83

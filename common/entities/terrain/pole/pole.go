@@ -6,6 +6,7 @@ import (
 )
 
 type Pole struct {
+	State
 	types.ID
 	collider.Collider
 }

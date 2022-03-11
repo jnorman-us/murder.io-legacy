@@ -2,6 +2,7 @@ package engine
 
 import (
 	"encoding/gob"
+	"fmt"
 	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
 )
@@ -45,12 +46,23 @@ func (e *Engine) GetData(encoder *gob.Encoder) error {
 	var kinetics = map[types.ID]packets.Kinetic{}
 
 	for id, kinetic := range e.kinetics {
-		if kinetic.Moved() {
-			kinetics[id] = *kinetic
-		}
+		//if kinetic.Moved() {
+		fmt.Println("This thing moved")
+		kinetics[id] = *kinetic
+		//}
 		kinetic.Reset()
 	}
 
 	err := encoder.Encode(kinetics)
 	return err
+}
+
+func (e *Engine) GetCatchupData(encoder *gob.Encoder) error {
+	var kinetics = map[types.ID]packets.Kinetic{}
+
+	for id, kinetic := range e.kinetics {
+		kinetics[id] = kinetic.GetStill()
+	}
+
+	return encoder.Encode(kinetics)
 }
