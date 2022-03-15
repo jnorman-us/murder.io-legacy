@@ -21,7 +21,6 @@ type Match struct {
 	world.World // keeps track of Spawns and Entities
 	game.Game   // keeps track of Game state
 
-	time       *types.Time
 	worldLock  *sync.Mutex
 	entityID   types.ID
 	logic      *logic.Manager
@@ -32,40 +31,28 @@ type Match struct {
 }
 
 func NewMatch(id types.ID) *Match {
-	var time = types.NewTime()
 	var m = &Match{
 		ID:        id,
 		entityID:  1,
-		time:      time,
 		worldLock: &sync.Mutex{},
 		Game:      *game.NewGame(),
 	}
 	var spawner = world.Spawner(m)
-	m.World = *world.NewWorld(&spawner, types.ServerEnvironment())
-	var additions = world.NewAdditions(&m.World, time)
-	var deletions = world.NewDeletions(&m.World, time)
-	m.SetAdditions(additions)
-	m.SetDeletions(deletions)
+	m.World = *world.NewWorld(&spawner)
 
 	var packetsInfo = ws.LobbyInfo(m)
 
 	var gLogic = logic.NewManager()
-	var gEngine = engine.NewEngine(time)
-	var packets = ws.NewLobby(&packetsInfo, time)
+	var gEngine = engine.NewEngine()
+	var packets = ws.NewLobby(&packetsInfo)
 	var inputs = input.NewManager()
 	var gCollisions = collisions.NewManager()
 
-	var inputListener = ws.Listener(inputs)
-	packets.AddListener(&inputListener)
+	//var inputListener = ws.Listener(inputs)
+	//packets.AddListener(&inputListener)
 
-	var positionsSystem = ws.System(gEngine)
-	var additionsSystem = ws.System(additions)
-	var deletionsSystem = ws.System(deletions)
-	var gameSystem = ws.System(m)
-	packets.AddSystem(&positionsSystem)
-	packets.AddSystem(&additionsSystem)
-	packets.AddSystem(&deletionsSystem)
-	packets.AddSystem(&gameSystem)
+	//var gameSystem = ws.System(m.Game)
+	//packets.AddSystem(&gameSystem)
 
 	m.logic = gLogic
 	m.engine = gEngine
@@ -96,9 +83,7 @@ func (m *Match) Tick() {
 func (m *Match) Send() {
 	for range time.Tick(sendTime) {
 		m.worldLock.Lock()
-		m.time.Reset()
 		m.packets.Send()
-		m.time.Tick++
 		m.worldLock.Unlock()
 	}
 }

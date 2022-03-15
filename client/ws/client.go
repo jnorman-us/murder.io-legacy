@@ -51,24 +51,20 @@ func (c *Client) Connect(ctx context.Context) error {
 	return err
 }
 
-func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
+func (c *Client) Write(background context.Context, conn *websocket.Conn) error {
 	var manager = c.manager
 	for range time.Tick(50 * time.Millisecond) {
 		select {
-		case <-parentCtx.Done():
-			return parentCtx.Err()
+		case <-background.Done():
+			return background.Err()
 		default:
-			packetArray, err := manager.EncodeSystems()
+			clump := manager.EncodeSystems()
+			outputs, err := manager.EncodeOutputs(clump)
 			if err != nil {
 				return err
 			}
 
-			byteArray, err := manager.EncodeOutputs(packetArray)
-			if err != nil {
-				return err
-			}
-
-			err = conn.Write(parentCtx, websocket.MessageBinary, byteArray)
+			err = conn.Write(background, websocket.MessageBinary, outputs)
 			if err != nil {
 				return err
 			}
@@ -77,28 +73,25 @@ func (c *Client) Write(parentCtx context.Context, conn *websocket.Conn) error {
 	return nil
 }
 
-func (c *Client) Read(parentCtx context.Context, conn *websocket.Conn) error {
+func (c *Client) Read(background context.Context, conn *websocket.Conn) error {
 	var manager = c.manager
 
 	for {
 		select {
-		case <-parentCtx.Done():
-			return parentCtx.Err()
+		case <-background.Done():
+			return background.Err()
 		default:
-			_, byteArray, err := conn.Read(parentCtx)
+			_, inputs, err := conn.Read(background)
 			if err != nil {
 				return err
 			}
 
-			packetCollection, err := manager.DecodeInputs(byteArray)
+			clump, err := manager.DecodeInputs(inputs)
 			if err != nil {
 				return err
 			}
 
-			err = manager.DecodeForListeners(packetCollection)
-			if err != nil {
-				return err
-			}
+			manager.DecodeForListeners(clump)
 		}
 	}
 }

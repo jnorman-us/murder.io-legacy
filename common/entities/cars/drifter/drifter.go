@@ -2,6 +2,7 @@ package drifter
 
 import (
 	"github.com/josephnormandev/murder/common/collider"
+	"github.com/josephnormandev/murder/common/entities"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -10,7 +11,8 @@ const Friction = 0.3
 const MaxHealth = 200
 
 type Drifter struct {
-	State
+	entities.Health
+	types.UserID
 	types.ID
 	collider.Collider
 	types.Input

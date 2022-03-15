@@ -11,16 +11,12 @@ import (
 	"github.com/josephnormandev/murder/common/world"
 	"golang.org/x/sync/errgroup"
 	"syscall/js"
-	"time"
 )
-
-const steadyTime = time.Millisecond * 1000 / 5
 
 type Manager struct {
 	world.World
 	game.Game
 
-	time     *types.Time
 	Username types.UserID
 
 	engine   *engine.Manager
@@ -34,17 +30,11 @@ type Manager struct {
 }
 
 func NewManager() *Manager {
-	var time = types.NewTime()
 	var m = &Manager{
-		time: time,
 		Game: *game.NewGame(),
 	}
 	var spawner = world.Spawner(m)
-	m.World = *world.NewWorld(&spawner, types.ClientEnvironment())
-	var additions = world.NewAdditions(&m.World, time)
-	var deletions = world.NewDeletions(&m.World, time)
-	m.SetAdditions(additions)
-	m.SetDeletions(deletions)
+	m.World = *world.NewWorld(&spawner)
 
 	var gEngine = engine.NewManager()
 	var gDrawer = drawer.NewDrawer()
@@ -52,17 +42,13 @@ func NewManager() *Manager {
 	var inputs = input.NewManager()
 
 	var wsSpawner = ws.Spawner(m)
-	var inputsSystem = ws.System(inputs)
-	var gameListener = ws.Listener(m)
-	var additionsListener = ws.Listener(additions)
-	var deletionsListener = ws.FutureListener(deletions)
-	var futurePositionListener = ws.FutureListener(gEngine)
+	//var inputsSystem = ws.System(inputs)
+	//var gameListener = ws.Listener(m)
+	//var futurePositionListener = ws.FutureListener(gEngine)
 	packets.SetSpawner(&wsSpawner)
-	packets.AddSystem(&inputsSystem)
-	packets.AddListener(&gameListener)
-	packets.AddListener(&additionsListener)
-	packets.AddFutureListener(&deletionsListener)
-	packets.AddFutureListener(&futurePositionListener)
+	//packets.AddSystem(&inputsSystem)
+	//packets.AddListener(&gameListener)
+	//packets.AddFutureListener(&futurePositionListener)
 
 	m.drawer = gDrawer
 	m.engine = gEngine

@@ -13,7 +13,7 @@ type Listener interface {
 type FutureListener interface {
 	GetChannel() byte
 	HandleFutureData(*gob.Decoder, time.Duration) error // decoder, ttl
-}
+} /*
 
 func (m *Manager) AddListener(l *Listener) {
 	var channel = (*l).GetChannel()
@@ -34,3 +34,4 @@ func (m *Manager) AddFutureListener(l *FutureListener) {
 func (m *Manager) RemoveFutureListener(channel byte) {
 	delete(m.futureListeners, channel)
 }
+*/

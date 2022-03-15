@@ -1,18 +1,16 @@
 package ws
 
 import (
-	"encoding/gob"
+	"github.com/josephnormandev/murder/common/communications/data"
 	"github.com/josephnormandev/murder/common/types"
 )
 
 type Spawner interface {
-	GetClasses() []byte
-	HandleSpawn(types.ID, byte, *gob.Decoder) error // id, class, decoder
+	HandleAddition(id types.ID, channel types.Channel, datum data.Data)
+	HandleUpdate(id types.ID, channel types.Channel, datum data.Data)
+	HandleDeletion(id types.ID, channel types.Channel, datum data.Data)
 }
 
 func (m *Manager) SetSpawner(s *Spawner) {
-	for _, class := range (*s).GetClasses() {
-		m.AddDecoder(class)
-	}
 	m.spawner = s
 }

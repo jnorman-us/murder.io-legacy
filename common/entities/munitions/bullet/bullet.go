@@ -9,7 +9,6 @@ const Mass = 1
 const Friction = 0
 
 type Bullet struct {
-	State
 	types.ID
 	collider.Collider
 

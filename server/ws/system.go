@@ -1,29 +1,26 @@
 package ws
 
-import "encoding/gob"
+import (
+	"github.com/josephnormandev/murder/common/communications/data"
+	"github.com/josephnormandev/murder/common/types"
+)
 
 type System interface {
-	GetChannel() byte
-	Flush() // for aggregating systems, bookmark data collection
-	GetData(*gob.Encoder) error
-	GetCatchupData(*gob.Encoder) error
+	GetChannel() types.Channel
+	GetData() data.Data
 }
 
 func (l *Lobby) AddSystem(s *System) {
-	l.systemMutex.Lock()
-	defer l.systemMutex.Unlock()
+	l.Lock()
+	defer l.Unlock()
 
 	var channel = (*s).GetChannel()
 	l.systems[channel] = s
-
-	for _, c := range l.clients {
-		c.codec.AddEncoder(channel)
-	}
 }
 
-func (l *Lobby) RemoveSystem(channel byte) {
-	l.systemMutex.Lock()
-	defer l.systemMutex.Unlock()
+func (l *Lobby) RemoveSystem(channel types.Channel) {
+	l.Lock()
+	defer l.Unlock()
 
 	delete(l.systems, channel)
 }

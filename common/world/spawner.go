@@ -9,18 +9,15 @@ import (
 )
 
 type Spawner interface {
-	// called by adding
 	SpawnDrifter(*drifter.Drifter) types.ID
 	SpawnPole(*pole.Pole) types.ID
 	SpawnBullet(*bullet.Bullet) types.ID
 	SpawnDimetrodon(*dimetrodon.Dimetrodon) types.ID
 
-	// called by removing
 	DespawnDrifter(types.ID)
 	DespawnDimetrodon(types.ID)
 	DespawnPole(types.ID)
 	DespawnBullet(types.ID)
 
-	// called by disabling
 	DisableBullet(types.ID)
 }

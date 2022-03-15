@@ -2,21 +2,23 @@ package ws
 
 import (
 	"github.com/josephnormandev/murder/common/communications"
-	"github.com/josephnormandev/murder/common/types"
+	"github.com/josephnormandev/murder/common/types/action"
+	"github.com/josephnormandev/murder/common/types/timestamp"
 	"time"
 )
 
 type Manager struct {
-	types.Tick
+	timestamp.Timestamp
 	communications.Codec
 
-	spawner         *Spawner
-	systems         map[byte]*System
-	listeners       map[byte]*Listener
-	futureListeners map[byte]*FutureListener
+	spawner *Spawner
+	// systems         map[byte]*System
+	// listeners       map[byte]*Listener
+	// futureListeners map[byte]*FutureListener
 
 	receivedFirst bool
-	updateQueue   []communications.PacketCollection
+	updateQueue   []communications.Clump
+	// currentPackets []communications.Packet
 }
 
 func NewManager() *Manager {
@@ -25,44 +27,35 @@ func NewManager() *Manager {
 	return &Manager{
 		Codec: *codec,
 
-		systems:         map[byte]*System{},
-		listeners:       map[byte]*Listener{},
-		futureListeners: map[byte]*FutureListener{},
+		// systems:         map[byte]*System{},
+		// listeners:       map[byte]*Listener{},
+		// futureListeners: map[byte]*FutureListener{},
 
 		receivedFirst: false,
-		updateQueue:   make([]communications.PacketCollection, 0),
+		updateQueue:   make([]communications.Clump, 0),
 	}
 }
 
-func (m *Manager) SteadyTick() error {
-	var ms = 1000 / 5 * time.Millisecond
+func (m *Manager) SteadyTick(ms time.Duration) {
 	var currentTimestamp = m.Tick - 1
 
 	// fmt.Println(len(m.updateQueue), m.Tick)
 	for len(m.updateQueue) > 0 {
-		var pc = m.updateQueue[0]
-		if pc.Timestamp <= currentTimestamp {
-			err := m.EmitToListeners(pc)
-			if err != nil {
-				return err
-			}
+		var clump = m.updateQueue[0]
+		if clump.Timestamp <= currentTimestamp {
+			m.EmitToListeners(clump)
 			m.updateQueue = m.updateQueue[1:]
-		} else if pc.Timestamp == currentTimestamp+1 {
-			err := m.EmitToFutureListeners(pc, ms)
-			if err != nil {
-				return err
-			}
+		} else if clump.Timestamp == currentTimestamp+1 {
 			break
 		} else {
 			break
 		}
 	}
-	m.Tick++
-	return nil
+	m.TimeTick()
 }
 
-func (m *Manager) EncodeSystems() (communications.PacketCollection, error) {
-	var packetArray []communications.Packet
+func (m *Manager) EncodeSystems() communications.Clump {
+	/*var packetArray []communications.Packet
 
 	for _, s := range m.systems {
 		var system = *s
@@ -85,82 +78,38 @@ func (m *Manager) EncodeSystems() (communications.PacketCollection, error) {
 	return communications.PacketCollection{
 		Timestamp:   0,
 		PacketArray: packetArray,
-	}, nil
+	}, nil*/
+	return communications.Clump{}
 }
 
-func (m *Manager) DecodeForListeners(pc communications.PacketCollection) error {
+func (m *Manager) DecodeForListeners(clump communications.Clump) {
 	if !m.receivedFirst {
 		m.receivedFirst = true
-		m.Tick = pc.Timestamp
+		m.Tick = clump.Timestamp
 	}
-	m.updateQueue = append(m.updateQueue, pc)
-	return nil
+	m.updateQueue = append(m.updateQueue, clump)
 }
 
-func (m *Manager) EmitToListeners(pc communications.PacketCollection) error {
-	for _, p := range pc.PacketArray {
+func (m *Manager) EmitToListeners(clump communications.Clump) {
+	var spawner = *m.spawner
+
+	for _, p := range clump.Packets {
 		var id = p.ID
 		var channel = p.Channel
-		var data = p.Data
+		var act = p.Action
+		var datum = p.Data
 
 		if id == 0 {
-			var l, ok = m.listeners[channel]
-			if ok {
-				decoder, err := m.BeginDecode(channel, data)
-				if err != nil {
-					return err
-				}
-
-				var listener = *l
-				err = listener.HandleData(decoder)
-				if err != nil {
-					return err
-				}
-
-				m.EndDecode(channel)
-			}
 		} else {
 			var class = channel
-
-			decoder, err := m.BeginDecode(class, data)
-			if err != nil {
-				return err
-			}
-
-			var spawner = *m.spawner
-			err = spawner.HandleSpawn(id, class, decoder)
-			if err != nil {
-				return err
-			}
-			m.EndDecode(class)
-		}
-	}
-	return nil
-}
-
-func (m *Manager) EmitToFutureListeners(pc communications.PacketCollection, ms time.Duration) error {
-	for _, p := range pc.PacketArray {
-		var id = p.ID
-		var channel = p.Channel
-		var data = p.Data
-
-		if id == 0 {
-			var l, ok = m.futureListeners[channel]
-			if ok {
-				decoder, err := m.BeginDecode(channel, data)
-				if err != nil {
-					return err
-				}
-
-				var listener = *l
-				err = listener.HandleFutureData(decoder, ms)
-				if err != nil {
-					return err
-				}
-
-				m.EndDecode(channel)
+			switch act {
+			case action.Actions.Add:
+				spawner.HandleAddition(id, class, datum)
+			case action.Actions.Update:
+				spawner.HandleUpdate(id, class, datum)
+			case action.Actions.Delete:
+				spawner.HandleDeletion(id, class, datum)
 			}
 		}
 	}
-	return nil
 }

@@ -16,7 +16,6 @@ func (m *Manager) SpawnDrifter(d *drifter.Drifter) types.ID {
 	d.Setup()
 
 	if d.GetUserID() == m.Username {
-		fmt.Println(m.Username)
 		var centerable = drawer.Centerable(d)
 		m.drawer.SetCenterable(&centerable)
 	}

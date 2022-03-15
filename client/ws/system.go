@@ -9,6 +9,7 @@ type System interface {
 	GetData(*gob.Encoder) error
 }
 
+/*
 func (m *Manager) AddSystem(s *System) {
 	var channel = (*s).GetChannel()
 	m.systems[channel] = s
@@ -17,4 +18,4 @@ func (m *Manager) AddSystem(s *System) {
 
 func (m *Manager) RemoveSystem(channel byte) {
 	delete(m.systems, channel)
-}
+}*/

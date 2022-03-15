@@ -1,38 +1,31 @@
 package ws
 
 import (
-	"encoding/gob"
+	"github.com/josephnormandev/murder/common/communications/data"
 	"github.com/josephnormandev/murder/common/types"
 )
 
 type Spawn interface {
 	GetID() types.ID
-	GetClass() byte
-	Dirty() bool
-	CleanDirt()
-	GetData(*gob.Encoder) error
+	GetClass() types.Channel
+	GetData() data.Data
 }
 
 func (l *Lobby) AddSpawn(id types.ID, s *Spawn) {
-	l.spawnMutex.Lock()
-	defer l.spawnMutex.Unlock()
-
-	var class = (*s).GetClass()
-	var _, ok = l.classes[class]
+	l.Lock()
+	defer l.Unlock()
 
 	l.spawns[id] = s
-	l.classes[class] = 0
-
-	if !ok {
-		for _, c := range l.clients {
-			c.codec.AddEncoder(class)
-		}
-	}
+	l.additions[id] = s
+	l.addTimes[id] = l.time.GetOffset()
 }
 
 func (l *Lobby) RemoveSpawn(id types.ID) {
-	l.spawnMutex.Lock()
-	defer l.spawnMutex.Unlock()
+	l.Lock()
+	defer l.Unlock()
+
+	l.deletions[id] = l.spawns[id]
+	l.deleteTimes[id] = l.time.GetOffset()
 
 	delete(l.spawns, id)
 }

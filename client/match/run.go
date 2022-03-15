@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+const steadyTime = time.Millisecond * 1000 / 5
+
 func (m *Manager) Connect(ctx context.Context, hostname string, port int, username types.UserID) error {
 	m.wsClient = ws.NewClient(m.packets, hostname, port, username)
 	m.Username = username
@@ -24,22 +26,17 @@ func (m *Manager) SteadyTick(ctx context.Context) error {
 			fmt.Println("Stopping steady tick")
 			return ctx.Err()
 		default:
-			m.time.Reset()
-			err := m.packets.SteadyTick()
-			if err != nil {
-				return err
-			}
+			m.packets.SteadyTick(steadyTime)
 		}
 	}
 	return nil
 }
 
 func (m *Manager) Update(this js.Value, values []js.Value) interface{} {
-	var timeElapsed = m.time.GetOffset()
+	var timeElapsed = m.packets.GetOffset()
 	var timeTotal = steadyTime
 
-	m.GetAdditions().AddTick(timeElapsed, timeTotal)
-	m.GetDeletions().DeleteTick(timeElapsed, timeTotal)
+	// here, call packets to release a few packets at a time
 	m.engine.UpdatePhysics(timeElapsed, timeTotal)
 
 	return nil
