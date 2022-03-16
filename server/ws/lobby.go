@@ -2,6 +2,7 @@ package ws
 
 import (
 	"github.com/josephnormandev/murder/common/communications"
+	"github.com/josephnormandev/murder/common/communications/data"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/types/action"
 	"github.com/josephnormandev/murder/common/types/timestamp"
@@ -18,11 +19,15 @@ type Lobby struct {
 	systems   map[types.Channel]*System
 	listeners map[types.Channel]*Listener
 
-	spawns      map[types.ID]*Spawn
-	additions   map[types.ID]*Spawn
-	addTimes    map[types.ID]time.Duration
+	spawns map[types.ID]*Spawn
+
+	additions map[types.ID]*Spawn
+	addTimes  map[types.ID]time.Duration
+	addData   map[types.ID]data.Data
+
 	deletions   map[types.ID]*Spawn
 	deleteTimes map[types.ID]time.Duration
+	deleteData  map[types.ID]data.Data
 }
 
 func NewLobby(info *LobbyInfo) *Lobby {
@@ -34,11 +39,15 @@ func NewLobby(info *LobbyInfo) *Lobby {
 		systems:   map[types.Channel]*System{},
 		listeners: map[types.Channel]*Listener{},
 
-		spawns:      map[types.ID]*Spawn{},
-		additions:   map[types.ID]*Spawn{},
-		addTimes:    map[types.ID]time.Duration{},
+		spawns: map[types.ID]*Spawn{},
+
+		additions: map[types.ID]*Spawn{},
+		addTimes:  map[types.ID]time.Duration{},
+		addData:   map[types.ID]data.Data{},
+
 		deletions:   map[types.ID]*Spawn{},
 		deleteTimes: map[types.ID]time.Duration{},
+		deleteData:  map[types.ID]data.Data{},
 	}
 }
 
@@ -66,7 +75,7 @@ func (l *Lobby) EncodeSystems(c *Client) communications.Clump {
 			spawn.GetClass(),
 			action.Actions.Add,
 			l.addTimes[id],
-			spawn.GetData(),
+			l.addData[id],
 		)
 		packets = append(packets, packet)
 	}
@@ -77,7 +86,7 @@ func (l *Lobby) EncodeSystems(c *Client) communications.Clump {
 			spawn.GetClass(),
 			action.Actions.Delete,
 			l.deleteTimes[id],
-			spawn.GetData(),
+			l.deleteData[id],
 		)
 		packets = append(packets, packet)
 	}

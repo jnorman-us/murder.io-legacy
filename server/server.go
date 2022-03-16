@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"github.com/josephnormandev/murder/common/entities/cars/dimetrodon"
-	"github.com/josephnormandev/murder/common/entities/cars/drifter"
 	"github.com/josephnormandev/murder/common/entities/terrain/pole"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/server/match"
@@ -18,7 +17,7 @@ var wsServer *ws.Server
 var soleGame *match.Match
 
 var names = []types.UserID{
-	"Jellotinous",
+	/*"Jellotinous",
 	"Wine_Craft",
 	"Xiehang",
 	"TheStorminNorman",
@@ -27,7 +26,7 @@ var names = []types.UserID{
 	"Envii",
 	"Jinseng",
 	"Laerir",
-	"JoeyD",
+	"JoeyD",*/
 	"Beta Tester",
 }
 
@@ -52,16 +51,17 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 	for _, name := range names {
-		if false && rand.Intn(2) == 1 {
-			var d = drifter.NewDrifter()
-			d.UserID = name
-			d.SetPosition(types.NewRandomVector(0, 0, 400, 400))
-			soleGame.AddDrifter(d)
+		var d = dimetrodon.NewDimetrodon()
+		d.UserID = name
+		d.SetPosition(types.NewRandomVector(0, 0, 400, 400))
+		soleGame.AddDimetrodon(d)
+		if true || rand.Intn(10) == 1 {
+			d.Input.AttackClick = true
+		}
+		if true || rand.Intn(2) == 1 {
+			d.Input.Left = true
 		} else {
-			var d = dimetrodon.NewDimetrodon()
-			d.UserID = name
-			d.SetPosition(types.NewRandomVector(0, 0, 400, 400))
-			soleGame.AddDimetrodon(d)
+			d.Input.Right = true
 		}
 	}
 

@@ -4,6 +4,7 @@ import (
 	"github.com/josephnormandev/murder/common/communications"
 	"github.com/josephnormandev/murder/common/types/action"
 	"github.com/josephnormandev/murder/common/types/timestamp"
+	"sort"
 	"time"
 )
 
@@ -18,7 +19,8 @@ type Manager struct {
 
 	receivedFirst bool
 	updateQueue   []communications.Clump
-	// currentPackets []communications.Packet
+	toRelease     []communications.Packet
+	releaseI      int
 }
 
 func NewManager() *Manager {
@@ -43,8 +45,9 @@ func (m *Manager) SteadyTick(ms time.Duration) {
 	for len(m.updateQueue) > 0 {
 		var clump = m.updateQueue[0]
 		if clump.Timestamp <= currentTimestamp {
-			m.EmitToListeners(clump)
+			var packets = clump.Packets
 			m.updateQueue = m.updateQueue[1:]
+			m.setRelease(packets)
 		} else if clump.Timestamp == currentTimestamp+1 {
 			break
 		} else {
@@ -90,26 +93,44 @@ func (m *Manager) DecodeForListeners(clump communications.Clump) {
 	m.updateQueue = append(m.updateQueue, clump)
 }
 
-func (m *Manager) EmitToListeners(clump communications.Clump) {
+func (m *Manager) setRelease(packets []communications.Packet) {
+	sort.Slice(packets, func(i, j int) bool {
+		return packets[i].Offset < packets[j].Offset
+	})
+	for _, packet := range m.toRelease {
+		m.emit(packet)
+	}
+	m.toRelease = packets
+	m.releaseI = 0
+}
+
+func (m *Manager) TrickleEmit(elapsed time.Duration) {
+	for ; m.releaseI < len(m.toRelease); m.releaseI++ {
+		var p = m.toRelease[m.releaseI]
+
+		if p.GetOffset() < elapsed {
+			m.emit(p)
+		}
+	}
+}
+
+func (m *Manager) emit(p communications.Packet) {
 	var spawner = *m.spawner
 
-	for _, p := range clump.Packets {
-		var id = p.ID
-		var channel = p.Channel
-		var act = p.Action
-		var datum = p.Data
-
-		if id == 0 {
-		} else {
-			var class = channel
-			switch act {
-			case action.Actions.Add:
-				spawner.HandleAddition(id, class, datum)
-			case action.Actions.Update:
-				spawner.HandleUpdate(id, class, datum)
-			case action.Actions.Delete:
-				spawner.HandleDeletion(id, class, datum)
-			}
+	var id = p.ID
+	var channel = p.Channel
+	var act = p.Action
+	var datum = p.Data
+	if id == 0 {
+	} else {
+		var class = channel
+		switch act {
+		case action.Actions.Add:
+			spawner.HandleAddition(id, class, datum)
+		case action.Actions.Update:
+			spawner.HandleUpdate(id, class, datum)
+		case action.Actions.Delete:
+			spawner.HandleDeletion(id, class, datum)
 		}
 	}
 }

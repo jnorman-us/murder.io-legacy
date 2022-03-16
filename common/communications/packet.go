@@ -11,7 +11,7 @@ type Packet struct {
 	ID      types.ID
 	Channel types.Channel // decoder channel
 	Action  action.Action
-	Offset  time.Duration
+	Offset  byte
 	Data    data.Data
 }
 
@@ -19,7 +19,7 @@ func NewPacket(channel types.Channel, action action.Action, offset time.Duration
 	return Packet{
 		Channel: channel,
 		Action:  action,
-		Offset:  offset,
+		Offset:  byte(offset / 1000000),
 		Data:    dat,
 	}
 }
@@ -29,7 +29,11 @@ func NewSpawnPacket(id types.ID, class types.Channel, action action.Action, offs
 		ID:      id,
 		Channel: class,
 		Action:  action,
-		Offset:  offset,
+		Offset:  byte(offset / time.Millisecond),
 		Data:    datum,
 	}
+}
+
+func (p *Packet) GetOffset() time.Duration {
+	return time.Duration(p.Offset) * time.Millisecond
 }

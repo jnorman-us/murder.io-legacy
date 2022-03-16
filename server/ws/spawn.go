@@ -17,6 +17,7 @@ func (l *Lobby) AddSpawn(id types.ID, s *Spawn) {
 
 	l.spawns[id] = s
 	l.additions[id] = s
+	l.addData[id] = (*s).GetData()
 	l.addTimes[id] = l.time.GetOffset()
 }
 
@@ -24,7 +25,9 @@ func (l *Lobby) RemoveSpawn(id types.ID) {
 	l.Lock()
 	defer l.Unlock()
 
-	l.deletions[id] = l.spawns[id]
+	var s = l.spawns[id]
+	l.deletions[id] = s
+	l.deleteData[id] = (*s).GetData()
 	l.deleteTimes[id] = l.time.GetOffset()
 
 	delete(l.spawns, id)

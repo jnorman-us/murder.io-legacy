@@ -37,6 +37,7 @@ func (m *Manager) Update(this js.Value, values []js.Value) interface{} {
 	var timeTotal = steadyTime
 
 	// here, call packets to release a few packets at a time
+	m.packets.TrickleEmit(timeElapsed)
 	m.engine.UpdatePhysics(timeElapsed, timeTotal)
 
 	return nil
