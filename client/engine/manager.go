@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/communications/data"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/types"
@@ -9,20 +8,22 @@ import (
 )
 
 type Manager struct {
-	moveables map[types.ID]*Moveable
-	kinetics  map[types.ID]*engine.Kinetic
+	moveables       map[types.ID]*Moveable
+	kinetics        map[types.ID]*engine.Kinetic
+	currentlyMoving map[types.ID]bool
 }
 
 func NewManager() *Manager {
 	return &Manager{
-		moveables: map[types.ID]*Moveable{},
-		kinetics:  map[types.ID]*engine.Kinetic{},
+		moveables:       map[types.ID]*Moveable{},
+		kinetics:        map[types.ID]*engine.Kinetic{},
+		currentlyMoving: map[types.ID]bool{},
 	}
 }
 
 func (m *Manager) UpdatePhysics(elapsed, total time.Duration) {
 	for id, mo := range m.moveables {
-		if kinetic, ok := m.kinetics[id]; ok {
+		if kinetic, ok := m.kinetics[id]; ok && m.currentlyMoving[id] {
 			//fmt.Println(kinetic)
 			var moveable = *mo
 			var timeOffset = time.Duration(0)
@@ -31,7 +32,6 @@ func (m *Manager) UpdatePhysics(elapsed, total time.Duration) {
 			if elapsed >= timeOffset {
 				alpha = float64(elapsed-timeOffset) / float64(total-timeOffset)
 			}
-			fmt.Println(kinetic.StartPosition, moveable.GetPosition())
 
 			if alpha >= 0 && alpha < 1 {
 				var currentPos = kinetic.StartPosition
@@ -61,8 +61,10 @@ func (m *Manager) GetChannel() types.Channel {
 }
 
 func (m *Manager) HandleFutureData(datums []data.Data) {
+	m.currentlyMoving = map[types.ID]bool{}
 	for _, datum := range datums {
 		var id = engine.GetDataID(datum)
+		m.currentlyMoving[id] = true
 		if kinetic, ok := m.kinetics[id]; ok {
 			kinetic.FromData(datum)
 		}

@@ -17,7 +17,7 @@ var wsServer *ws.Server
 var soleGame *match.Match
 
 var names = []types.UserID{
-	"Jellotinous",
+	/*"Jellotinous",
 	"Wine_Craft",
 	"Xiehang",
 	"TheStorminNorman",
@@ -25,7 +25,7 @@ var names = []types.UserID{
 	"Society Member",
 	"Envii",
 	"Jinseng",
-	"Laerir",
+	"Laerir",*/
 	"JoeyD",
 	"Beta Tester",
 }
@@ -55,7 +55,7 @@ func main() {
 		d.UserID = name
 		d.SetPosition(types.NewRandomVector(0, 0, 400, 400))
 		soleGame.AddDimetrodon(d)
-		if rand.Intn(10) == 1 {
+		if rand.Intn(2) == 1 {
 			d.Input.AttackClick = true
 		}
 		if rand.Intn(2) == 1 {

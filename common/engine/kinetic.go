@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/communications/data"
 	"github.com/josephnormandev/murder/common/communications/data/schemas"
 	"github.com/josephnormandev/murder/common/types"
@@ -32,7 +31,6 @@ func GetDataID(datum data.Data) types.ID {
 }
 
 func (k *Kinetic) Set(position types.Vector, angle float64) {
-	fmt.Println(k.StartPosition)
 	if !k.started {
 		k.StartPosition = position
 		k.StartAngle = angle
@@ -41,11 +39,9 @@ func (k *Kinetic) Set(position types.Vector, angle float64) {
 		k.EndPosition = position
 		k.EndAngle = angle
 	}
-	fmt.Println(k.StartPosition)
 }
 
 func (k *Kinetic) Restart() {
-	fmt.Println("RESTARTING")
 	k.StartPosition = k.EndPosition
 	k.StartAngle = k.EndAngle
 	k.started = false

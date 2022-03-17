@@ -4,7 +4,6 @@ import (
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/entities/cars/dimetrodon"
-	"github.com/josephnormandev/murder/common/entities/cars/drifter"
 	"github.com/josephnormandev/murder/common/entities/munitions/bullet"
 	"github.com/josephnormandev/murder/common/entities/terrain/pole"
 	"github.com/josephnormandev/murder/common/logic"
@@ -12,40 +11,6 @@ import (
 	"github.com/josephnormandev/murder/server/input"
 	"github.com/josephnormandev/murder/server/ws"
 )
-
-func (m *Match) SpawnDrifter(d *drifter.Drifter) types.ID {
-	var id = m.entityID
-	m.entityID++
-
-	var spawner = drifter.Spawner(m)
-	var spawn = ws.Spawn(d)
-	// var tickable = logic.Tickable(d)
-	var shootable = logic.Shootable(d)
-	var inputable = input.Inputable(d)
-	var driveable = logic.Driveable(d)
-	var moveable = engine.Moveable(&d.Collider)
-	var dynamic = collisions.Dynamic(d)
-
-	d.SetSpawner(&spawner)
-	m.packets.AddSpawn(id, &spawn)
-	m.logic.AddDriveable(id, &driveable)
-	m.logic.AddShootable(id, &shootable)
-	m.engine.AddMoveable(id, &moveable)
-	m.inputs.AddPlayerListener(id, &inputable)
-	m.collisions.AddDynamic(id, &dynamic)
-
-	d.ID = id
-	return id
-}
-
-func (m *Match) DespawnDrifter(id types.ID) {
-	m.packets.RemoveSpawn(id)
-	m.logic.RemoveDriveable(id)
-	m.logic.RemoveShootable(id)
-	m.engine.RemoveMoveable(id)
-	m.inputs.RemovePlayerListener(id)
-	m.collisions.RemoveDynamic(id)
-}
 
 func (m *Match) SpawnDimetrodon(d *dimetrodon.Dimetrodon) types.ID {
 	var id = m.entityID
