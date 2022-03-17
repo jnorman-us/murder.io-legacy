@@ -101,6 +101,15 @@ func (l *Lobby) EncodeSystems(c *Client) communications.Clump {
 		)
 		packets = append(packets, packet)
 	}
+	for _, s := range l.systems {
+		var system = *s
+		var packet = communications.NewSystemPacket(
+			system.GetChannel(),
+			0.0,
+			system.GetData(),
+		)
+		packets = append(packets, packet)
+	}
 	l.additions = map[types.ID]*Spawn{}
 	l.addTimes = map[types.ID]time.Duration{}
 	l.deletions = map[types.ID]*Spawn{}
@@ -124,7 +133,7 @@ func (l *Lobby) EncodeCatchupSystems(c *Client) communications.Clump {
 			spawn.GetClass(),
 			action.Actions.Add,
 			0.0,
-			spawn.GetData(),
+			spawn.GetStartData(),
 		)
 		packets = append(packets, packet)
 	}

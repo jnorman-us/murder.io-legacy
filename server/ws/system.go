@@ -7,7 +7,7 @@ import (
 
 type System interface {
 	GetChannel() types.Channel
-	GetData() data.Data
+	GetData() []data.Data
 }
 
 func (l *Lobby) AddSystem(s *System) {

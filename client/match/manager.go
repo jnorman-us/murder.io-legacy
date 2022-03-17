@@ -44,11 +44,11 @@ func NewManager() *Manager {
 	var wsSpawner = ws.Spawner(m)
 	//var inputsSystem = ws.System(inputs)
 	//var gameListener = ws.Listener(m)
-	//var futurePositionListener = ws.FutureListener(gEngine)
+	var futurePositionListener = ws.FutureListener(gEngine)
 	packets.SetSpawner(&wsSpawner)
 	//packets.AddSystem(&inputsSystem)
 	//packets.AddListener(&gameListener)
-	//packets.AddFutureListener(&futurePositionListener)
+	packets.AddFutureListener(&futurePositionListener)
 
 	m.drawer = gDrawer
 	m.engine = gEngine

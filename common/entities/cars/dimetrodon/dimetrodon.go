@@ -11,9 +11,10 @@ const Friction = 0.3
 const MaxHealth = 250
 
 type Dimetrodon struct {
-	types.UserID
-	entities.Health
 	types.ID
+	types.UserID
+	types.Change
+	entities.Health
 	collider.Collider
 	types.Input
 	gattlingGunCoolDown types.CoolDown
@@ -22,7 +23,7 @@ type Dimetrodon struct {
 
 func NewDimetrodon() *Dimetrodon {
 	var dimetrodon = &Dimetrodon{
-		gattlingGunCoolDown: types.NewCoolDown(4),
+		gattlingGunCoolDown: types.NewCoolDown(20),
 	}
 	dimetrodon.Setup()
 	return dimetrodon

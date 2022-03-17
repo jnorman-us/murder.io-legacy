@@ -23,7 +23,7 @@ func (m *Match) SpawnDrifter(d *drifter.Drifter) types.ID {
 	var shootable = logic.Shootable(d)
 	var inputable = input.Inputable(d)
 	var driveable = logic.Driveable(d)
-	var moveable = engine.Moveable(d)
+	var moveable = engine.Moveable(&d.Collider)
 	var dynamic = collisions.Dynamic(d)
 
 	d.SetSpawner(&spawner)
@@ -56,7 +56,7 @@ func (m *Match) SpawnDimetrodon(d *dimetrodon.Dimetrodon) types.ID {
 	var shootable = logic.Shootable(d)
 	var inputable = input.Inputable(d)
 	var driveable = logic.Driveable(d)
-	var moveable = engine.Moveable(d)
+	var moveable = engine.Moveable(&d.Collider)
 	var dynamic = collisions.Dynamic(d)
 
 	d.SetSpawner(&spawner)
@@ -106,7 +106,7 @@ func (m *Match) SpawnBullet(b *bullet.Bullet) types.ID {
 	var spawner = bullet.Spawner(m)
 	var spawn = ws.Spawn(b)
 	var dissolvable = logic.Dissolvable(b)
-	var moveable = engine.Moveable(b)
+	var moveable = engine.Moveable(&b.Collider)
 	var dynamic = collisions.Dynamic(b)
 
 	b.SetSpawner(&spawner)

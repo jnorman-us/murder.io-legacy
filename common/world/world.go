@@ -34,25 +34,25 @@ func (w *World) HandleAddition(id types.ID, channel types.Channel, datum data.Da
 	case drifter.Class:
 		d := drifter.NewDrifter()
 		d.ID = id
-		d.FromData(datum)
+		d.FromStartData(datum)
 		w.AddDrifter(d)
 		break
 	case dimetrodon.Class:
 		d := dimetrodon.NewDimetrodon()
 		d.ID = id
-		d.FromData(datum)
+		d.FromStartData(datum)
 		w.AddDimetrodon(d)
 		break
 	case bullet.Class:
 		b := bullet.NewBullet(nil, 0)
 		b.ID = id
-		b.FromData(datum)
+		b.FromStartData(datum)
 		w.AddBullet(b)
 		break
 	case pole.Class:
 		p := pole.NewPole()
 		p.ID = id
-		p.FromData(datum)
+		p.FromStartData(datum)
 		w.AddPole(p)
 		break
 	}

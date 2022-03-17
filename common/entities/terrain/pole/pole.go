@@ -6,8 +6,8 @@ import (
 )
 
 type Pole struct {
-	State
 	types.ID
+	types.Change
 	collider.Collider
 }
 

@@ -2,6 +2,7 @@ package ws
 
 import (
 	"github.com/josephnormandev/murder/common/communications"
+	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/types/action"
 	"github.com/josephnormandev/murder/common/types/timestamp"
 	"sort"
@@ -14,8 +15,8 @@ type Manager struct {
 
 	spawner *Spawner
 	// systems         map[byte]*System
-	// listeners       map[byte]*Listener
-	// futureListeners map[byte]*FutureListener
+	listeners       map[types.Channel]*Listener
+	futureListeners map[types.Channel]*FutureListener
 
 	receivedFirst bool
 	updateQueue   []communications.Clump
@@ -30,8 +31,8 @@ func NewManager() *Manager {
 		Codec: *codec,
 
 		// systems:         map[byte]*System{},
-		// listeners:       map[byte]*Listener{},
-		// futureListeners: map[byte]*FutureListener{},
+		listeners:       map[types.Channel]*Listener{},
+		futureListeners: map[types.Channel]*FutureListener{},
 
 		receivedFirst: false,
 		updateQueue:   make([]communications.Clump, 0),
@@ -39,7 +40,7 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) SteadyTick(ms time.Duration) {
-	var currentTimestamp = m.Tick - 1
+	var currentTimestamp = m.Tick - 2
 
 	// fmt.Println(len(m.updateQueue), m.Tick)
 	for len(m.updateQueue) > 0 {
@@ -49,6 +50,8 @@ func (m *Manager) SteadyTick(ms time.Duration) {
 			m.updateQueue = m.updateQueue[1:]
 			m.setRelease(packets)
 		} else if clump.Timestamp == currentTimestamp+1 {
+			var packets = clump.Packets
+			m.EmitFutures(packets)
 			break
 		} else {
 			break
@@ -120,10 +123,14 @@ func (m *Manager) emit(p communications.Packet) {
 	var id = p.ID
 	var channel = p.Channel
 	var act = p.Action
-	var datum = p.Data
 	if id == 0 {
+		var datums = p.Datas
+		if l, ok := m.listeners[channel]; ok {
+			(*l).HandleData(datums)
+		}
 	} else {
 		var class = channel
+		var datum = p.Data
 		switch act {
 		case action.Actions.Add:
 			spawner.HandleAddition(id, class, datum)
@@ -131,6 +138,15 @@ func (m *Manager) emit(p communications.Packet) {
 			spawner.HandleUpdate(id, class, datum)
 		case action.Actions.Delete:
 			spawner.HandleDeletion(id, class, datum)
+		}
+	}
+}
+
+func (m *Manager) EmitFutures(packets []communications.Packet) {
+	for _, p := range packets {
+		var channel = p.Channel
+		if l, ok := m.futureListeners[channel]; ok {
+			(*l).HandleFutureData(p.Datas)
 		}
 	}
 }

@@ -53,6 +53,8 @@ func NewMatch(id types.ID) *Match {
 
 	//var gameSystem = ws.System(m.Game)
 	//packets.AddSystem(&gameSystem)
+	var positionsSystem = ws.System(gEngine)
+	packets.AddSystem(&positionsSystem)
 
 	m.logic = gLogic
 	m.engine = gEngine

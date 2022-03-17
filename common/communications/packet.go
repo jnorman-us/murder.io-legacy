@@ -13,14 +13,14 @@ type Packet struct {
 	Action  action.Action
 	Offset  byte
 	Data    data.Data
+	Datas   []data.Data
 }
 
-func NewPacket(channel types.Channel, action action.Action, offset time.Duration, dat data.Data) Packet {
+func NewSystemPacket(channel types.Channel, offset time.Duration, dats []data.Data) Packet {
 	return Packet{
 		Channel: channel,
-		Action:  action,
 		Offset:  byte(offset / 1000000),
-		Data:    dat,
+		Datas:   dats,
 	}
 }
 

@@ -11,9 +11,10 @@ const Friction = 0.3
 const MaxHealth = 200
 
 type Drifter struct {
-	entities.Health
-	types.UserID
 	types.ID
+	types.UserID
+	types.Change
+	entities.Health
 	collider.Collider
 	types.Input
 	shotgunCoolDown types.CoolDown

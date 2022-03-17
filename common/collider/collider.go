@@ -2,14 +2,12 @@ package collider
 
 import (
 	"github.com/Tarliton/collision2d"
-	"github.com/josephnormandev/murder/common/communications/data"
 	"github.com/josephnormandev/murder/common/types"
 	"image/color"
 	"math"
 )
 
 type Collider struct {
-	types.Change
 	mass         float64
 	forceBuffer  types.Vector
 	torqueBuffer float64
@@ -136,23 +134,4 @@ func (c *Collider) SetColor(co color.RGBA) {
 
 func (c *Collider) GetColor() color.RGBA {
 	return c.color
-}
-
-func (c *Collider) ColliderData(datum data.Data) data.Data {
-	var position = c.GetPosition()
-
-	datum.SetFloat("X", position.X)
-	datum.SetFloat("Y", position.Y)
-	datum.SetFloat("Angle", c.GetAngle())
-
-	return datum
-}
-
-func (c *Collider) ColliderFromData(datum data.Data) {
-	var x = datum.GetFloat("X")
-	var y = datum.GetFloat("Y")
-	var angle = datum.GetFloat("Angle")
-
-	c.SetPosition(types.NewVector(x, y))
-	c.SetAngle(angle)
 }

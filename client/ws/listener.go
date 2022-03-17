@@ -1,37 +1,34 @@
 package ws
 
 import (
-	"encoding/gob"
-	"time"
+	"github.com/josephnormandev/murder/common/communications/data"
+	"github.com/josephnormandev/murder/common/types"
 )
 
 type Listener interface {
-	GetChannel() byte
-	HandleData(*gob.Decoder) error // id, decoder
+	GetChannel() types.Channel
+	HandleData([]data.Data) // id, decoder
 }
 
 type FutureListener interface {
-	GetChannel() byte
-	HandleFutureData(*gob.Decoder, time.Duration) error // decoder, ttl
-} /*
+	GetChannel() types.Channel
+	HandleFutureData([]data.Data) // decoder, ttl
+}
 
 func (m *Manager) AddListener(l *Listener) {
 	var channel = (*l).GetChannel()
 	m.listeners[channel] = l
-	m.AddDecoder(channel)
 }
 
-func (m *Manager) RemoveListener(channel byte) {
+func (m *Manager) RemoveListener(channel types.Channel) {
 	delete(m.listeners, channel)
 }
 
 func (m *Manager) AddFutureListener(l *FutureListener) {
 	var channel = (*l).GetChannel()
 	m.futureListeners[channel] = l
-	m.AddDecoder(channel)
 }
 
-func (m *Manager) RemoveFutureListener(channel byte) {
+func (m *Manager) RemoveFutureListener(channel types.Channel) {
 	delete(m.futureListeners, channel)
 }
-*/

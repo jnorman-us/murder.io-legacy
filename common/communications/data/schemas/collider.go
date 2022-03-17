@@ -10,3 +10,10 @@ var colliderSchema = data.NewSchema(
 	[]string{},
 )
 var ColliderSchema = &colliderSchema
+
+var movementSchema = data.NewSchema(
+	[]string{"StartX", "StartY", "StartAngle", "EndX", "EndY", "EndAngle"},
+	[]string{"ID"},
+	[]string{},
+)
+var MovementSchema = &movementSchema

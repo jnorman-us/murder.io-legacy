@@ -8,6 +8,9 @@ import (
 type Spawn interface {
 	GetID() types.ID
 	GetClass() types.Channel
+	Dirty() bool
+	CleanDirt()
+	GetStartData() data.Data
 	GetData() data.Data
 }
 
@@ -17,7 +20,7 @@ func (l *Lobby) AddSpawn(id types.ID, s *Spawn) {
 
 	l.spawns[id] = s
 	l.additions[id] = s
-	l.addData[id] = (*s).GetData()
+	l.addData[id] = (*s).GetStartData()
 	l.addTimes[id] = l.time.GetOffset()
 }
 

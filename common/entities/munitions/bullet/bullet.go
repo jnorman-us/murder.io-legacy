@@ -10,6 +10,7 @@ const Friction = 0
 
 type Bullet struct {
 	types.ID
+	types.Change
 	collider.Collider
 
 	initialPosition types.Vector
