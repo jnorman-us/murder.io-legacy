@@ -1,7 +1,6 @@
 package match
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/collisions"
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/game"
@@ -74,12 +73,10 @@ func (m *Match) Tick() {
 func (m *Match) tick() {
 	m.Lock()
 	defer m.Unlock()
-	fmt.Println("START TICK")
 	m.logic.Tick()
 	m.engine.UpdatePhysics(1)
 	m.collisions.ResolveCollisions()
 	m.worldOut.PollData()
-	fmt.Println("END TICK")
 }
 
 func (m *Match) Send() {
@@ -91,7 +88,5 @@ func (m *Match) Send() {
 func (m *Match) send() {
 	m.Lock()
 	defer m.Unlock()
-	fmt.Println("START SEND")
 	m.lobby.Send()
-	fmt.Println("END SEND")
 }

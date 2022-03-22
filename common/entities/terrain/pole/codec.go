@@ -7,7 +7,7 @@ import (
 )
 
 func (p *Pole) GetClass() types.Channel {
-	return 0x82
+	return Class
 }
 
 func (p *Pole) GetSchema() packets.Schema {

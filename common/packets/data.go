@@ -1,7 +1,6 @@
 package packets
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/types/action"
 	"github.com/josephnormandev/murder/common/types/timestamp"
@@ -86,7 +85,6 @@ func (d *Data) SetFloat(name string, set float64) {
 		if old != value {
 			d.MarkDirty()
 			d.RawFloats[index] = value
-			fmt.Println(len(d.floatDiff), len(d.intDiff), len(d.stringDiff))
 			d.floatDiff <- FloatDiff{
 				field:  index,
 				offset: d.timestamp.GetOffsetBytes(),

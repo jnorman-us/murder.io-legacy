@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/josephnormandev/murder/common/entities/cars/dimetrodon"
 	"github.com/josephnormandev/murder/common/entities/terrain/pole"
@@ -46,7 +45,6 @@ func main() {
 	wsServer.AddLobby(lobby)
 
 	soleGame.SetPlayers(names)
-	fmt.Println("TEST")
 
 	rand.Seed(time.Now().UnixNano())
 	for _, name := range names {
@@ -63,14 +61,12 @@ func main() {
 			d.Input.Right = true
 		}
 	}
-	fmt.Println("TEST")
 
 	for _, position := range polePositions {
 		var newPole = pole.NewPole()
 		newPole.SetPosition(position)
 		soleGame.AddPole(newPole)
 	}
-	fmt.Println("TEST")
 
 	go soleGame.Tick()
 	go soleGame.Send()

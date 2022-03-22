@@ -18,6 +18,7 @@ func (m *Manager) AddDatafiable(id types.ID, d *Datafiable) {
 	var stream, ok = m.streams[channel]
 	if !ok {
 		stream = m.packets.CreateStream(channel, true)
+		m.streams[channel] = stream
 	}
 	var data = stream.CreateData(id, schema)
 	m.data[id] = data

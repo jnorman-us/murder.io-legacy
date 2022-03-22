@@ -24,7 +24,7 @@ func NewLobby(info *LobbyInfo, packets *packets.Manager) *Lobby {
 
 func (l *Lobby) Send() {
 	var clump = l.MarshalPackets()
-	fmt.Println("Clump", clump)
+	fmt.Println("Clump", len(clump.Packets))
 	/*
 		for _, c := range l.clients {
 			if (*c).Active() {

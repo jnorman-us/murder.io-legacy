@@ -1,7 +1,6 @@
 package packets
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/types/action"
 	"github.com/josephnormandev/murder/common/types/timestamp"
@@ -40,12 +39,10 @@ func (s *Stream) CreateAnonymousData(sc Schema) *Data {
 
 func (s *Stream) CreateData(id types.ID, sc Schema) *Data {
 	var data = newData(id, sc, s.timestamp)
-	fmt.Println("ADDING")
 	s.additions <- Addition{
 		data:   data,
 		offset: s.timestamp.GetOffsetBytes(),
 	}
-	fmt.Println("DONE ADDING")
 	return data
 }
 
@@ -97,7 +94,6 @@ func (s *Stream) GeneratePackets() []Packet {
 			data.CleanDirt()
 			packets = append(packets, data.GeneratePacket(channel, action.Actions.Delete, offset))
 		default:
-			fmt.Println(len(s.additions), len(s.deletions))
 			return packets
 		}
 	}
