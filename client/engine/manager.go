@@ -1,8 +1,8 @@
 package engine
 
 import (
-	"github.com/josephnormandev/murder/common/communications/data"
 	"github.com/josephnormandev/murder/common/engine"
+	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
 	"time"
 )
@@ -60,7 +60,7 @@ func (m *Manager) GetChannel() types.Channel {
 	return 0x04
 }
 
-func (m *Manager) HandleFutureData(datums []data.Data) {
+func (m *Manager) HandleFutureData(datums []packets.Data) {
 	m.currentlyMoving = map[types.ID]bool{}
 	for _, datum := range datums {
 		var id = engine.GetDataID(datum)

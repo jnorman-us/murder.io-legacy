@@ -1,4 +1,4 @@
-package communications
+package packets
 
 import (
 	"github.com/josephnormandev/murder/common/types/timestamp"

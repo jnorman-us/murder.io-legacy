@@ -1,18 +1,18 @@
 package ws
 
 import (
-	"github.com/josephnormandev/murder/common/communications/data"
+	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
 )
 
 type Listener interface {
 	GetChannel() types.Channel
-	HandleData([]data.Data) // id, decoder
+	HandleData([]packets.Data) // id, decoder
 }
 
 type FutureListener interface {
 	GetChannel() types.Channel
-	HandleFutureData([]data.Data) // decoder, ttl
+	HandleFutureData([]packets.Data) // decoder, ttl
 }
 
 func (m *Manager) AddListener(l *Listener) {

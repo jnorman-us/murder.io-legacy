@@ -1,170 +1,35 @@
 package ws
 
 import (
-	"github.com/josephnormandev/murder/common/communications"
-	"github.com/josephnormandev/murder/common/communications/data"
+	"fmt"
+	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
-	"github.com/josephnormandev/murder/common/types/action"
-	"github.com/josephnormandev/murder/common/types/timestamp"
 	"sync"
-	"time"
 )
 
 type Lobby struct {
 	sync.Mutex
+	packets.Manager
 	info    *LobbyInfo
 	clients map[types.UserID]*Client // per user Client
-
-	time      *timestamp.Timestamp
-	systems   map[types.Channel]*System
-	listeners map[types.Channel]*Listener
-
-	spawns map[types.ID]*Spawn
-
-	additions map[types.ID]*Spawn
-	addTimes  map[types.ID]time.Duration
-	addData   map[types.ID]data.Data
-
-	deletions   map[types.ID]*Spawn
-	deleteTimes map[types.ID]time.Duration
-	deleteData  map[types.ID]data.Data
 }
 
-func NewLobby(info *LobbyInfo) *Lobby {
+func NewLobby(info *LobbyInfo, packets *packets.Manager) *Lobby {
 	return &Lobby{
+		Manager: *packets,
 		info:    info,
-		time:    timestamp.NewTimestamp(),
 		clients: map[types.UserID]*Client{},
-
-		systems:   map[types.Channel]*System{},
-		listeners: map[types.Channel]*Listener{},
-
-		spawns: map[types.ID]*Spawn{},
-
-		additions: map[types.ID]*Spawn{},
-		addTimes:  map[types.ID]time.Duration{},
-		addData:   map[types.ID]data.Data{},
-
-		deletions:   map[types.ID]*Spawn{},
-		deleteTimes: map[types.ID]time.Duration{},
-		deleteData:  map[types.ID]data.Data{},
 	}
 }
 
 func (l *Lobby) Send() {
-	for _, c := range l.clients {
-		if (*c).Active() {
-			var clump = l.EncodeSystems(c)
-			(*c).Send(clump)
-		}
-	}
-	l.time.TimeTick()
-}
-
-// EncodeSystems allows the use of a per-client visibility filter
-// so that each client receives a stream of bytes unique to itself
-func (l *Lobby) EncodeSystems(c *Client) communications.Clump {
-	l.Lock()
-	defer l.Unlock()
-
-	var packets []communications.Packet
-	for id, s := range l.additions {
-		var spawn = *s
-		var packet = communications.NewSpawnPacket(
-			spawn.GetID(),
-			spawn.GetClass(),
-			action.Actions.Add,
-			l.addTimes[id],
-			l.addData[id],
-		)
-		packets = append(packets, packet)
-	}
-	for id, s := range l.deletions {
-		var spawn = *s
-		var packet = communications.NewSpawnPacket(
-			spawn.GetID(),
-			spawn.GetClass(),
-			action.Actions.Delete,
-			l.deleteTimes[id],
-			l.deleteData[id],
-		)
-		packets = append(packets, packet)
-	}
-	for _, s := range l.spawns {
-		var spawn = *s
-		var packet = communications.NewSpawnPacket(
-			spawn.GetID(),
-			spawn.GetClass(),
-			action.Actions.Update,
-			0.0,
-			spawn.GetData(),
-		)
-		packets = append(packets, packet)
-	}
-	for _, s := range l.systems {
-		var system = *s
-		var packet = communications.NewSystemPacket(
-			system.GetChannel(),
-			0.0,
-			system.GetData(),
-		)
-		packets = append(packets, packet)
-	}
-	l.additions = map[types.ID]*Spawn{}
-	l.addTimes = map[types.ID]time.Duration{}
-	l.deletions = map[types.ID]*Spawn{}
-	l.deleteTimes = map[types.ID]time.Duration{}
-
-	return communications.Clump{
-		Packets:   packets,
-		Timestamp: l.time.Tick,
-	}
-}
-
-func (l *Lobby) EncodeCatchupSystems(c *Client) communications.Clump {
-	l.Lock()
-	defer l.Unlock()
-
-	var packets []communications.Packet
-	for _, s := range l.spawns {
-		var spawn = *s
-		var packet = communications.NewSpawnPacket(
-			spawn.GetID(),
-			spawn.GetClass(),
-			action.Actions.Add,
-			0.0,
-			spawn.GetStartData(),
-		)
-		packets = append(packets, packet)
-	}
-
-	return communications.Clump{
-		Packets:   packets,
-		Timestamp: l.time.Tick,
-	}
-}
-
-func (l *Lobby) DecodeForListeners(c *Client, clump communications.Clump) error {
-	/*var lobby = c.lobby
-	var codec = c.codec
-
-	for _, p := range clump.Packets {
-		var channel = p.Channel
-		var data = p.Data
-
-		var l, ok = lobby.listeners[channel]
-		if ok {
-			var listener = *l
-			decoder, err := codec.BeginDecode(channel, data)
-			if err != nil {
-				return err
+	var clump = l.MarshalPackets()
+	fmt.Println("Clump", clump)
+	/*
+		for _, c := range l.clients {
+			if (*c).Active() {
+				c.Send(clump)
 			}
-			err = listener.HandleData(c.identifier, decoder)
-			if err != nil {
-				return err
-			}
-			codec.EndDecode(channel)
 		}
-	}*/
-	return nil
+		fmt.Println("REst")*/
 }

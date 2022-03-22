@@ -1,7 +1,8 @@
 package ws
 
 import (
-	"github.com/josephnormandev/murder/common/communications"
+	"github.com/josephnormandev/murder/common/codec"
+	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/types/action"
 	"github.com/josephnormandev/murder/common/types/timestamp"
@@ -11,7 +12,7 @@ import (
 
 type Manager struct {
 	timestamp.Timestamp
-	communications.Codec
+	codec.Codec
 
 	spawner *Spawner
 	// systems         map[byte]*System
@@ -19,13 +20,13 @@ type Manager struct {
 	futureListeners map[types.Channel]*FutureListener
 
 	receivedFirst bool
-	updateQueue   []communications.Clump
-	toRelease     []communications.Packet
+	updateQueue   []packets.Clump
+	toRelease     []packets.Packet
 	releaseI      int
 }
 
 func NewManager() *Manager {
-	var codec = communications.NewCodec()
+	var codec = codec.NewCodec()
 
 	return &Manager{
 		Codec: *codec,
@@ -35,7 +36,7 @@ func NewManager() *Manager {
 		futureListeners: map[types.Channel]*FutureListener{},
 
 		receivedFirst: false,
-		updateQueue:   make([]communications.Clump, 0),
+		updateQueue:   make([]packets.Clump, 0),
 	}
 }
 
@@ -60,7 +61,7 @@ func (m *Manager) SteadyTick(ms time.Duration) {
 	m.TimeTick()
 }
 
-func (m *Manager) EncodeSystems() communications.Clump {
+func (m *Manager) EncodeSystems() packets.Clump {
 	/*var packetArray []communications.Packet
 
 	for _, s := range m.systems {
@@ -85,10 +86,10 @@ func (m *Manager) EncodeSystems() communications.Clump {
 		Timestamp:   0,
 		PacketArray: packetArray,
 	}, nil*/
-	return communications.Clump{}
+	return packets.Clump{}
 }
 
-func (m *Manager) DecodeForListeners(clump communications.Clump) {
+func (m *Manager) DecodeForListeners(clump packets.Clump) {
 	if !m.receivedFirst {
 		m.receivedFirst = true
 		m.Tick = clump.Timestamp
@@ -96,7 +97,7 @@ func (m *Manager) DecodeForListeners(clump communications.Clump) {
 	m.updateQueue = append(m.updateQueue, clump)
 }
 
-func (m *Manager) setRelease(packets []communications.Packet) {
+func (m *Manager) setRelease(packets []packets.Packet) {
 	sort.Slice(packets, func(i, j int) bool {
 		return packets[i].Offset < packets[j].Offset
 	})
@@ -117,7 +118,7 @@ func (m *Manager) TrickleEmit(elapsed time.Duration) {
 	}
 }
 
-func (m *Manager) emit(p communications.Packet) {
+func (m *Manager) emit(p packets.Packet) {
 	var spawner = *m.spawner
 
 	var id = p.ID
@@ -142,7 +143,7 @@ func (m *Manager) emit(p communications.Packet) {
 	}
 }
 
-func (m *Manager) EmitFutures(packets []communications.Packet) {
+func (m *Manager) EmitFutures(packets []packets.Packet) {
 	for _, p := range packets {
 		var channel = p.Channel
 		if l, ok := m.futureListeners[channel]; ok {

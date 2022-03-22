@@ -1,8 +1,9 @@
-package communications
+package codec
 
 import (
 	"bytes"
 	"encoding/gob"
+	"github.com/josephnormandev/murder/common/packets"
 )
 
 type Codec struct {
@@ -26,7 +27,7 @@ func NewCodec() *Codec {
 	}
 }
 
-func (c *Codec) EncodeOutputs(pc Clump) ([]byte, error) {
+func (c *Codec) EncodeOutputs(pc packets.Clump) ([]byte, error) {
 	c.output.Reset()
 	var err = c.encoder.Encode(pc)
 	if err != nil {
@@ -38,17 +39,17 @@ func (c *Codec) EncodeOutputs(pc Clump) ([]byte, error) {
 	return outputs, nil
 }
 
-func (c *Codec) DecodeInputs(data []byte) (Clump, error) {
-	var clump = &Clump{}
+func (c *Codec) DecodeInputs(data []byte) (packets.Clump, error) {
+	var clump = &packets.Clump{}
 	c.input.Reset()
 	_, err := c.input.Write(data)
 	if err != nil {
-		return Clump{}, err
+		return packets.Clump{}, err
 	}
 
 	err = c.decoder.Decode(clump)
 	if err != nil {
-		return Clump{}, nil
+		return packets.Clump{}, nil
 	}
 	return *clump, nil
 }

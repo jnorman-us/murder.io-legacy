@@ -3,12 +3,12 @@ package ws
 import (
 	"context"
 	"fmt"
-	"github.com/josephnormandev/murder/common/communications"
+	"github.com/josephnormandev/murder/common/codec"
+	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
 	"golang.org/x/sync/errgroup"
 	"nhooyr.io/websocket"
 	"sync"
-	"time"
 )
 
 type Client struct {
@@ -16,20 +16,20 @@ type Client struct {
 
 	identifier types.UserID
 	lobby      *Lobby
-	codec      *communications.Codec
+	codec      *codec.Codec
 
 	cancel        func()
 	connected     bool
 	receivedFirst bool
 
-	clumps chan communications.Clump
+	clumps chan packets.Clump
 }
 
 func NewClient(id types.UserID, m *Lobby) *Client {
 	return &Client{
 		identifier: id,
 		lobby:      m,
-		clumps:     make(chan communications.Clump),
+		clumps:     make(chan packets.Clump),
 
 		connected:     false,
 		receivedFirst: false,
@@ -57,7 +57,7 @@ func (c *Client) Setup(ctx context.Context, conn *websocket.Conn) error {
 }
 
 func (c *Client) setupCodec() {
-	c.codec = communications.NewCodec()
+	c.codec = codec.NewCodec()
 }
 
 func (c *Client) destroyCodec() {
@@ -80,40 +80,38 @@ func (c *Client) Write(background context.Context, conn *websocket.Conn) error {
 			}
 		case <-background.Done():
 			return background.Err()
-		default:
-			time.Sleep(10 * time.Millisecond)
 		}
 	}
 }
 
 func (c *Client) Read(background context.Context, conn *websocket.Conn) error {
-	var codec = c.codec
+	//var codec = c.codec
 
 	for {
 		select {
 		case <-background.Done():
 			return background.Err()
 		default:
-			_, byteArray, err := conn.Read(background)
+			_, _, err := conn.Read(background)
 			if !c.receivedFirst {
 				c.receiveFirst()
-				clump := c.lobby.EncodeCatchupSystems(c)
+				clump := c.lobby.MarshalFullPackets()
 				c.Send(clump)
 			}
 			if err != nil {
 				c.disconnect()
 				return err
 			}
+			/*
+				clump, err := codec.DecodeInputs(byteArray)
+				if err != nil {
+					return err
+				}
 
-			clump, err := codec.DecodeInputs(byteArray)
-			if err != nil {
-				return err
-			}
-
-			err = c.lobby.DecodeForListeners(c, clump)
-			if err != nil {
-				return err
-			}
+				err = c.lobby.ReceivePackets(c, clump)
+				if err != nil {
+					return err
+				}*/
 		}
 	}
 }
@@ -137,7 +135,7 @@ func (c *Client) disconnect() {
 	c.connected = false
 }
 
-func (c *Client) Send(clump communications.Clump) {
+func (c *Client) Send(clump packets.Clump) {
 	c.Lock()
 	defer c.Unlock()
 
