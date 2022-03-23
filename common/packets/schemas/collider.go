@@ -1,10 +1,7 @@
 package schemas
 
-import (
-	"github.com/josephnormandev/murder/common/packets"
-)
-
-var ColliderSchema = packets.NewSchema(
+var ColliderSchema = NewSchema(
+	0x80,
 	[]string{"X", "Y", "Angle"},
 	[]string{},
 	[]string{},

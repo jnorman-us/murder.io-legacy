@@ -5,7 +5,6 @@ import (
 	"github.com/josephnormandev/murder/common/engine"
 	"github.com/josephnormandev/murder/common/game"
 	"github.com/josephnormandev/murder/common/logic"
-	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
 	"github.com/josephnormandev/murder/server/input"
@@ -46,7 +45,7 @@ func NewMatch(id types.ID) *Match {
 
 	var gLogic = logic.NewManager()
 	var gEngine = engine.NewEngine()
-	var lobby = ws.NewLobby(&packetsInfo, packets.NewManager())
+	var lobby = ws.NewLobby(&packetsInfo)
 	var inputs = input.NewManager()
 	var gCollisions = collisions.NewManager()
 	var worldOut = worldout.NewManager(&lobby.Manager)

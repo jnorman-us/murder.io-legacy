@@ -8,19 +8,17 @@ import (
 type Datafiable interface {
 	GetID() types.ID
 	GetClass() types.Channel
-	GetSchema() packets.Schema
 	PopulateData(data *packets.Data)
 }
 
 func (m *Manager) AddDatafiable(id types.ID, d *Datafiable) {
 	var channel = (*d).GetClass()
-	var schema = (*d).GetSchema()
 	var stream, ok = m.streams[channel]
 	if !ok {
 		stream = m.packets.CreateStream(channel, true)
 		m.streams[channel] = stream
 	}
-	var data = stream.CreateData(id, schema)
+	var data = stream.CreateData(id, channel)
 	m.data[id] = data
 	m.datafiables[id] = d
 }

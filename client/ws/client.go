@@ -58,7 +58,7 @@ func (c *Client) Write(background context.Context, conn *websocket.Conn) error {
 		case <-background.Done():
 			return background.Err()
 		default:
-			clump := manager.EncodeSystems()
+			clump := manager.MarshalPackets()
 			outputs, err := manager.EncodeOutputs(clump)
 			if err != nil {
 				return err
@@ -91,7 +91,7 @@ func (c *Client) Read(background context.Context, conn *websocket.Conn) error {
 				return err
 			}
 
-			manager.DecodeForListeners(clump)
+			manager.Receive(clump)
 		}
 	}
 }

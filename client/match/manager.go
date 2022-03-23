@@ -5,8 +5,10 @@ import (
 	"github.com/josephnormandev/murder/client/drawer"
 	"github.com/josephnormandev/murder/client/engine"
 	"github.com/josephnormandev/murder/client/input"
+	"github.com/josephnormandev/murder/client/worldin"
 	"github.com/josephnormandev/murder/client/ws"
 	"github.com/josephnormandev/murder/common/game"
+	"github.com/josephnormandev/murder/common/packets/schemas"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
 	"golang.org/x/sync/errgroup"
@@ -23,6 +25,7 @@ type Manager struct {
 	packets  *ws.Manager
 	drawer   *drawer.Drawer
 	inputs   *input.Manager
+	worldIn  *worldin.Manager
 	wsClient *ws.Client
 
 	RunContext context.Context
@@ -40,20 +43,17 @@ func NewManager() *Manager {
 	var gDrawer = drawer.NewDrawer()
 	var packets = ws.NewManager()
 	var inputs = input.NewManager()
-
-	var wsSpawner = ws.Spawner(m)
-	//var inputsSystem = ws.System(inputs)
-	//var gameListener = ws.Listener(m)
-	var futurePositionListener = ws.FutureListener(gEngine)
-	packets.SetSpawner(&wsSpawner)
-	//packets.AddSystem(&inputsSystem)
-	//packets.AddListener(&gameListener)
-	packets.AddFutureListener(&futurePositionListener)
+	var worldIn = worldin.NewManager(packets, []types.Channel{
+		schemas.BulletSchema.Channel(),
+		schemas.DimetrodonSchema.Channel(),
+		schemas.PoleSchema.Channel(),
+	})
 
 	m.drawer = gDrawer
 	m.engine = gEngine
 	m.packets = packets
 	m.inputs = inputs
+	m.worldIn = worldIn
 
 	return m
 }

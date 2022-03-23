@@ -85,14 +85,13 @@ func (c *Client) Write(background context.Context, conn *websocket.Conn) error {
 }
 
 func (c *Client) Read(background context.Context, conn *websocket.Conn) error {
-	//var codec = c.codec
-
+	var codec = c.codec
 	for {
 		select {
 		case <-background.Done():
 			return background.Err()
 		default:
-			_, _, err := conn.Read(background)
+			_, input, err := conn.Read(background)
 			if !c.receivedFirst {
 				c.receiveFirst()
 				clump := c.lobby.MarshalFullPackets()
@@ -102,16 +101,12 @@ func (c *Client) Read(background context.Context, conn *websocket.Conn) error {
 				c.disconnect()
 				return err
 			}
-			/*
-				clump, err := codec.DecodeInputs(byteArray)
-				if err != nil {
-					return err
-				}
+			clump, err := codec.DecodeInputs(input)
+			if err != nil {
+				return err
+			}
 
-				err = c.lobby.ReceivePackets(c, clump)
-				if err != nil {
-					return err
-				}*/
+			c.lobby.Receive(c, clump)
 		}
 	}
 }

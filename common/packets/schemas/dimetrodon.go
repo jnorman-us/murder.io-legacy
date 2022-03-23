@@ -1,12 +1,8 @@
 package schemas
 
-import (
-	"github.com/josephnormandev/murder/common/packets"
-)
-
-var dimetrodonSchema = packets.NewSchema(
+var DimetrodonSchema = MergeSchema(ColliderSchema, NewSchema(
+	0x82,
 	[]string{},
 	[]string{"Health", "MaxHealth"},
 	[]string{"Username"},
-)
-var DimetrodonSchema = packets.MergeSchema(ColliderSchema, dimetrodonSchema)
+))

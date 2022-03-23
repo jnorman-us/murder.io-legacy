@@ -33,14 +33,14 @@ func (m *Manager) SteadyTick(ctx context.Context) error {
 }
 
 func (m *Manager) Update(this js.Value, values []js.Value) interface{} {
-	var timeElapsed = m.packets.GetOffset()
-	var timeTotal = steadyTime
+	var timeElapsed = m.packets.GetOffsetBytes()
+	//var timeTotal = steadyTime
 
 	// fmt.Println(m.packets.Timestamp.Tick, m.packets.Timestamp.GetOffset())
 
 	// here, call packets to release a few packets at a time
-	m.packets.TrickleEmit(timeElapsed)
-	m.engine.UpdatePhysics(timeElapsed, timeTotal)
+	m.packets.Trickle(timeElapsed)
+	//m.engine.UpdatePhysics(timeElapsed, timeTotal)
 
 	return nil
 }

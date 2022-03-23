@@ -2,16 +2,11 @@ package dimetrodon
 
 import (
 	"github.com/josephnormandev/murder/common/packets"
-	"github.com/josephnormandev/murder/common/packets/schemas"
 	"github.com/josephnormandev/murder/common/types"
 )
 
 func (d *Dimetrodon) GetClass() types.Channel {
 	return Class
-}
-
-func (d *Dimetrodon) GetSchema() packets.Schema {
-	return schemas.DimetrodonSchema
 }
 
 func (d *Dimetrodon) PopulateData(data *packets.Data) {
@@ -23,4 +18,4 @@ func (d *Dimetrodon) PopulateData(data *packets.Data) {
 	data.SetString("Username", string(d.UserID))
 }
 
-const Class types.Channel = 0x84
+const Class types.Channel = 0x82

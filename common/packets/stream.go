@@ -31,17 +31,17 @@ func newStream(c types.Channel, t *timestamp.Timestamp, catchup bool) *Stream {
 	return stream
 }
 
-func (s *Stream) CreateAnonymousData(sc Schema) *Data {
+func (s *Stream) CreateAnonymousData(c types.Channel) *Data {
 	s.anonymousID++
 	var id = s.anonymousID
-	return s.CreateData(id, sc)
+	return s.CreateData(id, c)
 }
 
-func (s *Stream) CreateData(id types.ID, sc Schema) *Data {
-	var data = newData(id, sc, s.timestamp)
+func (s *Stream) CreateData(id types.ID, c types.Channel) *Data {
+	var data = NewData(id, c, s.timestamp)
 	s.additions <- Addition{
-		data:   data,
-		offset: s.timestamp.GetOffsetBytes(),
+		Data:   data,
+		Offset: s.timestamp.GetOffsetBytes(),
 	}
 	return data
 }
@@ -49,8 +49,8 @@ func (s *Stream) CreateData(id types.ID, sc Schema) *Data {
 func (s *Stream) DeleteData(id types.ID) {
 	var data = s.data[id]
 	s.deletions <- Deletion{
-		data:   data,
-		offset: s.timestamp.GetOffsetBytes(),
+		Data:   data,
+		Offset: s.timestamp.GetOffsetBytes(),
 	}
 }
 
@@ -58,9 +58,8 @@ func (s *Stream) GenerateFullPackets() []Packet {
 	var packets []Packet
 
 	if s.catchup {
-		var channel = s.channel
 		for _, data := range s.data {
-			packets = append(packets, data.GenerateFullPacket(channel))
+			packets = append(packets, data.GenerateFullPacket())
 		}
 	}
 	return packets
@@ -68,11 +67,9 @@ func (s *Stream) GenerateFullPackets() []Packet {
 
 func (s *Stream) GeneratePackets() []Packet {
 	var packets []Packet
-	var channel = s.channel
-
 	for _, data := range s.data {
 		if data.Dirty() {
-			packets = append(packets, data.GeneratePacket(channel, action.Actions.Update, 0))
+			packets = append(packets, data.GeneratePacket(action.Actions.Update, 0))
 			data.CleanDirt()
 		}
 	}
@@ -80,19 +77,19 @@ func (s *Stream) GeneratePackets() []Packet {
 	for {
 		select {
 		case addition := <-s.additions:
-			var id = addition.data.id
-			var data = addition.data
-			var offset = addition.offset
+			var id = addition.Data.id
+			var data = addition.Data
+			var offset = addition.Offset
 			s.data[id] = data
 			data.CleanDirt()
-			packets = append(packets, data.GeneratePacket(channel, action.Actions.Add, offset))
+			packets = append(packets, data.GeneratePacket(action.Actions.Add, offset))
 		case deletion := <-s.deletions:
-			var id = deletion.data.id
-			var data = deletion.data
-			var offset = deletion.offset
+			var id = deletion.Data.id
+			var data = deletion.Data
+			var offset = deletion.Offset
 			s.data[id] = data
 			data.CleanDirt()
-			packets = append(packets, data.GeneratePacket(channel, action.Actions.Delete, offset))
+			packets = append(packets, data.GeneratePacket(action.Actions.Delete, offset))
 		default:
 			return packets
 		}

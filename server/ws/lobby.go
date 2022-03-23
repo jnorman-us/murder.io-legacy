@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
 	"sync"
@@ -14,9 +13,9 @@ type Lobby struct {
 	clients map[types.UserID]*Client // per user Client
 }
 
-func NewLobby(info *LobbyInfo, packets *packets.Manager) *Lobby {
+func NewLobby(info *LobbyInfo) *Lobby {
 	return &Lobby{
-		Manager: *packets,
+		Manager: *packets.NewManager(),
 		info:    info,
 		clients: map[types.UserID]*Client{},
 	}
@@ -24,12 +23,14 @@ func NewLobby(info *LobbyInfo, packets *packets.Manager) *Lobby {
 
 func (l *Lobby) Send() {
 	var clump = l.MarshalPackets()
-	fmt.Println("Clump", len(clump.Packets))
-	/*
-		for _, c := range l.clients {
-			if (*c).Active() {
-				c.Send(clump)
-			}
+	for _, c := range l.clients {
+		if (*c).Active() {
+			c.Send(clump)
 		}
-		fmt.Println("REst")*/
+	}
+	l.TimeTick()
+}
+
+func (l *Lobby) Receive(client *Client, clump packets.Clump) {
+
 }

@@ -18,9 +18,9 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) CreateStream(channel types.Channel, catchup bool) *Stream {
-	var stream = newStream(channel, &m.Timestamp, catchup)
-	m.streams[channel] = stream
+func (m *Manager) CreateStream(c types.Channel, catchup bool) *Stream {
+	var stream = newStream(c, &m.Timestamp, catchup)
+	m.streams[c] = stream
 	return stream
 }
 

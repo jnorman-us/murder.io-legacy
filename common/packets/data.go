@@ -1,6 +1,8 @@
 package packets
 
 import (
+	"fmt"
+	"github.com/josephnormandev/murder/common/packets/schemas"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/types/action"
 	"github.com/josephnormandev/murder/common/types/timestamp"
@@ -20,10 +22,18 @@ type Data struct {
 	intDiff    chan IntDiff
 	stringDiff chan StringDiff
 
-	schema Schema
+	floatI   int
+	intI     int
+	stringI  int
+	floatIn  []FloatDiff
+	intIn    []IntDiff
+	stringIn []StringDiff
+
+	channel types.Channel
+	schema  schemas.Schema
 }
 
-func newData(id types.ID, s Schema, t *timestamp.Timestamp) *Data {
+func NewData(id types.ID, c types.Channel, t *timestamp.Timestamp) *Data {
 	return &Data{
 		timestamp: t,
 
@@ -37,101 +47,102 @@ func newData(id types.ID, s Schema, t *timestamp.Timestamp) *Data {
 		intDiff:    make(chan IntDiff, 1000),
 		stringDiff: make(chan StringDiff, 1000),
 
-		schema: s,
+		channel: c,
+		schema:  schemas.Schemas[c],
 	}
 }
 
-func (d *Data) ApplySchema(schema Schema) {
+func (d *Data) ApplySchema(schema schemas.Schema) {
 	d.schema = schema
 }
 
 func (d *Data) GetFloat(name string) float64 {
-	if !d.schema.real {
+	if !d.schema.Real() {
 		return 0.0
 	}
-	if index, ok := d.schema.floatNTI[name]; ok {
+	if index, ok := d.schema.FloatNTI[name]; ok {
 		return float64(d.RawFloats[index])
 	}
 	return 0.0
 }
 
 func (d *Data) GetInteger(name string) int {
-	if !d.schema.real {
+	if !d.schema.Real() {
 		return 0
 	}
-	if index, ok := d.schema.integerNTI[name]; ok {
+	if index, ok := d.schema.IntegerNTI[name]; ok {
 		return int(d.RawIntegers[index])
 	}
 	return 0
 }
 
 func (d *Data) GetString(name string) string {
-	if !d.schema.real {
+	if !d.schema.Real() {
 		return ""
 	}
-	if index, ok := d.schema.stringNTI[name]; ok {
+	if index, ok := d.schema.StringNTI[name]; ok {
 		return d.RawStrings[index]
 	}
 	return ""
 }
 
 func (d *Data) SetFloat(name string, set float64) {
-	if !d.schema.real {
+	if !d.schema.Real() {
 		return
 	}
-	if index, ok := d.schema.floatNTI[name]; ok {
+	if index, ok := d.schema.FloatNTI[name]; ok {
 		var value = float32(set)
-		var old = d.RawFloats[index]
-		if old != value {
+		var old, ok = d.RawFloats[index]
+		if !ok || old != value {
 			d.MarkDirty()
 			d.RawFloats[index] = value
 			d.floatDiff <- FloatDiff{
-				field:  index,
-				offset: d.timestamp.GetOffsetBytes(),
-				value:  value,
+				Field:  index,
+				Offset: d.timestamp.GetOffsetBytes(),
+				Value:  value,
 			}
 		}
 	}
 }
 
 func (d *Data) SetInteger(name string, set int) {
-	if !d.schema.real {
+	if !d.schema.Real() {
 		return
 	}
-	if index, ok := d.schema.integerNTI[name]; ok {
+	if index, ok := d.schema.IntegerNTI[name]; ok {
 		var value = int32(set)
-		var old = d.RawIntegers[index]
-		if old != value {
+		var old, ok = d.RawIntegers[index]
+		if !ok || old != value {
 			d.MarkDirty()
 			d.RawIntegers[index] = value
 			d.intDiff <- IntDiff{
-				field:  index,
-				offset: d.timestamp.GetOffsetBytes(),
-				value:  value,
+				Field:  index,
+				Offset: d.timestamp.GetOffsetBytes(),
+				Value:  value,
 			}
 		}
 	}
 }
 
 func (d *Data) SetString(name string, set string) {
-	if !d.schema.real {
+	if !d.schema.Real() {
 		return
 	}
-	if index, ok := d.schema.stringNTI[name]; ok {
-		var old = d.RawStrings[index]
-		if old != set {
+	if index, ok := d.schema.StringNTI[name]; ok {
+		var old, ok = d.RawStrings[index]
+		if !ok || old != set {
 			d.MarkDirty()
 			d.RawStrings[index] = set
 			d.stringDiff <- StringDiff{
-				field:  index,
-				offset: d.timestamp.GetOffsetBytes(),
-				value:  set,
+				Field:  index,
+				Offset: d.timestamp.GetOffsetBytes(),
+				Value:  set,
 			}
 		}
 	}
 }
 
-func (d *Data) GenerateFullPacket(c types.Channel) Packet {
+func (d *Data) GenerateFullPacket() Packet {
 	var floatDiff []FloatDiff
 	var intDiff []IntDiff
 	var stringDiff []StringDiff
@@ -139,29 +150,29 @@ func (d *Data) GenerateFullPacket(c types.Channel) Packet {
 	// generate full diffs
 	for index, value := range d.RawFloats {
 		floatDiff = append(floatDiff, FloatDiff{
-			field:  index,
-			offset: 0,
-			value:  value,
+			Field:  index,
+			Offset: 0,
+			Value:  value,
 		})
 	}
 	for index, value := range d.RawIntegers {
 		intDiff = append(intDiff, IntDiff{
-			field:  index,
-			offset: 0,
-			value:  value,
+			Field:  index,
+			Offset: 0,
+			Value:  value,
 		})
 	}
 	for index, value := range d.RawStrings {
 		stringDiff = append(stringDiff, StringDiff{
-			field:  index,
-			offset: 0,
-			value:  value,
+			Field:  index,
+			Offset: 0,
+			Value:  value,
 		})
 	}
 
 	return Packet{
 		ID:         d.id,
-		Channel:    c,
+		Channel:    d.channel,
 		Action:     action.Actions.Add,
 		Offset:     0,
 		FloatDiff:  floatDiff,
@@ -170,7 +181,7 @@ func (d *Data) GenerateFullPacket(c types.Channel) Packet {
 	}
 }
 
-func (d *Data) GeneratePacket(c types.Channel, a action.Action, offset byte) Packet {
+func (d *Data) GeneratePacket(a action.Action, offset byte) Packet {
 	var floatDiff []FloatDiff
 	var intDiff []IntDiff
 	var stringDiff []StringDiff
@@ -186,7 +197,7 @@ func (d *Data) GeneratePacket(c types.Channel, a action.Action, offset byte) Pac
 		default:
 			return Packet{
 				ID:         d.id,
-				Channel:    c,
+				Channel:    d.channel,
 				Action:     a,
 				Offset:     offset,
 				FloatDiff:  floatDiff,
@@ -195,4 +206,62 @@ func (d *Data) GeneratePacket(c types.Channel, a action.Action, offset byte) Pac
 			}
 		}
 	}
+}
+
+func (d *Data) SetDiffs(floatDiff []FloatDiff, intDiff []IntDiff, stringDiff []StringDiff) {
+	d.floatI = 0
+	d.intI = 0
+	d.stringI = 0
+	d.floatIn = floatDiff
+	d.intIn = intDiff
+	d.stringIn = stringDiff
+}
+
+func (d *Data) Trickle(elapsed byte) {
+	for ; d.floatI < len(d.floatIn); d.floatI++ {
+		var floatDiff = d.floatIn[d.floatI]
+		if floatDiff.Offset <= elapsed {
+			d.applyFloatDiff(floatDiff)
+		} else {
+			break
+		}
+	}
+	for ; d.intI < len(d.intIn); d.intI++ {
+		var intDiff = d.intIn[d.intI]
+		if intDiff.Offset <= elapsed {
+			d.applyIntegerDiff(intDiff)
+		} else {
+			break
+		}
+	}
+	for ; d.stringI < len(d.stringIn); d.stringI++ {
+		var stringDiff = d.stringIn[d.stringI]
+		if stringDiff.Offset <= elapsed {
+			d.applyStringDiff(stringDiff)
+		} else {
+			break
+		}
+	}
+}
+
+func (d *Data) applyFloatDiff(diff FloatDiff) {
+	var field = diff.Field
+	var value = diff.Value
+	d.RawFloats[field] = value
+}
+
+func (d *Data) applyIntegerDiff(diff IntDiff) {
+	var field = diff.Field
+	var value = diff.Value
+	d.RawIntegers[field] = value
+}
+
+func (d *Data) applyStringDiff(diff StringDiff) {
+	var field = diff.Field
+	var value = diff.Value
+	d.RawStrings[field] = value
+}
+
+func (d *Data) Print() {
+	fmt.Println(d.id, d.RawFloats, d.RawIntegers, d.RawStrings)
 }

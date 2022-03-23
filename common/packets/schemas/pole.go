@@ -1,12 +1,8 @@
 package schemas
 
-import (
-	"github.com/josephnormandev/murder/common/packets"
-)
-
-var poleSchema = packets.NewSchema(
+var PoleSchema = MergeSchema(ColliderSchema, NewSchema(
+	0x83,
 	[]string{},
 	[]string{},
 	[]string{},
-)
-var PoleSchema = packets.MergeSchema(ColliderSchema, poleSchema)
+))
