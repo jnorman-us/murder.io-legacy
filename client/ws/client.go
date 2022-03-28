@@ -53,7 +53,7 @@ func (c *Client) Connect(ctx context.Context) error {
 
 func (c *Client) Write(background context.Context, conn *websocket.Conn) error {
 	var manager = c.manager
-	for range time.Tick(50 * time.Millisecond) {
+	for range time.Tick(1000 * time.Millisecond) {
 		select {
 		case <-background.Done():
 			return background.Err()

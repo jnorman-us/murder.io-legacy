@@ -2,6 +2,7 @@ package pole
 
 import (
 	"github.com/josephnormandev/murder/common/packets"
+	"github.com/josephnormandev/murder/common/packets/schemas"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -15,4 +16,11 @@ func (p *Pole) PopulateData(data *packets.Data) {
 	data.SetFloat("Angle", p.Angle)
 }
 
-const Class types.Channel = 0x83
+func (p *Pole) FromData(data packets.Data) {
+	var position = types.NewVector(data.GetFloat("X"), data.GetFloat("Y"))
+	var angle = data.GetFloat("Angle")
+	p.SetPosition(position)
+	p.SetAngle(angle)
+}
+
+var Class = schemas.PoleSchema.Channel()

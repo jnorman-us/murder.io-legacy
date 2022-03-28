@@ -11,7 +11,7 @@ import (
 type Data struct {
 	timestamp *timestamp.Timestamp
 
-	id types.ID
+	types.ID
 
 	RawFloats   map[byte]float32
 	RawIntegers map[byte]int32
@@ -37,7 +37,7 @@ func NewData(id types.ID, c types.Channel, t *timestamp.Timestamp) *Data {
 	return &Data{
 		timestamp: t,
 
-		id: id,
+		ID: id,
 
 		RawFloats:   map[byte]float32{},
 		RawIntegers: map[byte]int32{},
@@ -142,6 +142,10 @@ func (d *Data) SetString(name string, set string) {
 	}
 }
 
+func (d *Data) GetChannel() types.Channel {
+	return d.channel
+}
+
 func (d *Data) GenerateFullPacket() Packet {
 	var floatDiff []FloatDiff
 	var intDiff []IntDiff
@@ -171,7 +175,7 @@ func (d *Data) GenerateFullPacket() Packet {
 	}
 
 	return Packet{
-		ID:         d.id,
+		ID:         d.ID,
 		Channel:    d.channel,
 		Action:     action.Actions.Add,
 		Offset:     0,
@@ -196,7 +200,7 @@ func (d *Data) GeneratePacket(a action.Action, offset byte) Packet {
 			stringDiff = append(stringDiff, diff)
 		default:
 			return Packet{
-				ID:         d.id,
+				ID:         d.ID,
 				Channel:    d.channel,
 				Action:     a,
 				Offset:     offset,
@@ -217,11 +221,13 @@ func (d *Data) SetDiffs(floatDiff []FloatDiff, intDiff []IntDiff, stringDiff []S
 	d.stringIn = stringDiff
 }
 
-func (d *Data) Trickle(elapsed byte) {
+func (d *Data) Trickle(elapsed byte) bool {
+	var trickled = false
 	for ; d.floatI < len(d.floatIn); d.floatI++ {
 		var floatDiff = d.floatIn[d.floatI]
 		if floatDiff.Offset <= elapsed {
 			d.applyFloatDiff(floatDiff)
+			trickled = true
 		} else {
 			break
 		}
@@ -230,6 +236,7 @@ func (d *Data) Trickle(elapsed byte) {
 		var intDiff = d.intIn[d.intI]
 		if intDiff.Offset <= elapsed {
 			d.applyIntegerDiff(intDiff)
+			trickled = true
 		} else {
 			break
 		}
@@ -238,10 +245,12 @@ func (d *Data) Trickle(elapsed byte) {
 		var stringDiff = d.stringIn[d.stringI]
 		if stringDiff.Offset <= elapsed {
 			d.applyStringDiff(stringDiff)
+			trickled = true
 		} else {
 			break
 		}
 	}
+	return trickled
 }
 
 func (d *Data) applyFloatDiff(diff FloatDiff) {
@@ -263,5 +272,5 @@ func (d *Data) applyStringDiff(diff StringDiff) {
 }
 
 func (d *Data) Print() {
-	fmt.Println(d.id, d.RawFloats, d.RawIntegers, d.RawStrings)
+	fmt.Println(d.ID, d.RawFloats, d.RawIntegers, d.RawStrings)
 }

@@ -2,6 +2,7 @@ package bullet
 
 import (
 	"github.com/josephnormandev/murder/common/packets"
+	"github.com/josephnormandev/murder/common/packets/schemas"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -15,4 +16,11 @@ func (b *Bullet) PopulateData(data *packets.Data) {
 	data.SetFloat("Angle", b.Angle)
 }
 
-const Class types.Channel = 0x81
+func (b *Bullet) FromData(data packets.Data) {
+	var position = types.NewVector(data.GetFloat("X"), data.GetFloat("Y"))
+	var angle = data.GetFloat("Angle")
+	b.SetPosition(position)
+	b.SetAngle(angle)
+}
+
+var Class = schemas.BulletSchema.Channel()

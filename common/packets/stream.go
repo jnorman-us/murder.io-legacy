@@ -77,14 +77,14 @@ func (s *Stream) GeneratePackets() []Packet {
 	for {
 		select {
 		case addition := <-s.additions:
-			var id = addition.Data.id
+			var id = addition.Data.ID
 			var data = addition.Data
 			var offset = addition.Offset
 			s.data[id] = data
 			data.CleanDirt()
 			packets = append(packets, data.GeneratePacket(action.Actions.Add, offset))
 		case deletion := <-s.deletions:
-			var id = deletion.Data.id
+			var id = deletion.Data.ID
 			var data = deletion.Data
 			var offset = deletion.Offset
 			s.data[id] = data

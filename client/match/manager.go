@@ -8,7 +8,6 @@ import (
 	"github.com/josephnormandev/murder/client/worldin"
 	"github.com/josephnormandev/murder/client/ws"
 	"github.com/josephnormandev/murder/common/game"
-	"github.com/josephnormandev/murder/common/packets/schemas"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/world"
 	"golang.org/x/sync/errgroup"
@@ -43,11 +42,9 @@ func NewManager() *Manager {
 	var gDrawer = drawer.NewDrawer()
 	var packets = ws.NewManager()
 	var inputs = input.NewManager()
-	var worldIn = worldin.NewManager(packets, []types.Channel{
-		schemas.BulletSchema.Channel(),
-		schemas.DimetrodonSchema.Channel(),
-		schemas.PoleSchema.Channel(),
-	})
+
+	var worldOutput = worldin.Output(&m.World)
+	var worldIn = worldin.NewManager(packets, &worldOutput)
 
 	m.drawer = gDrawer
 	m.engine = gEngine

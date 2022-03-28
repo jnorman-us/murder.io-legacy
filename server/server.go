@@ -26,7 +26,7 @@ var names = []types.UserID{
 	"Envii",
 	"Jinseng",
 	"Laerir",*/
-	/*"JoeyD",*/
+	"JoeyD",
 	"Beta Tester",
 }
 
@@ -53,7 +53,7 @@ func main() {
 		d.SetPosition(types.NewRandomVector(0, 0, 400, 400))
 		soleGame.AddDimetrodon(d)
 		if rand.Intn(2) == 1 {
-			//d.Input.AttackClick = true
+			d.Input.AttackClick = true
 		}
 		if rand.Intn(2) == 1 {
 			d.Input.Left = true

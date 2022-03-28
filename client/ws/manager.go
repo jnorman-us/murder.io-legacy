@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"fmt"
 	"github.com/josephnormandev/murder/common/codec"
 	"github.com/josephnormandev/murder/common/packets"
 	"github.com/josephnormandev/murder/common/types"
@@ -32,7 +33,7 @@ func NewManager() *Manager {
 func (m *Manager) SteadyTick(ms time.Duration) {
 	var currentTimestamp = m.Tick - 2
 
-	// fmt.Println(len(m.updateQueue), m.Tick)
+	fmt.Println(len(m.updateQueue), m.Tick)
 	for len(m.updateQueue) > 0 {
 		var clump = m.updateQueue[0]
 		if clump.Timestamp <= currentTimestamp {

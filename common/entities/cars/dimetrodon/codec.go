@@ -2,6 +2,7 @@ package dimetrodon
 
 import (
 	"github.com/josephnormandev/murder/common/packets"
+	"github.com/josephnormandev/murder/common/packets/schemas"
 	"github.com/josephnormandev/murder/common/types"
 )
 
@@ -18,4 +19,15 @@ func (d *Dimetrodon) PopulateData(data *packets.Data) {
 	data.SetString("Username", string(d.UserID))
 }
 
-const Class types.Channel = 0x82
+func (d *Dimetrodon) FromData(data packets.Data) {
+	var position = types.NewVector(data.GetFloat("X"), data.GetFloat("Y"))
+	var angle = data.GetFloat("Angle")
+	d.SetPosition(position)
+	d.SetAngle(angle)
+
+	d.SetHealth(data.GetInteger("Health"))
+	d.Health.MaxHealth = data.GetInteger("MaxHealth")
+	d.UserID = types.UserID(data.GetString("Username"))
+}
+
+var Class = schemas.DimetrodonSchema.Channel()
