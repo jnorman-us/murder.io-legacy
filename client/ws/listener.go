@@ -1,9 +1,7 @@
 package ws
 
 import (
-	"fmt"
 	"github.com/josephnormandev/murder/common/packets"
-	"github.com/josephnormandev/murder/common/packets/schemas"
 	"github.com/josephnormandev/murder/common/types"
 	"github.com/josephnormandev/murder/common/types/action"
 )
@@ -63,11 +61,6 @@ func (l *Listener) trickle(elapsed byte) {
 	for _, data := range l.data {
 		if data.Trickle(elapsed) {
 			handler.HandleUpdate(data.GetChannel(), *data)
-		} else {
-			if data.GetChannel() == schemas.DimetrodonSchema.Channel() {
-				fmt.Println("NOTHING", data.ID, elapsed)
-
-			}
 		}
 	}
 }

@@ -87,7 +87,7 @@ func (s *Stream) GeneratePackets() []Packet {
 			var id = deletion.Data.ID
 			var data = deletion.Data
 			var offset = deletion.Offset
-			s.data[id] = data
+			delete(s.data, id)
 			data.CleanDirt()
 			packets = append(packets, data.GeneratePacket(action.Actions.Delete, offset))
 		default:
